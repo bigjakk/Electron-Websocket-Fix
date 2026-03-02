@@ -6,12 +6,12 @@ This is critical for competitive browser-based games (like [Krunker](https://kru
 
 ## Downloads
 
-Pre-built patched binaries (Windows x64):
+Pre-built patched binaries (Windows x64) are available on the [Releases page](https://gitea.crjlab.net/bigjakk/Electron-Websocket-Fix/releases/tag/v1.0.0):
 
 | File | Electron Version | Size |
 |------|-----------------|------|
-| [`electron-v40.6.1-release-patched-win32-x64.zip`](releases/electron-v40.6.1-release-patched-win32-x64.zip) | v40.6.1 (latest stable) | 133MB |
-| [`electron-v42.0.0-nightly-release-patched-win32-x64.zip`](releases/electron-v42.0.0-nightly-release-patched-win32-x64.zip) | v42.0.0-nightly | 137MB |
+| `electron-v40.6.1-release-patched-win32-x64.zip` | v40.6.1 (latest stable) | 133MB |
+| `electron-v42.0.0-nightly-release-patched-win32-x64.zip` | v42.0.0-nightly | 137MB |
 
 Both are full release builds (`is_official_build = true`) with maximum optimizations.
 
