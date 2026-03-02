@@ -1,0 +1,9 @@
+{
+  "name": "ws-starvation-test",
+  "version": "1.0.0",
+  "description": "Automated stress test for WebSocket starvation under continuous mouse input",
+  "main": "cdp-test.js",
+  "dependencies": {
+    "ws": "^8.0.0"
+  }
+}
