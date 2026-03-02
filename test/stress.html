@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head><title>WS Starvation Stress Test</title></head>
+<body style="margin:0; overflow:hidden; background:#111;">
+<canvas id="c" style="width:100vw;height:100vh;display:block;"></canvas>
+<div id="hud" style="position:fixed;top:10px;left:10px;color:#0f0;font:14px monospace;background:rgba(0,0,0,0.8);padding:10px;z-index:10;pointer-events:none;"></div>
+<script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const hud = document.getElementById('hud');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Draw crosshair at mouse position (forces compositor work on every mousemove)
+    let mx = canvas.width/2, my = canvas.height/2;
+    let mouseDown = false;
+    let moveCount = 0;
+    let frameCount = 0;
+
+    document.addEventListener('mousedown', (e) => {
+        mouseDown = true;
+        mx = e.clientX; my = e.clientY;
+        // Simulate shooting — draw muzzle flash (forces paint)
+        ctx.fillStyle = '#ff0';
+        ctx.beginPath();
+        ctx.arc(mx, my, 30, 0, Math.PI*2);
+        ctx.fill();
+    });
+    document.addEventListener('mouseup', () => { mouseDown = false; });
+    document.addEventListener('mousemove', (e) => {
+        mx = e.clientX; my = e.clientY;
+        moveCount++;
+        // Force layout/paint on every single mousemove
+        // This is what triggers the compositor priority boost
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Draw crosshair
+        ctx.strokeStyle = mouseDown ? '#f00' : '#0f0';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(mx - 20, my); ctx.lineTo(mx + 20, my);
+        ctx.moveTo(mx, my - 20); ctx.lineTo(mx, my + 20);
+        ctx.stroke();
+        // Draw particles when "shooting"
+        if (mouseDown) {
+            for (let i = 0; i < 5; i++) {
+                ctx.fillStyle = `hsl(${Math.random()*60}, 100%, 50%)`;
+                ctx.fillRect(mx + Math.random()*60-30, my + Math.random()*60-30, 3, 3);
+            }
+        }
+    });
+
+    // requestAnimationFrame loop (keeps compositor busy at unlimited FPS)
+    function frame() {
+        frameCount++;
+        requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    // WebSocket latency tracking
+    let wsLatencies = [];
+    const ws = new WebSocket('ws://' + location.host);
+    ws.onmessage = (e) => {
+        const now = performance.now();
+        if (ws._lastReceive) {
+            wsLatencies.push(now - ws._lastReceive);
+        }
+        ws._lastReceive = now;
+    };
+
+    // Periodic HUD update
+    setInterval(() => {
+        if (wsLatencies.length < 2) return;
+        const recent = wsLatencies.slice(-300); // last 5 seconds at 60Hz
+        const sorted = [...recent].sort((a,b) => a - b);
+        const avg = recent.reduce((a,b) => a+b, 0) / recent.length;
+        const p95 = sorted[Math.floor(sorted.length * 0.95)];
+        const p99 = sorted[Math.floor(sorted.length * 0.99)];
+        const max = sorted[sorted.length - 1];
+        const over50 = recent.filter(x => x > 50).length;
+        hud.innerHTML =
+            `Mouse: ${mouseDown ? 'SHOOTING' : 'idle'} (${moveCount} moves)<br>` +
+            `Frames: ${frameCount}<br>` +
+            `WS: avg=${avg.toFixed(1)} p95=${p95.toFixed(1)} p99=${p99.toFixed(1)} max=${max.toFixed(1)}<br>` +
+            `WS >50ms: ${over50}/${recent.length} (${(over50/recent.length*100).toFixed(1)}%)`;
+    }, 250);
+</script>
+</body>
+</html>
