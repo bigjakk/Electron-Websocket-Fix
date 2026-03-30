@@ -17,9 +17,11 @@ Pre-built patched binaries are available on the [Releases page](https://gitea.cr
 
 ### Linux x64
 
-Linux binaries can be built from source using the same patch -- see [`BUILD-GUIDE.md`](BUILD-GUIDE.md) for full instructions. The patch is platform-agnostic (pure Chromium C++) and applies identically on Linux.
+| File | Electron Version | Size |
+|------|-----------------|------|
+| `electron-v43.0.0-nightly-release-patched-linux-x64.zip` | v43.0.0-nightly | 113MB |
 
-All builds are full release builds (`is_official_build = true`) with maximum optimizations.
+All builds are full release builds (`is_official_build = true`) with maximum optimizations. Additional versions can be built from source -- see [`BUILD-GUIDE.md`](BUILD-GUIDE.md).
 
 ## The Problem
 
