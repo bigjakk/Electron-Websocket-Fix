@@ -4,8 +4,11 @@ const fs = require('fs');
 const path = require('path');
 const { WebSocketServer } = require('ws');
 
-const PORT = parseInt(process.argv[2] || '8085');
-const LABEL = process.argv[3] || 'TEST';
+// Filter out Electron/Chromium flags (e.g. --no-sandbox) from argv to find app args
+const appArgs = process.argv.slice(1).filter(a => !a.startsWith('-'));
+// appArgs[0] is the script path, rest are user arguments
+const PORT = parseInt(appArgs[1] || '8085');
+const LABEL = appArgs[2] || 'TEST';
 const TEST_DURATION_MS = 12000;
 const WARMUP_MS = 3000;
 

@@ -6,14 +6,20 @@ This is critical for competitive browser-based games (like [Krunker](https://kru
 
 ## Downloads
 
-Pre-built patched binaries (Windows x64) are available on the [Releases page](https://gitea.crjlab.net/bigjakk/Electron-Websocket-Fix/releases/tag/v1.0.0):
+Pre-built patched binaries are available on the [Releases page](https://gitea.crjlab.net/bigjakk/Electron-Websocket-Fix/releases):
+
+### Windows x64
 
 | File | Electron Version | Size |
 |------|-----------------|------|
 | `electron-v40.6.1-release-patched-win32-x64.zip` | v40.6.1 (latest stable) | 133MB |
 | `electron-v42.0.0-nightly-release-patched-win32-x64.zip` | v42.0.0-nightly | 137MB |
 
-Both are full release builds (`is_official_build = true`) with maximum optimizations.
+### Linux x64
+
+Linux binaries can be built from source using the same patch -- see [`BUILD-GUIDE.md`](BUILD-GUIDE.md) for full instructions. The patch is platform-agnostic (pure Chromium C++) and applies identically on Linux.
+
+All builds are full release builds (`is_official_build = true`) with maximum optimizations.
 
 ## The Problem
 
@@ -64,8 +70,16 @@ The patch not only eliminates starvation but actually **improves** both input th
 
 Extract the zip and run your app:
 
+**Windows:**
+
 ```bash
 electron.exe path/to/your/app
+```
+
+**Linux:**
+
+```bash
+./electron path/to/your/app
 ```
 
 ### Option B: Replace in node_modules
@@ -112,7 +126,12 @@ An automated stress test is included in the [`test/`](test/) directory:
 ```bash
 cd test
 npm install
+
+# Windows
 path/to/patched/electron.exe cdp-test.js 8085 PATCHED
+
+# Linux
+path/to/patched/electron cdp-test.js 8085 PATCHED
 ```
 
 The test uses CDP `Input.dispatchMouseEvent` to simulate continuous mouse input (the only reliable automated method -- Electron's `sendInputEvent` API bypasses the compositor thread and doesn't trigger the bug).
@@ -126,9 +145,10 @@ Full build instructions are in [`BUILD-GUIDE.md`](BUILD-GUIDE.md).
 Quick summary:
 
 ```bash
-# 1. Set up environment (depot_tools, VS Build Tools, Python, etc.)
+# 1. Set up environment (depot_tools, build toolchain, Python, etc.)
 # 2. Initialize and sync Electron source
-e init --root=C:\electron my-build --import release
+e init --root=$HOME/electron my-build --import release  # Linux
+e init --root=C:\electron my-build --import release      # Windows
 e sync
 
 # 3. Check out desired version
@@ -145,7 +165,8 @@ mkdir -p out/Release
 #   is_official_build = true
 #   use_remoteexec = false
 #   use_reclient = false
-buildtools/win/gn.exe gen out/Release
+buildtools/linux64/gn gen out/Release    # Linux
+buildtools/win/gn.exe gen out/Release    # Windows
 ninja -C out/Release electron
 ninja -C out/Release electron:electron_dist_zip
 ```
@@ -154,7 +175,7 @@ Expect 6-10+ hours for a full build on a modern machine (24 cores, 64GB RAM).
 
 ## Patch Details
 
-The patch modifies Chromium source (not Electron source), so it applies to any Electron version. Line numbers may shift between versions but the function names remain the same:
+The patch modifies Chromium source (not Electron source), so it applies to any Electron version since Electron 10 (Chromium 84+) on any platform (Windows, Linux, macOS). Line numbers may shift between versions but the function names remain the same:
 
 - `ComputePriority()` -- search for `PrioritisationType::kInput`
 - `ComputeCompositorPriority()` -- search for that function name

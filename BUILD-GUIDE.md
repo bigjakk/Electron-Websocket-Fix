@@ -4,6 +4,10 @@ This guide documents how to build a patched Electron binary that fixes a Chromiu
 regression where continuous mouse input (e.g., shooting in an FPS game) starves
 WebSocket and Worker message dispatch when `--disable-frame-rate-limit` is active.
 
+Build instructions are provided for both **Windows** and **Linux**. The patch
+itself is platform-agnostic (pure Chromium C++), so the same `.diff` file works
+on both platforms.
+
 ## Problem
 
 When an Electron app uses `--disable-frame-rate-limit` and `--disable-gpu-vsync`
@@ -50,6 +54,8 @@ Test results (12-second automated stress test with continuous mouse input):
 
 ## Prerequisites
 
+### Windows
+
 - **Windows 11** (10 may work, untested)
 - **250GB+ free disk space** (source is ~30GB, build output ~41GB)
 - **16GB+ RAM** (64GB recommended)
@@ -61,7 +67,24 @@ Test results (12-second automated stress test with continuous mouse input):
 - **Node.js** LTS (v20+)
 - **Python 3.11+**
 
+### Linux
+
+- **Ubuntu 22.04+** / **Debian 12+** / **Fedora 38+** (or equivalent)
+- **250GB+ free disk space** (source is ~30GB, build output ~41GB)
+- **16GB+ RAM** (64GB recommended)
+- **Build toolchain**: GCC/G++ or Clang (Chromium provides its own Clang, but
+  system compilers are needed for bootstrapping)
+- **Git** 2.x+
+- **Node.js** LTS (v20+)
+- **Python 3.11+**
+- **System libraries** (see Linux setup below)
+
+---
+
 ## Step 0: Environment Setup
+
+<details>
+<summary><strong>Windows Setup</strong></summary>
 
 ### Install depot_tools
 
@@ -160,15 +183,110 @@ npm install -g @electron/build-tools
 mkdir C:\git_cache
 ```
 
+</details>
+
+<details>
+<summary><strong>Linux Setup</strong></summary>
+
+### Install system dependencies
+
+**Ubuntu/Debian:**
+
+```bash
+sudo apt update
+sudo apt install -y build-essential clang lld gperf pkg-config \
+  libdbus-1-dev libgtk-3-dev libnotify-dev libgnome-keyring-dev \
+  libgconf2-dev libasound2-dev libcap-dev libcups2-dev libxtst-dev \
+  libxss1 libnss3-dev gcc-multilib g++-multilib curl libcurl4-openssl-dev \
+  libdrm-dev libgbm-dev mesa-common-dev libpango1.0-dev libpci-dev \
+  libx11-xcb-dev libxcomposite-dev libxdamage-dev libxrandr-dev \
+  libxkbcommon-dev
+```
+
+**Fedora:**
+
+```bash
+sudo dnf groupinstall -y "Development Tools" "C Development Tools and Libraries"
+sudo dnf install -y clang lld gperf pkgconf-pkg-config dbus-devel gtk3-devel \
+  libnotify-devel gnome-keyring-devel alsa-lib-devel libcap-devel cups-devel \
+  libXtst-devel nss-devel libcurl-devel libdrm-devel mesa-libgbm-devel \
+  pango-devel pciutils-devel libxcb-devel libXcomposite-devel libXdamage-devel \
+  libXrandr-devel libxkbcommon-devel
+```
+
+**Note:** Chromium's build also runs `build/install-build-deps.sh` during sync,
+which installs additional packages. The list above covers the main requirements.
+
+### Install depot_tools
+
+```bash
+cd ~
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+```
+
+### Configure environment
+
+Add to your `~/.bashrc` or `~/.zshrc`:
+
+```bash
+export PATH="$HOME/depot_tools:$PATH"
+export GIT_CACHE_PATH="$HOME/git_cache"
+```
+
+Then reload:
+
+```bash
+source ~/.bashrc  # or ~/.zshrc
+```
+
+### Configure Git
+
+```bash
+git config --global core.autocrlf false
+git config --global branch.autosetuprebase always
+```
+
+### Install Node.js
+
+Use your package manager or nvm:
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+nvm install 20
+```
+
+### Install @electron/build-tools
+
+```bash
+npm install -g @electron/build-tools
+```
+
+### Create git cache directory
+
+```bash
+mkdir -p ~/git_cache
+```
+
+</details>
+
 ---
 
 ## Step 1: Initialize and Sync Source
 
 ### Initialize Electron source
 
+**Windows:**
+
 ```bash
 mkdir C:\electron && cd C:\electron
 e init --root=C:\electron krunker-patch --import release
+```
+
+**Linux:**
+
+```bash
+mkdir -p ~/electron && cd ~/electron
+e init --root=$HOME/electron krunker-patch --import release
 ```
 
 This creates the directory structure and `.gclient` file.
@@ -182,14 +300,24 @@ e sync
 This takes 1-3 hours depending on network speed. It downloads Chromium, Node.js,
 and all dependencies.
 
+**Linux note:** During sync, Chromium may run `build/install-build-deps.sh` which
+requires sudo to install additional system packages. If it doesn't run
+automatically, execute it manually:
+
+```bash
+cd ~/electron/src
+./build/install-build-deps.sh
+```
+
 ---
 
 ## Step 2: Apply the Patch
 
 The file to modify is:
-```
-C:\electron\electron\src\third_party\blink\renderer\platform\scheduler\main_thread\main_thread_scheduler_impl.cc
-```
+
+**Windows:** `C:\electron\electron\src\third_party\blink\renderer\platform\scheduler\main_thread\main_thread_scheduler_impl.cc`
+
+**Linux:** `~/electron/src/third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc`
 
 ### Patch 1: Input Priority (in `ComputePriority()` function)
 
@@ -292,15 +420,33 @@ TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
 
 Alternatively, if you have the `.diff` file, apply it from the Chromium src root:
 
+**Windows:**
+
 ```bash
 cd C:\electron\electron\src
 git apply /path/to/ws-priority-patch.diff
 ```
 
+**Linux:**
+
+```bash
+cd ~/electron/src
+git apply /path/to/ws-priority-patch.diff
+```
+
 ### Verify the patch
+
+**Windows:**
 
 ```bash
 cd C:\electron\electron\src
+grep -n "kNormalPriority" third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc | grep -E "(kInput|std::max)"
+```
+
+**Linux:**
+
+```bash
+cd ~/electron/src
 grep -n "kNormalPriority" third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc | grep -E "(kInput|std::max)"
 ```
 
@@ -313,11 +459,19 @@ cap at the end of `ComputeCompositorPriority()`.
 
 ### Set up args.gn
 
+**Windows:**
+
 ```bash
 mkdir -p C:\electron\electron\src\out\Release
 ```
 
-Create/edit `C:\electron\electron\src\out\Release\args.gn`:
+**Linux:**
+
+```bash
+mkdir -p ~/electron/src/out/Release
+```
+
+Create/edit `out/Release/args.gn`:
 
 ```gn
 import("//electron/build/args/release.gn")
@@ -328,9 +482,18 @@ use_reclient = false
 
 ### Generate build files
 
+**Windows:**
+
 ```bash
 cd C:\electron\electron\src
 buildtools/win/gn.exe gen out/Release
+```
+
+**Linux:**
+
+```bash
+cd ~/electron/src
+buildtools/linux64/gn gen out/Release
 ```
 
 You should see: `Done. Made XXXXX targets from XXXX files`
@@ -339,17 +502,35 @@ You should see: `Done. Made XXXXX targets from XXXX files`
 
 If you see an error about Siso state files:
 
+**Windows:**
+
 ```bash
 buildtools/win/gn.exe clean out/Release
 buildtools/win/gn.exe gen out/Release
+```
+
+**Linux:**
+
+```bash
+buildtools/linux64/gn clean out/Release
+buildtools/linux64/gn gen out/Release
 ```
 
 ---
 
 ## Step 4: Build
 
+**Windows:**
+
 ```bash
 cd C:\electron\electron\src
+ninja -C out/Release electron
+```
+
+**Linux:**
+
+```bash
+cd ~/electron/src
 ninja -C out/Release electron
 ```
 
@@ -365,7 +546,9 @@ After the main build completes:
 ninja -C out/Release electron:electron_dist_zip
 ```
 
-The dist zip will be at `C:\electron\electron\src\out\Release\dist.zip` (~137MB).
+**Windows:** The dist zip will be at `C:\electron\electron\src\out\Release\dist.zip` (~137MB).
+
+**Linux:** The dist zip will be at `~/electron/src/out/Release/dist.zip` (~130MB).
 
 ---
 
@@ -375,8 +558,16 @@ The dist zip will be at `C:\electron\electron\src\out\Release\dist.zip` (~137MB)
 
 Run your app directly with the built electron:
 
+**Windows:**
+
 ```bash
 C:\electron\electron\src\out\Release\electron.exe /path/to/your/app
+```
+
+**Linux:**
+
+```bash
+~/electron/src/out/Release/electron /path/to/your/app
 ```
 
 ### Option B: Replace in node_modules
@@ -703,12 +894,24 @@ app.whenReady().then(async () => {
 
 ### Running the test
 
+**Windows:**
+
 ```bash
 # Test the patched build
 C:\electron\electron\src\out\Release\electron.exe cdp-test.js 8085 PATCHED
 
 # Compare against a stock Electron (download from https://github.com/electron/electron/releases)
-path/to/stock/electron.exe cdp-test.js 8086 BASELINE
+path\to\stock\electron.exe cdp-test.js 8086 BASELINE
+```
+
+**Linux:**
+
+```bash
+# Test the patched build
+~/electron/src/out/Release/electron cdp-test.js 8085 PATCHED
+
+# Compare against a stock Electron (download from https://github.com/electron/electron/releases)
+path/to/stock/electron cdp-test.js 8086 BASELINE
 ```
 
 **Expected results:**
@@ -726,6 +929,8 @@ compositor thread input handler).
 
 To build the patch against a different Electron version (e.g., upgrading to a
 newer stable release):
+
+**Windows:**
 
 ```bash
 cd C:\electron\electron\src\electron
@@ -751,6 +956,32 @@ ninja -C out/Release electron
 ninja -C out/Release electron:electron_dist_zip
 ```
 
+**Linux:**
+
+```bash
+cd ~/electron/src/electron
+
+# List available stable versions
+git tag --list 'v*' --sort=-version:refname | grep -v -E '(nightly|alpha|beta)' | head -10
+
+# Check out the desired version
+git checkout v40.6.1
+
+# Sync dependencies (30-60+ minutes)
+cd ~/electron/src
+gclient sync --with_branch_heads --with_tags
+
+# Re-apply the patch (line numbers may differ between versions)
+# Edit main_thread_scheduler_impl.cc as described in Step 2
+# Or try: git apply ws-priority-patch.diff
+
+# Clean, generate, and build
+buildtools/linux64/gn clean out/Release
+buildtools/linux64/gn gen out/Release
+ninja -C out/Release electron
+ninja -C out/Release electron:electron_dist_zip
+```
+
 **Note:** The patch modifies Chromium source (not Electron source), so line numbers
 may shift between versions. The function names and structure should remain the same
 across Chromium versions. Search for `PrioritisationType::kInput` and
@@ -768,25 +999,63 @@ to all recent versions.
 
 ## Troubleshooting
 
-### "Python was not found" during build
+### Windows
+
+#### "Python was not found" during build
 Disable Windows Store Python aliases (see Step 0). Ensure real Python 3.12 is
 in PATH before `C:\Users\<you>\AppData\Local\Microsoft\WindowsApps`.
 
-### "Siso state file" error when running ninja
-Run `buildtools/win/gn.exe clean out/Release` then `gn gen` again.
-
-### "gn not found"
+#### "gn not found"
 Use the full path: `buildtools/win/gn.exe` from the Chromium src directory.
 
-### Build fails with missing Windows SDK
+#### Build fails with missing Windows SDK
 Install SDK 10.0.26100.0: `winget install "Microsoft.WindowsSDK.10.0.26100"`
 
-### gclient sync fails with SSH errors
+### Linux
+
+#### Missing system libraries during build
+Run the Chromium dependency installer:
+
+```bash
+cd ~/electron/src
+./build/install-build-deps.sh
+```
+
+This installs all required system packages. You may need `--no-prompt` for
+non-interactive use.
+
+#### "gn not found"
+Use the full path: `buildtools/linux64/gn` from the Chromium src directory.
+
+#### Build fails with "file not found" errors for system headers
+Ensure you have the development packages installed. On Ubuntu/Debian:
+
+```bash
+sudo apt install -y libgtk-3-dev libnss3-dev libasound2-dev libxtst-dev
+```
+
+#### Electron binary doesn't launch (missing shared libraries)
+Check which libraries are missing:
+
+```bash
+ldd ~/electron/src/out/Release/electron | grep "not found"
+```
+
+Install the missing packages with your system package manager.
+
+### Both Platforms
+
+#### "Siso state file" error when running ninja
+Clean and regenerate:
+- **Windows:** `buildtools/win/gn.exe clean out/Release` then `gn gen` again
+- **Linux:** `buildtools/linux64/gn clean out/Release` then `gn gen` again
+
+#### gclient sync fails with SSH errors
 The sync uses Git cache. If SSH keys aren't set up for GitHub, the repos should
 still sync via HTTPS through the cache. If errors persist, check `GIT_CACHE_PATH`
 is set correctly.
 
-### Patch doesn't apply cleanly to a different version
+#### Patch doesn't apply cleanly to a different version
 Apply manually -- search for `PrioritisationType::kInput` returning
 `kHighestPriority` and change it to `kNormalPriority`. Then find
 `ComputeCompositorPriority()` and add the `std::max` cap. The surrounding code
