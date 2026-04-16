@@ -1,3 +1,4 @@
+[![GitHub Downloads](https://img.shields.io/github/downloads/bigjakk/Krunker-Civilian-Client/total?style=flat&logo=github&label=Downloads)](https://github.com/bigjakk/Electron-Websocket-Fix/releases)
 # Electron WebSocket Fix
 
 Patched Electron builds that fix a Chromium regression where continuous mouse input starves WebSocket and Worker message dispatch when `--disable-frame-rate-limit` is active.
