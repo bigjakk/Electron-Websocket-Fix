@@ -7,20 +7,7 @@ This is critical for competitive browser-based games (like [Krunker](https://kru
 
 ## Downloads
 
-Pre-built patched binaries are available on the [Releases page](https://gitea.crjlab.net/bigjakk/Electron-Websocket-Fix/releases):
-
-### Windows x64
-
-| File | Electron Version | Size |
-|------|-----------------|------|
-| `electron-v40.6.1-release-patched-win32-x64.zip` | v40.6.1 (latest stable) | 133MB |
-| `electron-v42.0.0-nightly-release-patched-win32-x64.zip` | v42.0.0-nightly | 137MB |
-
-### Linux x64
-
-| File | Electron Version | Size |
-|------|-----------------|------|
-| `electron-v43.0.0-nightly-release-patched-linux-x64.zip` | v43.0.0-nightly | 113MB |
+Pre-built patched binaries for **Windows x64** and **Linux x64** are available on the [Releases page](https://github.com/bigjakk/Electron-Websocket-Fix/releases). Each release targets a specific Electron version — download the asset matching your platform from the release you need.
 
 All builds are full release builds (`is_official_build = true`) with maximum optimizations. Additional versions can be built from source -- see [`BUILD-GUIDE.md`](BUILD-GUIDE.md).
 
