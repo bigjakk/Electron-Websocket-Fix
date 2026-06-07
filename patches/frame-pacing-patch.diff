@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Gus <58223632+thegu5@users.noreply.github.com>
+Date: Fri, 5 Jun 2026 00:10:49 -0400
+Subject: fix: correctly throttle drawn frames when rate is unlimited
+
+
+diff --git a/cc/scheduler/scheduler_state_machine.cc b/cc/scheduler/scheduler_state_machine.cc
+index ae87756c7fb14871c7d28be1238a9c7700c75dfb..c70181b475a8431cf689a18d2fb11ba90957e2ee 100644
+--- a/cc/scheduler/scheduler_state_machine.cc
++++ b/cc/scheduler/scheduler_state_machine.cc
+@@ -1465,8 +1465,7 @@ bool SchedulerStateMachine::IsDrawThrottled() const {
+   if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+     return false;
+   }
+-  return pending_submit_frames_ >= kMaxPendingSubmitFrames &&
+-         !settings_.disable_frame_rate_limit;
++  return pending_submit_frames_ >= kMaxPendingSubmitFrames;
+ }
+ 
+ void SchedulerStateMachine::SetVisible(bool visible) {

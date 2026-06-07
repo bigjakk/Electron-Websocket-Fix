@@ -36,12 +36,28 @@ This regression was introduced in Chromium 84 when `PrioritizeCompositingAfterIn
 
 ## The Fix
 
-Two changes in one file (`main_thread_scheduler_impl.cc`):
+The latest builds apply **two complementary patches**:
+
+### 1. Input priority (this project)
+
+Two changes in `main_thread_scheduler_impl.cc`:
 
 1. **Lower input task priority** from `kHighestPriority` to `kNormalPriority`
 2. **Cap compositor priority** to `kNormalPriority` via `std::max()`
 
-See [`patches/ws-priority-patch.diff`](patches/ws-priority-patch.diff) for the exact diff.
+This stops continuous mouse input from starving WebSocket/Worker message dispatch. See [`patches/ws-priority-patch.diff`](patches/ws-priority-patch.diff) for the exact diff.
+
+### 2. Frame pacing ([thegu5](https://github.com/thegu5))
+
+A one-line change to `IsDrawThrottled()` in `cc/scheduler/scheduler_state_machine.cc`:
+
+```diff
+-  return pending_submit_frames_ >= kMaxPendingSubmitFrames &&
+-         !settings_.disable_frame_rate_limit;
++  return pending_submit_frames_ >= kMaxPendingSubmitFrames;
+```
+
+Removing the `!settings_.disable_frame_rate_limit` term re-enables frame throttling even when `--disable-frame-rate-limit` is set, so the `BackToBackBeginFrameSource` can no longer flood the main thread with zero-delay `SEND_BEGIN_MAIN_FRAME` tasks (root-cause factor 3 above). See [`patches/frame-pacing-patch.diff`](patches/frame-pacing-patch.diff), from thegu5's Electron commit [`733d1c2`](https://github.com/electron/electron/commit/733d1c2cdab84ebc252d4f672b3527a1fc73bd01).
 
 ### Test Results
 
@@ -53,6 +69,8 @@ See [`patches/ws-priority-patch.diff`](patches/ws-priority-patch.diff) for the e
 | **Patched** | ~34ms | ~38ms | **0%** | ~12,360 | ~7,620 |
 
 The patch not only eliminates starvation but actually **improves** both input throughput (+9% mouse events) and frame rate (+21% frames) because it prevents the input/compositor priority cascade from monopolizing the main thread.
+
+_The numbers above reflect the input-priority patch (the WebSocket-starvation fix). The frame-pacing patch is a complementary change that throttles runaway frame generation under `--disable-frame-rate-limit`._
 
 ## Usage
 
@@ -145,8 +163,9 @@ e sync
 cd src/electron && git checkout v40.6.1
 cd .. && gclient sync --with_branch_heads --with_tags
 
-# 4. Apply patch
-git apply path/to/ws-priority-patch.diff
+# 4. Apply patches
+git apply path/to/ws-priority-patch.diff     # input priority (this repo)
+git apply path/to/frame-pacing-patch.diff    # frame pacing (thegu5)
 
 # 5. Configure and build
 mkdir -p out/Release
@@ -165,12 +184,16 @@ Expect 6-10+ hours for a full build on a modern machine (24 cores, 64GB RAM).
 
 ## Patch Details
 
-The patch modifies Chromium source (not Electron source), so it applies to any Electron version since Electron 10 (Chromium 84+) on any platform (Windows, Linux, macOS). Line numbers may shift between versions but the function names remain the same:
+Both patches modify Chromium source (not Electron source), so they apply to any Electron version since Electron 10 (Chromium 84+) on any platform (Windows, Linux, macOS). Line numbers may shift between versions but the function names remain the same.
+
+**Input priority** -- `third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc`:
 
 - `ComputePriority()` -- search for `PrioritisationType::kInput`
 - `ComputeCompositorPriority()` -- search for that function name
 
-File: `third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc`
+**Frame pacing** -- `cc/scheduler/scheduler_state_machine.cc`:
+
+- `IsDrawThrottled()` -- remove the `!settings_.disable_frame_rate_limit` term from the throttle condition
 
 ## License
 

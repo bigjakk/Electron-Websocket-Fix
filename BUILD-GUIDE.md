@@ -1,12 +1,12 @@
-# Building Patched Electron: WebSocket/Input Priority Fix
+# Building Patched Electron: WebSocket/Input Priority + Frame Pacing Fix
 
 This guide documents how to build a patched Electron binary that fixes a Chromium
 regression where continuous mouse input (e.g., shooting in an FPS game) starves
 WebSocket and Worker message dispatch when `--disable-frame-rate-limit` is active.
 
-Build instructions are provided for both **Windows** and **Linux**. The patch
-itself is platform-agnostic (pure Chromium C++), so the same `.diff` file works
-on both platforms.
+Build instructions are provided for both **Windows** and **Linux**. The patches
+themselves are platform-agnostic (pure Chromium C++), so the same `.diff` files
+work on both platforms.
 
 ## Problem
 
@@ -38,10 +38,14 @@ Three factors combine:
 
 ### The Fix
 
-Two changes in `main_thread_scheduler_impl.cc`:
+Two complementary patches:
+
+**Input priority** (this project) -- two changes in `main_thread_scheduler_impl.cc`:
 
 1. Lower input task priority from `kHighestPriority` to `kNormalPriority`
 2. Cap compositor priority to `kNormalPriority`
+
+**Frame pacing** ([thegu5](https://github.com/thegu5)) -- one change in `cc/scheduler/scheduler_state_machine.cc`: drop the `!settings_.disable_frame_rate_limit` term from `IsDrawThrottled()` so frames are still throttled under `--disable-frame-rate-limit`.
 
 Test results (12-second automated stress test with continuous mouse input):
 
@@ -311,13 +315,19 @@ cd ~/electron/src
 
 ---
 
-## Step 2: Apply the Patch
+## Step 2: Apply the Patches
 
-The file to modify is:
+The input-priority patch modifies `main_thread_scheduler_impl.cc`:
 
 **Windows:** `C:\electron\electron\src\third_party\blink\renderer\platform\scheduler\main_thread\main_thread_scheduler_impl.cc`
 
 **Linux:** `~/electron/src/third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc`
+
+The frame-pacing patch modifies `cc/scheduler/scheduler_state_machine.cc`:
+
+**Windows:** `C:\electron\electron\src\cc\scheduler\scheduler_state_machine.cc`
+
+**Linux:** `~/electron/src/cc/scheduler/scheduler_state_machine.cc`
 
 ### Patch 1: Input Priority (in `ComputePriority()` function)
 
@@ -416,15 +426,51 @@ TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
 }
 ```
 
+### Patch 3: Frame Pacing (in `IsDrawThrottled()` -- `scheduler_state_machine.cc`)
+
+This patch is from [thegu5](https://github.com/thegu5) (Electron commit
+[`733d1c2`](https://github.com/electron/electron/commit/733d1c2cdab84ebc252d4f672b3527a1fc73bd01)).
+
+Find `IsDrawThrottled()` in `cc/scheduler/scheduler_state_machine.cc` (around
+line 1465):
+
+```cpp
+bool SchedulerStateMachine::IsDrawThrottled() const {
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    return false;
+  }
+  return pending_submit_frames_ >= kMaxPendingSubmitFrames &&
+         !settings_.disable_frame_rate_limit;
+}
+```
+
+Drop the `disable_frame_rate_limit` exemption so frames are throttled even when
+the frame-rate limit is disabled:
+
+```cpp
+bool SchedulerStateMachine::IsDrawThrottled() const {
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    return false;
+  }
+  return pending_submit_frames_ >= kMaxPendingSubmitFrames;
+}
+```
+
+Without this, `--disable-frame-rate-limit` lets `BackToBackBeginFrameSource` post
+`SEND_BEGIN_MAIN_FRAME` tasks with no pacing -- the runaway-frame half of the
+root cause above.
+
 ### Using the diff file
 
-Alternatively, if you have the `.diff` file, apply it from the Chromium src root:
+Alternatively, if you have the `.diff` files, apply them from the Chromium src
+root:
 
 **Windows:**
 
 ```bash
 cd C:\electron\electron\src
 git apply /path/to/ws-priority-patch.diff
+git apply /path/to/frame-pacing-patch.diff
 ```
 
 **Linux:**
@@ -432,6 +478,7 @@ git apply /path/to/ws-priority-patch.diff
 ```bash
 cd ~/electron/src
 git apply /path/to/ws-priority-patch.diff
+git apply /path/to/frame-pacing-patch.diff
 ```
 
 ### Verify the patch
@@ -452,6 +499,16 @@ grep -n "kNormalPriority" third_party/blink/renderer/platform/scheduler/main_thr
 
 You should see the `kInput` case returning `kNormalPriority` and the `std::max`
 cap at the end of `ComputeCompositorPriority()`.
+
+For the frame-pacing patch, confirm the `disable_frame_rate_limit` term is gone
+from `IsDrawThrottled()`:
+
+```bash
+grep -n -A3 "IsDrawThrottled" cc/scheduler/scheduler_state_machine.cc
+```
+
+The `return` should read `pending_submit_frames_ >= kMaxPendingSubmitFrames;`
+with no `disable_frame_rate_limit` check.
 
 ---
 
@@ -945,9 +1002,9 @@ git checkout v40.6.1
 cd C:\electron\electron\src
 gclient sync --with_branch_heads --with_tags
 
-# Re-apply the patch (line numbers may differ between versions)
-# Edit main_thread_scheduler_impl.cc as described in Step 2
-# Or try: git apply ws-priority-patch.diff
+# Re-apply the patches (line numbers may differ between versions)
+# Edit main_thread_scheduler_impl.cc and scheduler_state_machine.cc as in Step 2
+# Or try: git apply ws-priority-patch.diff && git apply frame-pacing-patch.diff
 
 # Clean, generate, and build
 buildtools/win/gn.exe clean out/Release
@@ -971,9 +1028,9 @@ git checkout v40.6.1
 cd ~/electron/src
 gclient sync --with_branch_heads --with_tags
 
-# Re-apply the patch (line numbers may differ between versions)
-# Edit main_thread_scheduler_impl.cc as described in Step 2
-# Or try: git apply ws-priority-patch.diff
+# Re-apply the patches (line numbers may differ between versions)
+# Edit main_thread_scheduler_impl.cc and scheduler_state_machine.cc as in Step 2
+# Or try: git apply ws-priority-patch.diff && git apply frame-pacing-patch.diff
 
 # Clean, generate, and build
 buildtools/linux64/gn clean out/Release
@@ -982,18 +1039,22 @@ ninja -C out/Release electron
 ninja -C out/Release electron:electron_dist_zip
 ```
 
-**Note:** The patch modifies Chromium source (not Electron source), so line numbers
+**Note:** The patches modify Chromium source (not Electron source), so line numbers
 may shift between versions. The function names and structure should remain the same
-across Chromium versions. Search for `PrioritisationType::kInput` and
-`ComputeCompositorPriority()` to find the right locations.
+across Chromium versions. Search for `PrioritisationType::kInput`,
+`ComputeCompositorPriority()`, and `IsDrawThrottled()` to find the right locations.
 
 ---
 
 ## Patch File
 
-The raw diff is saved at `ws-priority-patch.diff` alongside this guide. It was
-generated against Chromium 147.x (Electron v42 nightly) but the same logic applies
-to all recent versions.
+The raw diffs are saved alongside this guide:
+
+- `ws-priority-patch.diff` -- input-priority patch (this project)
+- `frame-pacing-patch.diff` -- frame-pacing patch ([thegu5](https://github.com/thegu5), Electron commit `733d1c2`)
+
+They were generated against Chromium 147.x (Electron v42) but the same logic
+applies to all recent versions.
 
 ---
 
@@ -1058,5 +1119,7 @@ is set correctly.
 #### Patch doesn't apply cleanly to a different version
 Apply manually -- search for `PrioritisationType::kInput` returning
 `kHighestPriority` and change it to `kNormalPriority`. Then find
-`ComputeCompositorPriority()` and add the `std::max` cap. The surrounding code
-structure should be recognizable even if line numbers differ.
+`ComputeCompositorPriority()` and add the `std::max` cap. For the frame-pacing
+patch, find `IsDrawThrottled()` and drop the `!settings_.disable_frame_rate_limit`
+term. The surrounding code structure should be recognizable even if line numbers
+differ.
