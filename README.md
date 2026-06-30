@@ -47,17 +47,33 @@ Two changes in `main_thread_scheduler_impl.cc`:
 
 This stops continuous mouse input from starving WebSocket/Worker message dispatch. See [`patches/ws-priority-patch.diff`](patches/ws-priority-patch.diff) for the exact diff.
 
-### 2. Frame pacing ([thegu5](https://github.com/thegu5))
+### 2. Frame pacing (originally [thegu5](https://github.com/thegu5), extended by [bigjakk](https://github.com/bigjakk))
 
-A one-line change to `IsDrawThrottled()` in `cc/scheduler/scheduler_state_machine.cc`:
+The base is a one-line change to `IsDrawThrottled()` from [thegu5](https://github.com/thegu5) (Electron commit [`733d1c2`](https://github.com/electron/electron/commit/733d1c2cdab84ebc252d4f672b3527a1fc73bd01)): drop the `!settings_.disable_frame_rate_limit` exemption so frames stay throttled even under `--disable-frame-rate-limit`. This project extends that fix to expose the pending-submit-frame queue depth as a runtime feature param, tunable without a rebuild:
 
-```diff
--  return pending_submit_frames_ >= kMaxPendingSubmitFrames &&
--         !settings_.disable_frame_rate_limit;
-+  return pending_submit_frames_ >= kMaxPendingSubmitFrames;
+```cpp
+// Default 1 (stock behavior); raise at runtime with
+// --enable-features=CustomMaxPendingFrames:count/2
+BASE_FEATURE(kCustomMaxPendingFrames, "CustomMaxPendingFrames",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kMaxPendingFramesCount{
+    &kCustomMaxPendingFrames, "count", kMaxPendingSubmitFrames};
+
+bool SchedulerStateMachine::IsDrawThrottled() const {
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks))
+    return false;
+  return pending_submit_frames_ >= MaxPendingSubmitFrames();  // floored at 1
+}
 ```
 
-Removing the `!settings_.disable_frame_rate_limit` term re-enables frame throttling even when `--disable-frame-rate-limit` is set, so the `BackToBackBeginFrameSource` can no longer flood the main thread with zero-delay `SEND_BEGIN_MAIN_FRAME` tasks (root-cause factor 3 above). See [`patches/frame-pacing-patch.diff`](patches/frame-pacing-patch.diff), from thegu5's Electron commit [`733d1c2`](https://github.com/electron/electron/commit/733d1c2cdab84ebc252d4f672b3527a1fc73bd01).
+This keeps `BackToBackBeginFrameSource` from flooding the main thread with zero-delay `SEND_BEGIN_MAIN_FRAME` tasks (root-cause factor 3 above), while letting the queue depth be raised at runtime:
+
+| Flag | Pending frames | Effect |
+|------|----------------|--------|
+| _(none)_ | 1 | stock behavior, safe default |
+| `--enable-features=CustomMaxPendingFrames:count/2` | 2 | ~+27% frame throughput, still 0% WS stalls |
+
+See [`patches/frame-pacing-patch.diff`](patches/frame-pacing-patch.diff) for the full change.
 
 ### Test Results
 
@@ -70,7 +86,7 @@ Removing the `!settings_.disable_frame_rate_limit` term re-enables frame throttl
 
 The patch not only eliminates starvation but actually **improves** both input throughput (+9% mouse events) and frame rate (+21% frames) because it prevents the input/compositor priority cascade from monopolizing the main thread.
 
-_The numbers above reflect the input-priority patch (the WebSocket-starvation fix). The frame-pacing patch is a complementary change that throttles runaway frame generation under `--disable-frame-rate-limit`._
+_The numbers above reflect the input-priority patch (the WebSocket-starvation fix). The frame-pacing patch is a complementary change that throttles runaway frame generation under `--disable-frame-rate-limit` and exposes a runtime-tunable queue depth (see above)._
 
 ## Usage
 
@@ -89,6 +105,8 @@ electron.exe path/to/your/app
 ```bash
 ./electron path/to/your/app
 ```
+
+**Higher Max FPS (optional):** add `--enable-features=CustomMaxPendingFrames:count/2` to allow 2 pending compositor frames (~+27% frame throughput in testing). Omit it for the safe default of 1.
 
 ### Option B: Replace in node_modules
 
@@ -193,7 +211,7 @@ Both patches modify Chromium source (not Electron source), so they apply to any 
 
 **Frame pacing** -- `cc/scheduler/scheduler_state_machine.cc`:
 
-- `IsDrawThrottled()` -- remove the `!settings_.disable_frame_rate_limit` term from the throttle condition
+- `IsDrawThrottled()` -- drop the `!settings_.disable_frame_rate_limit` term and route the throttle through a `CustomMaxPendingFrames` feature param (default 1; `--enable-features=CustomMaxPendingFrames:count/2` for 2)
 
 ## License
 

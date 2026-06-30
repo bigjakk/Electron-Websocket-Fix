@@ -45,7 +45,7 @@ Two complementary patches:
 1. Lower input task priority from `kHighestPriority` to `kNormalPriority`
 2. Cap compositor priority to `kNormalPriority`
 
-**Frame pacing** ([thegu5](https://github.com/thegu5)) -- one change in `cc/scheduler/scheduler_state_machine.cc`: drop the `!settings_.disable_frame_rate_limit` term from `IsDrawThrottled()` so frames are still throttled under `--disable-frame-rate-limit`.
+**Frame pacing** (runtime-tunable, building on [thegu5](https://github.com/thegu5)) -- changes in `cc/scheduler/scheduler_state_machine.cc`: drop the `!settings_.disable_frame_rate_limit` term from `IsDrawThrottled()` (so frames are throttled under `--disable-frame-rate-limit`), and expose the pending-frame queue depth as a `CustomMaxPendingFrames` feature param (default 1; `--enable-features=CustomMaxPendingFrames:count/2` for 2).
 
 Test results (12-second automated stress test with continuous mouse input):
 
@@ -426,39 +426,59 @@ TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
 }
 ```
 
-### Patch 3: Frame Pacing (in `IsDrawThrottled()` -- `scheduler_state_machine.cc`)
+### Patch 3: Frame Pacing (in `scheduler_state_machine.cc`)
 
-This patch is from [thegu5](https://github.com/thegu5) (Electron commit
-[`733d1c2`](https://github.com/electron/electron/commit/733d1c2cdab84ebc252d4f672b3527a1fc73bd01)).
+Builds on [thegu5](https://github.com/thegu5)'s throttle fix (Electron commit
+[`733d1c2`](https://github.com/electron/electron/commit/733d1c2cdab84ebc252d4f672b3527a1fc73bd01)),
+extended to make the frame-queue depth runtime-tunable.
 
-Find `IsDrawThrottled()` in `cc/scheduler/scheduler_state_machine.cc` (around
-line 1465):
+Add two includes near the top of `cc/scheduler/scheduler_state_machine.cc`:
+
+```cpp
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+```
+
+In the anonymous namespace, alongside `kMaxPendingSubmitFrames`, add the feature,
+param, and accessor:
+
+```cpp
+constexpr int kMaxPendingSubmitFrames = 1;  // safe default
+
+BASE_FEATURE(kCustomMaxPendingFrames,
+             "CustomMaxPendingFrames",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kMaxPendingFramesCount{
+    &kCustomMaxPendingFrames, "count", kMaxPendingSubmitFrames};
+
+// Read once and cache; floor of 1 so 0/negative can't disable throttling.
+int MaxPendingSubmitFrames() {
+  static const int value = std::max(1, kMaxPendingFramesCount.Get());
+  return value;
+}
+```
+
+Then change `IsDrawThrottled()` to drop the `disable_frame_rate_limit` exemption
+and use the accessor (and update the matching `DCHECK_LT` in
+`DidSubmitCompositorFrame()` the same way):
 
 ```cpp
 bool SchedulerStateMachine::IsDrawThrottled() const {
   if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
     return false;
   }
-  return pending_submit_frames_ >= kMaxPendingSubmitFrames &&
-         !settings_.disable_frame_rate_limit;
+  return pending_submit_frames_ >= MaxPendingSubmitFrames();
 }
 ```
 
-Drop the `disable_frame_rate_limit` exemption so frames are throttled even when
-the frame-rate limit is disabled:
+Semantics:
 
-```cpp
-bool SchedulerStateMachine::IsDrawThrottled() const {
-  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
-    return false;
-  }
-  return pending_submit_frames_ >= kMaxPendingSubmitFrames;
-}
-```
+- No flag -> 1 (stock behavior; `BackToBackBeginFrameSource` can't flood the main
+  thread with zero-delay `SEND_BEGIN_MAIN_FRAME` tasks under `--disable-frame-rate-limit`).
+- `--enable-features=CustomMaxPendingFrames:count/2` -> 2 (~+27% frame throughput).
+- `--disable-features=CustomMaxPendingFrames` -> 1.
 
-Without this, `--disable-frame-rate-limit` lets `BackToBackBeginFrameSource` post
-`SEND_BEGIN_MAIN_FRAME` tasks with no pacing -- the runaway-frame half of the
-root cause above.
+Applying the diff directly (see below) is easier than editing by hand.
 
 ### Using the diff file
 
@@ -500,15 +520,16 @@ grep -n "kNormalPriority" third_party/blink/renderer/platform/scheduler/main_thr
 You should see the `kInput` case returning `kNormalPriority` and the `std::max`
 cap at the end of `ComputeCompositorPriority()`.
 
-For the frame-pacing patch, confirm the `disable_frame_rate_limit` term is gone
-from `IsDrawThrottled()`:
+For the frame-pacing patch, confirm `IsDrawThrottled()` uses the accessor and the
+feature is defined:
 
 ```bash
-grep -n -A3 "IsDrawThrottled" cc/scheduler/scheduler_state_machine.cc
+grep -n "MaxPendingSubmitFrames()\|CustomMaxPendingFrames" cc/scheduler/scheduler_state_machine.cc
 ```
 
-The `return` should read `pending_submit_frames_ >= kMaxPendingSubmitFrames;`
-with no `disable_frame_rate_limit` check.
+You should see `return pending_submit_frames_ >= MaxPendingSubmitFrames();` (no
+`disable_frame_rate_limit` check) plus the `BASE_FEATURE(kCustomMaxPendingFrames, ...)`
+and `MaxPendingSubmitFrames()` definitions.
 
 ---
 
@@ -679,6 +700,14 @@ Your Electron app should use these flags for unlimited FPS:
 ```javascript
 app.commandLine.appendSwitch('disable-frame-rate-limit');
 app.commandLine.appendSwitch('disable-gpu-vsync');
+```
+
+Optionally raise the compositor frame-queue depth (default 1) for higher frame
+throughput:
+
+```javascript
+// 2 pending frames (~+27% frame throughput); omit for the safe default of 1
+app.commandLine.appendSwitch('enable-features', 'CustomMaxPendingFrames:count/2');
 ```
 
 ---
@@ -1051,10 +1080,11 @@ across Chromium versions. Search for `PrioritisationType::kInput`,
 The raw diffs are saved alongside this guide:
 
 - `ws-priority-patch.diff` -- input-priority patch (this project)
-- `frame-pacing-patch.diff` -- frame-pacing patch ([thegu5](https://github.com/thegu5), Electron commit `733d1c2`)
+- `frame-pacing-patch.diff` -- runtime-tunable frame-pacing patch (builds on [thegu5](https://github.com/thegu5)'s Electron commit `733d1c2`)
 
-They were generated against Chromium 147.x (Electron v42) but the same logic
-applies to all recent versions.
+They apply cleanly to recent Chromium milestones (verified on 148 / Electron
+v42.5.1 and 150 / Electron v43.0.0). Line numbers may shift between versions;
+regenerate against the real checkout if `git apply` reports drift.
 
 ---
 
@@ -1120,6 +1150,7 @@ is set correctly.
 Apply manually -- search for `PrioritisationType::kInput` returning
 `kHighestPriority` and change it to `kNormalPriority`. Then find
 `ComputeCompositorPriority()` and add the `std::max` cap. For the frame-pacing
-patch, find `IsDrawThrottled()` and drop the `!settings_.disable_frame_rate_limit`
-term. The surrounding code structure should be recognizable even if line numbers
-differ.
+patch, add the `CustomMaxPendingFrames` feature/param/accessor (see Patch 3) and
+route `IsDrawThrottled()` (and the `DCHECK_LT` in `DidSubmitCompositorFrame()`)
+through `MaxPendingSubmitFrames()`. The surrounding code structure should be
+recognizable even if line numbers differ.
