@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Wed, 8 Jul 2026 04:45:00 -0700
+Subject: [PATCH] fix(macos): guard null external_begin_frame_source() to stop
+ GPU crash under --disable-frame-rate-limit
+
+On macOS, --disable-frame-rate-limit switches the display to a synthetic
+begin-frame source, so external_begin_frame_source() returns null. A June 2026
+Chromium regression (0348f5809af17d, "viz: Defer UpdateVSyncDisplay and ensure
+smooth transition for DisplayLinkMac", crbug 345275139) added an unconditional
+virtual call on that pointer in
+RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams, so the GPU process
+dereferences null (EXC_BAD_ACCESS at 0x0 -> exit_code=11) and the window goes
+black. Because these patched builds require --disable-frame-rate-limit, every
+macOS build on Chromium 150 / 7871 hits this.
+
+Fixed upstream by f0d1fd614eefb (2026-06-18) but NOT backported to the 7871
+release branch (present in 7871.46/.47/.48 = all of Electron 43.x), so it must
+be applied locally. The guard mirrors the existing display_client_ null-check a
+few lines above.
+
+diff --git a/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc b/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc
+index 0f22973a60c99..25040fa9601d6 100644
+--- a/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc
++++ b/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc
+@@ -923,7 +923,8 @@ void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
+   if (display_client_)
+     display_client_->OnDisplayReceivedCALayerParams(std::move(ca_layer_params));
+
+-  external_begin_frame_source()->DidReceiveNewCALayerParams();
++  if (auto* ebfs = external_begin_frame_source())
++    ebfs->DidReceiveNewCALayerParams();
+ #else
+   NOTREACHED();
+ #endif
