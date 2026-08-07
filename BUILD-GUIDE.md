@@ -480,6 +480,31 @@ Semantics:
 
 Applying the diff directly (see below) is easier than editing by hand.
 
+### Patch 4: macOS GPU Crash Guard (macOS builds only)
+
+macOS builds need one more change, in
+`components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc`. Under
+`--disable-frame-rate-limit` the display uses a *synthetic* begin-frame source,
+so `external_begin_frame_source()` returns null; a June 2026 Chromium regression
+(`0348f5809af17d`) calls a virtual method on it unguarded inside
+`DisplayDidReceiveCALayerParams()`, crashing the GPU process (`exit_code=11`,
+black screen) on the entire Electron 43.x / Chromium 150 (`7871`) line (the
+upstream fix `f0d1fd614eefb` was not backported). Find this line (inside the
+`#if BUILDFLAG(IS_APPLE)` block):
+
+```cpp
+  external_begin_frame_source()->DidReceiveNewCALayerParams();
+```
+
+Replace with a null guard (mirrors the `display_client_` guard just above):
+
+```cpp
+  if (auto* ebfs = external_begin_frame_source())
+    ebfs->DidReceiveNewCALayerParams();
+```
+
+Windows and Linux don't need this patch.
+
 ### Using the diff file
 
 Alternatively, if you have the `.diff` files, apply them from the Chromium src
@@ -499,6 +524,13 @@ git apply /path/to/frame-pacing-patch.diff
 cd ~/electron/src
 git apply /path/to/ws-priority-patch.diff
 git apply /path/to/frame-pacing-patch.diff
+```
+
+**macOS (additionally, after the two above):**
+
+```bash
+cd ~/electron/src
+git apply /path/to/macos-gpu-crash-patch.diff
 ```
 
 ### Verify the patch
@@ -530,6 +562,15 @@ grep -n "MaxPendingSubmitFrames()\|CustomMaxPendingFrames" cc/scheduler/schedule
 You should see `return pending_submit_frames_ >= MaxPendingSubmitFrames();` (no
 `disable_frame_rate_limit` check) plus the `BASE_FEATURE(kCustomMaxPendingFrames, ...)`
 and `MaxPendingSubmitFrames()` definitions.
+
+On macOS, confirm the GPU-crash guard is in place:
+
+```bash
+grep -n "external_begin_frame_source" components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc
+```
+
+You should see the call wrapped as `if (auto* ebfs = external_begin_frame_source())`
+rather than called directly.
 
 ---
 
@@ -1081,9 +1122,11 @@ The raw diffs are saved alongside this guide:
 
 - `ws-priority-patch.diff` -- input-priority patch (this project)
 - `frame-pacing-patch.diff` -- runtime-tunable frame-pacing patch (builds on [thegu5](https://github.com/thegu5)'s Electron commit `733d1c2`)
+- `macos-gpu-crash-patch.diff` -- macOS-only GPU-crash guard for `external_begin_frame_source()` under `--disable-frame-rate-limit` (Chromium 150 / `7871`)
 
-They apply cleanly to recent Chromium milestones (verified on 148 / Electron
-v42.5.1 and 150 / Electron v43.0.0). Line numbers may shift between versions;
+They apply cleanly to recent Chromium milestones (input-priority and frame-pacing
+verified on 148 / Electron v42.5.1 and 150 / Electron v43.0.0; the macOS GPU-crash
+guard verified on 150 / Electron v43.0.0). Line numbers may shift between versions;
 regenerate against the real checkout if `git apply` reports drift.
 
 ---

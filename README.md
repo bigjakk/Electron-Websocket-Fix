@@ -75,6 +75,18 @@ This keeps `BackToBackBeginFrameSource` from flooding the main thread with zero-
 
 See [`patches/frame-pacing-patch.diff`](patches/frame-pacing-patch.diff) for the full change.
 
+### 3. macOS GPU crash guard (macOS builds only)
+
+On macOS, `--disable-frame-rate-limit` switches the display to a *synthetic* begin-frame source, so `external_begin_frame_source()` returns null. A June 2026 Chromium regression (commit `0348f5809af17d`) then calls a virtual method on that null pointer in `RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams()`, crashing the GPU process (`exit_code=11`, black screen). This affects the entire Electron 43.x / Chromium 150 (`7871`) line — the upstream fix (`f0d1fd614eefb`) was not backported — so every macOS build needs a one-line null guard:
+
+```cpp
+// Guard the call the same way the adjacent display_client_ call is guarded.
+if (auto* ebfs = external_begin_frame_source())
+  ebfs->DidReceiveNewCALayerParams();
+```
+
+Windows and Linux are unaffected and don't need this patch. See [`patches/macos-gpu-crash-patch.diff`](patches/macos-gpu-crash-patch.diff).
+
 ### Test Results
 
 12-second automated stress test with continuous CDP mouse input (left-click held, circular movement):
@@ -184,6 +196,7 @@ cd .. && gclient sync --with_branch_heads --with_tags
 # 4. Apply patches
 git apply path/to/ws-priority-patch.diff     # input priority (this repo)
 git apply path/to/frame-pacing-patch.diff    # frame pacing (thegu5)
+git apply path/to/macos-gpu-crash-patch.diff # macOS only: GPU crash guard
 
 # 5. Configure and build
 mkdir -p out/Release
@@ -202,7 +215,7 @@ Expect 6-10+ hours for a full build on a modern machine (24 cores, 64GB RAM).
 
 ## Patch Details
 
-Both patches modify Chromium source (not Electron source), so they apply to any Electron version since Electron 10 (Chromium 84+) on any platform (Windows, Linux, macOS). Line numbers may shift between versions but the function names remain the same.
+These patches modify Chromium source (not Electron source), so they apply to any Electron version since Electron 10 (Chromium 84+). The input-priority and frame-pacing patches are cross-platform (Windows, Linux, macOS); the GPU-crash guard is macOS-only. Line numbers may shift between versions but the function names remain the same.
 
 **Input priority** -- `third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc`:
 
@@ -212,6 +225,10 @@ Both patches modify Chromium source (not Electron source), so they apply to any 
 **Frame pacing** -- `cc/scheduler/scheduler_state_machine.cc`:
 
 - `IsDrawThrottled()` -- drop the `!settings_.disable_frame_rate_limit` term and route the throttle through a `CustomMaxPendingFrames` feature param (default 1; `--enable-features=CustomMaxPendingFrames:count/2` for 2)
+
+**macOS GPU crash guard** (macOS only) -- `components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc`:
+
+- `DisplayDidReceiveCALayerParams()` -- null-check `external_begin_frame_source()` before calling `DidReceiveNewCALayerParams()` on it; it returns null under `--disable-frame-rate-limit`, which otherwise crashes the GPU process on Chromium 150 (`7871`, all of Electron 43.x)
 
 ## License
 
