@@ -36,7 +36,7 @@ This regression was introduced in Chromium 84 when `PrioritizeCompositingAfterIn
 
 ## The Fix
 
-The latest builds apply **two complementary patches**:
+The latest builds apply **three complementary patches**, plus a macOS-only crash guard:
 
 ### 1. Input priority (this project)
 
@@ -73,9 +73,51 @@ This keeps `BackToBackBeginFrameSource` from flooding the main thread with zero-
 | _(none)_ | 1 | stock behavior, safe default |
 | `--enable-features=CustomMaxPendingFrames:count/2` | 2 | ~+27% frame throughput, still 0% WS stalls |
 
+> **Do not combine `count/2` (or higher) with the frame cap in section 3.** The two features are in direct tension and produce inverted behavior together — see the limitation note below.
+
 See [`patches/frame-pacing-patch.diff`](patches/frame-pacing-patch.diff) for the full change.
 
-### 3. macOS GPU crash guard (macOS builds only)
+### 3. Exact FPS cap -- CustomFrameCap
+
+Frame pacing (section 2) throttles runaway frame generation but doesn't let you pick a *number*. This patch does: it caps FPS at an exact target while `--disable-frame-rate-limit` is active, and lets you change that target at runtime without a restart.
+
+Under `--disable-frame-rate-limit` the per-window BeginFrame source is `BackToBackBeginFrameSource`, whose cadence is gated only by swap-buffer acks through `DisplayScheduler`'s `SetIsGpuBusy` latch. The patch turns `DidReceiveSwapBuffersAck()` into a pacing gate that stretches those ack releases onto a fixed **absolute-time grid**, which yields an exact cap with dense submission and avoids the vsync-grid snapping that broke earlier metadata-based attempts. The grid advances by whole intervals and is never re-anchored to `Now()`, so a cycle that overshoots can compensate rather than making the cap a per-frame floor.
+
+**Set the cap at launch:**
+
+```bash
+# Cap at 240 FPS. Clamped to 30..1000; 0 or absent = stock behavior.
+electron.exe myapp --disable-frame-rate-limit --enable-features=CustomFrameCap:fps/240
+```
+
+**Or change it at runtime** (new `BaseWindow` method, no restart needed):
+
+```javascript
+win.setFrameCap(240);  // cap at 240 FPS
+win.setFrameCap(120);  // re-cap, takes effect immediately
+win.setFrameCap(0);    // 0 or negative -> uncapped
+```
+
+Runtime adjustment goes through a dedicated `DisplayPrivate.SetFrameCapInterval(TimeDelta)` mojo method rather than reusing the vsync-parameter channel, so real display vsync updates can never be misread as cap commands. `Compositor` caches the value and re-sends it on frame-sink re-bind, so a window that is hidden and shown again keeps its cap.
+
+Measured on Electron v43.0.0 / Chromium 150.0.7871.46, win32-x64 (uncapped control: 282.8 FPS):
+
+| Setting | Measured | Error |
+|---------|----------|-------|
+| `CustomFrameCap:fps/240` at launch | 238.1 | -0.79% |
+| `fps/0` or param absent | indistinguishable from control | — |
+| `setFrameCap(120)` at runtime | 123.4 | +2.8% |
+| `setFrameCap(150)` at runtime | 150.03 | +0.02% |
+| `setFrameCap(150)`, after hide/show | 150.03 | +0.02% |
+| `setFrameCap(0)` at runtime | 264.3 (uncapped) | — |
+
+> **Known limitation — do not co-emit with `CustomMaxPendingFrames:count/N` where N >= 2.** The two features don't merely cancel out, they *invert*: measured rAF rates **rise** as the cap tightens. On a machine whose depth-2 uncapped ceiling is 551 FPS, a cap of 285 gave 555, 240 gave 666, 120 gave 804, 60 gave 1008, and 30 gave 1381.
+>
+> This is by design, not a bug in the implementation: `CustomMaxPendingFrames` exists to let the renderer run *ahead* of the draw loop, and this cap works by *pacing* that same draw loop. The decoupling happens in cc's scheduler in the renderer process, upstream of anything `DisplayScheduler` can influence, so no change confined to viz can fix it. Use one feature or the other — at the default `count/1`, the cap behaves correctly.
+
+The change spans two git repos, so it ships as two patch files: [`patches/frame-cap-patch.diff`](patches/frame-cap-patch.diff) (apply from the Chromium `src` root) and [`patches/frame-cap-electron-patch.diff`](patches/frame-cap-electron-patch.diff) (apply from `src/electron`).
+
+### 4. macOS GPU crash guard (macOS builds only)
 
 On macOS, `--disable-frame-rate-limit` switches the display to a *synthetic* begin-frame source, so `external_begin_frame_source()` returns null. A June 2026 Chromium regression (commit `0348f5809af17d`) then calls a virtual method on that null pointer in `RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams()`, crashing the GPU process (`exit_code=11`, black screen). This affects the entire Electron 43.x / Chromium 150 (`7871`) line — the upstream fix (`f0d1fd614eefb`) was not backported — so every macOS build needs a one-line null guard:
 
@@ -193,10 +235,14 @@ e sync
 cd src/electron && git checkout v40.6.1
 cd .. && gclient sync --with_branch_heads --with_tags
 
-# 4. Apply patches
+# 4. Apply patches -- from the Chromium src root
 git apply path/to/ws-priority-patch.diff     # input priority (this repo)
 git apply path/to/frame-pacing-patch.diff    # frame pacing (thegu5)
+git apply path/to/frame-cap-patch.diff       # exact FPS cap (Chromium half)
 git apply path/to/macos-gpu-crash-patch.diff # macOS only: GPU crash guard
+
+# ...and the Electron half of the frame cap, from src/electron
+cd electron && git apply path/to/frame-cap-electron-patch.diff && cd ..
 
 # 5. Configure and build
 mkdir -p out/Release
@@ -215,7 +261,7 @@ Expect 6-10+ hours for a full build on a modern machine (24 cores, 64GB RAM).
 
 ## Patch Details
 
-These patches modify Chromium source (not Electron source), so they apply to any Electron version since Electron 10 (Chromium 84+). The input-priority and frame-pacing patches are cross-platform (Windows, Linux, macOS); the GPU-crash guard is macOS-only. Line numbers may shift between versions but the function names remain the same.
+Most of these patches modify Chromium source (not Electron source), so they apply to any Electron version since Electron 10 (Chromium 84+) — the exception is the frame cap, whose runtime-adjustment half touches Electron's shell. The input-priority, frame-pacing, and frame-cap patches are cross-platform (Windows, Linux, macOS); the GPU-crash guard is macOS-only. Line numbers may shift between versions but the function names remain the same.
 
 **Input priority** -- `third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc`:
 
@@ -225,6 +271,12 @@ These patches modify Chromium source (not Electron source), so they apply to any
 **Frame pacing** -- `cc/scheduler/scheduler_state_machine.cc`:
 
 - `IsDrawThrottled()` -- drop the `!settings_.disable_frame_rate_limit` term and route the throttle through a `CustomMaxPendingFrames` feature param (default 1; `--enable-features=CustomMaxPendingFrames:count/2` for 2)
+
+**Exact FPS cap** -- spans two repos, so it ships as two diffs:
+
+- `components/viz/service/display/display_scheduler.cc` -- `DidReceiveSwapBuffersAck()` becomes a pacing gate; the stock body moves verbatim into `DidReceiveSwapBuffersAckImpl()`. Every gate-deferred ack owes exactly one `Impl()` call, tracked by `pending_release_count_`, with a single `base::DeadlineTimer` scheduling the next payout
+- `components/viz/service/display/display.cc` -- `Resize()` and `DisableSwapUntilResize()` flush the pending delay, the latter *before* `ForceImmediateSwapIfPossible()`, or a held ack makes the forced pre-resize swap a silent no-op
+- `shell/browser/api/electron_api_base_window.cc` (in `src/electron`) -- adds the `setFrameCap` method, clamped to 30..1000 with 0 or negative meaning uncapped
 
 **macOS GPU crash guard** (macOS only) -- `components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc`:
 
