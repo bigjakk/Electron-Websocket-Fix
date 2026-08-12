@@ -1,0 +1,85 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 7 Aug 2026 12:00:00 -0400
+Subject: feat: expose BaseWindow.setFrameCap(fps) for CustomFrameCap
+
+Electron-shell half of the frame cap. Apply from the electron checkout
+(src/electron), NOT the Chromium src root. The Chromium half is
+frame-cap-patch.diff and must be applied too -- this patch calls
+ui::Compositor::SetFrameCapInterval(), which that patch adds.
+
+win.setFrameCap(fps) sets the cap at runtime with no restart; 0 or negative
+uncaps. The clamp matches the CustomFrameCap feature param (30..1000). Launch
+time init still comes from the feature param, so a configured cap applies from
+the first frame and the API overrides thereafter (last write wins).
+
+NativeWindow exposes no direct compositor accessor, so this routes through its
+Widget -- widget()->GetCompositor() -- the same route native_window.cc already
+uses for SetBackgroundThrottling. Both the widget and the compositor are null
+checked: the compositor is absent before the window is realized and after it is
+torn down.
+
+No docs or typings: the client calls this through an any-cast.
+
+diff --git a/shell/browser/api/electron_api_base_window.cc b/shell/browser/api/electron_api_base_window.cc
+index 4f46e64da..2b2081e1a 100644
+--- a/shell/browser/api/electron_api_base_window.cc
++++ b/shell/browser/api/electron_api_base_window.cc
+@@ -10,6 +10,7 @@
+ #include <vector>
+ 
+ #include "base/task/single_thread_task_runner.h"
++#include "base/time/time.h"
+ #include "content/public/common/color_parser.h"
+ #include "electron/buildflags/buildflags.h"
+ #include "gin/dictionary.h"
+@@ -33,6 +34,8 @@
+ #include "shell/common/node_includes.h"
+ #include "shell/common/node_util.h"
+ #include "shell/common/options_switches.h"
++#include "ui/compositor/compositor.h"
++#include "ui/views/widget/widget.h"
+ 
+ #if defined(TOOLKIT_VIEWS)
+ #include "shell/browser/native_window_views.h"
+@@ -687,6 +690,18 @@ double BaseWindow::GetOpacity() const {
+   return window_->GetOpacity();
+ }
+ 
++void BaseWindow::SetFrameCap(int fps) {
++  // 0 or negative -> uncapped. Same clamp as the CustomFrameCap feature param.
++  base::TimeDelta interval;
++  if (fps > 0)
++    interval = base::Hertz(std::clamp(fps, 30, 1000));
++  // NativeWindow exposes no direct compositor accessor; go through its Widget.
++  if (!window_->widget())
++    return;
++  if (auto* compositor = window_->widget()->GetCompositor())
++    compositor->SetFrameCapInterval(interval);
++}
++
+ void BaseWindow::SetShape(const std::vector<gfx::Rect>& rects) {
+   window_->SetShape(rects);
+ }
+@@ -1236,6 +1251,7 @@ void BaseWindow::BuildPrototype(v8::Isolate* isolate,
+       .SetMethod("hasShadow", &BaseWindow::HasShadow)
+       .SetMethod("setOpacity", &BaseWindow::SetOpacity)
+       .SetMethod("getOpacity", &BaseWindow::GetOpacity)
++      .SetMethod("setFrameCap", &BaseWindow::SetFrameCap)
+       .SetMethod("setShape", &BaseWindow::SetShape)
+       .SetMethod("setRepresentedFilename", &BaseWindow::SetRepresentedFilename)
+       .SetMethod("getRepresentedFilename", &BaseWindow::GetRepresentedFilename)
+diff --git a/shell/browser/api/electron_api_base_window.h b/shell/browser/api/electron_api_base_window.h
+index b62d81278..927c69b7a 100644
+--- a/shell/browser/api/electron_api_base_window.h
++++ b/shell/browser/api/electron_api_base_window.h
+@@ -176,6 +176,9 @@ class BaseWindow : public gin_helper::TrackableObject<BaseWindow>,
+   bool HasShadow() const;
+   void SetOpacity(const double opacity);
+   double GetOpacity() const;
++  // KCC CustomFrameCap: exact FPS cap while --disable-frame-rate-limit is
++  // active. 0 or negative uncaps. Takes effect without a restart.
++  void SetFrameCap(int fps);
+   void SetShape(const std::vector<gfx::Rect>& rects);
+   void SetRepresentedFilename(const std::string& filename);
+   std::string GetRepresentedFilename() const;

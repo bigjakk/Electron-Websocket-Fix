@@ -1,0 +1,408 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 7 Aug 2026 12:00:00 -0400
+Subject: feat: CustomFrameCap -- exact FPS cap via swap-ack pacing, with runtime adjustment
+
+Chromium-side half of the frame cap. Apply from the Chromium src root.
+The Electron-shell half is frame-cap-electron-patch.diff.
+
+Under --disable-frame-rate-limit the per-window BeginFrame source is
+BackToBackBeginFrameSource, whose cadence is gated only by swap-buffer acks
+through DisplayScheduler's SetIsGpuBusy latch. Stretching those ack releases
+onto a fixed interval yields an exact cap with dense submission, avoiding the
+vsync-grid snapping that broke earlier metadata-based attempts.
+
+DidReceiveSwapBuffersAck() becomes a pacing gate; its stock body moves verbatim
+into DidReceiveSwapBuffersAckImpl(). Core invariant: every gate-deferred ack
+owes exactly one Impl() call. pending_release_count_ is that ledger and a single
+base::DeadlineTimer (kPrecise, absolute deadline -- PostDelayedTaskAt's PassKey
+is not available to viz) only schedules the next payout. There are no per-ack
+structures and never more than one timer. Releases are FIFO along the grid.
+
+The grid advances by whole intervals and is never re-anchored to Now() on the
+immediate-release path: re-anchoring makes the cap a per-frame floor where a
+cycle can overshoot but never compensate, landing the mean measurably under
+target (measured on an earlier revision: a stable but wrong 229.9 at a 240
+target, vs 238.1 with the grid).
+
+Display::Resize and Display::DisableSwapUntilResize flush the pending delay,
+the latter before ForceImmediateSwapIfPossible() -- AttemptDrawAndSwap() gates
+on pending_swaps_ < MaxPendingSwaps(), so a held ack would otherwise make the
+forced pre-resize swap a silent no-op. FlushPendingSwapAckDelay() and
+SetFrameCapInterval() are no-op virtuals on DisplaySchedulerBase because
+Display holds the scheduler as a base pointer.
+
+Runtime adjustment adds DisplayPrivate.SetFrameCapInterval(TimeDelta), a
+dedicated mojo method rather than a reuse of the vsync-parameter channel so
+that real display vsync updates can never be interpreted as cap commands.
+RootCompositorFrameSinkImpl forwards it to Display (already on the viz thread,
+so a direct call). Compositor caches the value and re-sends it wherever the
+other display properties are re-sent on frame-sink re-bind, so a hidden->shown
+window keeps its cap. Unlike SetDisplayVSyncParameters, Compositor::
+SetFrameCapInterval deliberately has no kDisableFrameRateLimit early-out: that
+switch is precisely the mode the cap exists for.
+
+Semantics: no flag -> 0 -> stock behavior on every path;
+--enable-features=CustomFrameCap:fps/240 -> capped at 240. Clamped to 30..1000.
+
+KNOWN LIMITATION -- do not ship without reading:
+The cap holds only at renderer submit-queue depth 1. Co-emitting
+CustomMaxPendingFrames:count/N with N>=2 does not merely disable the cap, it
+inverts it: measured rAF rates rise as the cap tightens (at count/2 on a box
+whose depth-2 uncapped ceiling is 551 fps: cap 1000 -> 535, 285 -> 555,
+240 -> 666, 120 -> 804, 60 -> 1008, 30 -> 1381). The two features are in
+direct tension by design -- CustomMaxPendingFrames exists to let the renderer
+run ahead of the draw loop, and this cap works by pacing that same draw loop.
+The decoupling happens in cc's scheduler in the renderer process, upstream of
+anything DisplayScheduler can influence, so no change confined to viz fixes it.
+Either cap the renderer submit gate as well, or do not co-emit the two features.
+
+diff --git a/components/viz/service/display/display.cc b/components/viz/service/display/display.cc
+index ecd530cd32994..24f6b673ce349 100644
+--- a/components/viz/service/display/display.cc
++++ b/components/viz/service/display/display.cc
+@@ -445,6 +445,11 @@ void Display::SetVisible(bool visible) {
+ void Display::Resize(const gfx::Size& size) {
+   disable_swap_until_resize_ = false;
+ 
++  // Don't let a frame-cap pacing delay hold the draw gate closed across a
++  // resize; the new size should be drawn without waiting out the interval.
++  if (scheduler_)
++    scheduler_->FlushPendingSwapAckDelay();
++
+   auto clamped_size_px = size;
+   auto max_texture_size = output_surface_->capabilities().max_texture_size;
+   if (max_texture_size > 0) {
+@@ -467,6 +472,11 @@ void Display::Resize(const gfx::Size& size) {
+   damage_tracker_->DisplayResized();
+ }
+ 
++void Display::SetFrameCapInterval(base::TimeDelta interval) {
++  if (scheduler_)
++    scheduler_->SetFrameCapInterval(interval);
++}
++
+ void Display::SetOutputSurfaceClipRect(const gfx::Rect& clip_rect) {
+   renderer_->SetOutputSurfaceClipRect(clip_rect);
+ }
+@@ -486,6 +496,11 @@ void Display::DisableSwapUntilResize(
+   if (!disable_swap_until_resize_) {
+     DCHECK(scheduler_);
+ 
++    // Ordering is load-bearing: AttemptDrawAndSwap() gates on
++    // pending_swaps_ < MaxPendingSwaps(), so an ack held back by the frame cap
++    // would turn the forced swap below into a silent no-op.
++    scheduler_->FlushPendingSwapAckDelay();
++
+     if (!swapped_since_resize_)
+       scheduler_->ForceImmediateSwapIfPossible();
+ 
+diff --git a/components/viz/service/display/display.h b/components/viz/service/display/display.h
+index dd34646c36755..fbd0fd7a26733 100644
+--- a/components/viz/service/display/display.h
++++ b/components/viz/service/display/display.h
+@@ -125,6 +125,11 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
+   void SetVisible(bool visible);
+   void Resize(const gfx::Size& new_size);
+ 
++  // KCC CustomFrameCap. Sets the swap-ack pacing interval at runtime; a zero
++  // interval means uncapped. Called on the viz thread from the display private
++  // mojo API, and forwarded straight to the scheduler.
++  void SetFrameCapInterval(base::TimeDelta interval);
++
+   // Sets additional clip rect for the OutputSurface. DirectRenderer will not
+   // draw outside of this rect.
+   void SetOutputSurfaceClipRect(const gfx::Rect& clip_rect);
+diff --git a/components/viz/service/display/display_scheduler.cc b/components/viz/service/display/display_scheduler.cc
+index 66585309f48e3..276f72af9b995 100644
+--- a/components/viz/service/display/display_scheduler.cc
++++ b/components/viz/service/display/display_scheduler.cc
+@@ -11,6 +11,7 @@
+ #include "base/auto_reset.h"
+ #include "base/feature_list.h"
+ #include "base/memory/raw_ptr.h"
++#include "base/metrics/field_trial_params.h"
+ #include "base/notimplemented.h"
+ #include "base/task/delay_policy.h"
+ #include "base/task/single_thread_task_runner.h"
+@@ -46,6 +47,23 @@ bool AdpfCanUseSetThreads() {
+ #endif
+ }
+ 
++// KCC: exact frame cap while --disable-frame-rate-limit is active. Paces the
++// swap-ack release that re-arms BackToBackBeginFrameSource.
++// Client passes: --enable-features=CustomFrameCap:fps/240   (0 = off)
++BASE_FEATURE(kCustomFrameCap,
++             "CustomFrameCap",
++             base::FEATURE_ENABLED_BY_DEFAULT);
++constexpr base::FeatureParam<int> kCustomFrameCapFps{&kCustomFrameCap, "fps",
++                                                     0};
++
++// Clamp 30..1000: sub-30 caps make window interactions pathological, >1000 is
++// meaningless at timer resolution.
++base::TimeDelta FrameCapIntervalFromFps(int fps) {
++  if (fps <= 0)
++    return base::TimeDelta();  // off
++  return base::Hertz(std::clamp(fps, 30, 1000));
++}
++
+ }  // namespace
+ 
+ class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
+@@ -98,6 +116,7 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
+       pending_swaps_(0),
+       pending_swap_params_(std::move(pending_swap_params)),
+       wait_for_all_surfaces_before_draw_(wait_for_all_surfaces_before_draw),
++      cap_interval_(FrameCapIntervalFromFps(kCustomFrameCapFps.Get())),
+       observing_begin_frame_source_(false),
+       last_targeted_latch_time_(),
+       hint_session_factory_(hint_session_factory),
+@@ -106,6 +125,7 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
+     begin_frame_source_->SetSchedulerClient(this);
+   }
+   begin_frame_deadline_timer_.SetTaskRunner(task_runner);
++  ack_release_timer_.SetTaskRunner(task_runner);
+   begin_frame_deadline_closure_ = base::BindRepeating(
+       &DisplayScheduler::OnBeginFrameDeadline, weak_ptr_factory_.GetWeakPtr());
+   session_states_.emplace_back(HintSession::SessionType::kAnimation);
+@@ -702,6 +722,71 @@ void DisplayScheduler::DidSwapBuffers() {
+ }
+ 
+ void DisplayScheduler::DidReceiveSwapBuffersAck() {
++  if (!cap_interval_.is_zero()) {
++    const base::TimeTicks now = base::TimeTicks::Now();
++    // Absolute grid with idle resync: fast acks (SWAP_SKIPPED, no-damage)
++    // must not pull frames early; idle gaps must not accumulate debt.
++    // Resync ONLY here -- never on the release path.
++    if (next_ack_release_.is_null() ||
++        now - next_ack_release_ > cap_interval_ * 4) {
++      next_ack_release_ = now;
++    }
++    // Advance the grid by whole intervals; do NOT re-anchor to |now|. Doing so
++    // would turn the grid into a per-frame floor, where a cycle can overshoot
++    // its slot but never compensate, landing the mean measurably under target.
++    next_ack_release_ += cap_interval_;
++    if (now < next_ack_release_) {
++      ++pending_release_count_;
++      if (!ack_release_timer_.IsRunning()) {
++        armed_deadline_ = next_ack_release_;
++        ack_release_timer_.Start(
++            FROM_HERE, armed_deadline_,
++            base::BindOnce(&DisplayScheduler::RunDelayedSwapBuffersAck,
++                           base::Unretained(this)),
++            base::subtle::DelayPolicy::kPrecise);
++      }
++      return;
++    }
++  }
++  DidReceiveSwapBuffersAckImpl();
++}
++
++void DisplayScheduler::RunDelayedSwapBuffersAck() {
++  if (pending_release_count_ == 0) {
++    return;  // flushed meanwhile
++  }
++  --pending_release_count_;
++  DidReceiveSwapBuffersAckImpl();
++  if (pending_release_count_ > 0) {
++    // FIFO: the next queued release fires one grid step later.
++    armed_deadline_ += cap_interval_;
++    ack_release_timer_.Start(
++        FROM_HERE, armed_deadline_,
++        base::BindOnce(&DisplayScheduler::RunDelayedSwapBuffersAck,
++                       base::Unretained(this)),
++        base::subtle::DelayPolicy::kPrecise);
++  }
++}
++
++void DisplayScheduler::FlushPendingSwapAckDelay() {
++  ack_release_timer_.Stop();
++  next_ack_release_ = base::TimeTicks();
++  // Drain the ledger COMPLETELY -- each deferred ack owes one Impl(); paying
++  // fewer corrupts pending_swaps_ and wedges the SetIsGpuBusy gate.
++  while (pending_release_count_ > 0) {
++    --pending_release_count_;
++    DidReceiveSwapBuffersAckImpl();
++  }
++}
++
++void DisplayScheduler::SetFrameCapInterval(base::TimeDelta interval) {
++  cap_interval_ = interval;
++  // New cadence starts fresh; queued releases pay out immediately (a cap
++  // change is a user action -- no re-gridding of in-flight acks).
++  FlushPendingSwapAckDelay();
++}
++
++void DisplayScheduler::DidReceiveSwapBuffersAckImpl() {
+   uint32_t swap_id = next_swap_id_ - pending_swaps_;
+   pending_swaps_--;
+ 
+diff --git a/components/viz/service/display/display_scheduler.h b/components/viz/service/display/display_scheduler.h
+index e0acdd921e1ee..e1ab6b66828ba 100644
+--- a/components/viz/service/display/display_scheduler.h
++++ b/components/viz/service/display/display_scheduler.h
+@@ -56,6 +56,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
+                              bool needs_draw) override;
+   void DidSwapBuffers() override;
+   void DidReceiveSwapBuffersAck() override;
++  void FlushPendingSwapAckDelay() override;
++  void SetFrameCapInterval(base::TimeDelta interval) override;
+   void OutputSurfaceLost() override;
+   void ReportFrameTime(
+       base::TimeDelta frame_time,
+@@ -92,6 +94,13 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
+   void OnBeginFrameContinuation(const BeginFrameArgs& args);
+   int MaxPendingSwaps() const;
+ 
++  // Stock body of DidReceiveSwapBuffersAck(); runs immediately when the frame
++  // cap is off, otherwise deferred onto the pacing grid.
++  void DidReceiveSwapBuffersAckImpl();
++  // Pays out one entry from the |pending_release_count_| ledger and re-arms
++  // for the next if any remain.
++  void RunDelayedSwapBuffersAck();
++
+   base::TimeTicks current_frame_display_time() const {
+     return current_begin_frame_args_.frame_time +
+            current_begin_frame_args_.interval;
+@@ -169,6 +178,20 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
+   const PendingSwapParams pending_swap_params_;
+   bool wait_for_all_surfaces_before_draw_;
+ 
++  // KCC CustomFrameCap. |cap_interval_| zero means uncapped; it is seeded from
++  // the feature param and can be replaced at runtime via SetFrameCapInterval().
++  // Every gate-deferred ack owes exactly one DidReceiveSwapBuffersAckImpl()
++  // call: |pending_release_count_| is that ledger, and |ack_release_timer_| is
++  // only the scheduler of the next payout -- there is never more than one timer
++  // and never a per-ack structure. |next_ack_release_| is the head of the
++  // absolute pacing grid; |armed_deadline_| is the slot the timer is currently
++  // targeting, which trails the head while releases are queued.
++  base::TimeDelta cap_interval_;
++  base::TimeTicks next_ack_release_;
++  base::TimeTicks armed_deadline_;
++  int pending_release_count_ = 0;
++  base::DeadlineTimer ack_release_timer_;
++
+   bool observing_begin_frame_source_;
+ 
+   base::TimeTicks last_targeted_latch_time_;
+diff --git a/components/viz/service/display/display_scheduler_base.h b/components/viz/service/display/display_scheduler_base.h
+index 20ee337c49517..365516fda3ae3 100644
+--- a/components/viz/service/display/display_scheduler_base.h
++++ b/components/viz/service/display/display_scheduler_base.h
+@@ -64,6 +64,13 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
+                                      bool needs_draw) = 0;
+   virtual void DidSwapBuffers() = 0;
+   virtual void DidReceiveSwapBuffersAck() = 0;
++  // KCC CustomFrameCap. Releases every swap ack currently held back by the
++  // frame cap, so a resize-driven forced swap isn't blocked by pacing.
++  // No-op unless the cap is active.
++  virtual void FlushPendingSwapAckDelay() {}
++  // KCC CustomFrameCap. Sets the pacing interval at runtime; a zero interval
++  // means uncapped. Display routes here from the mojo display private API.
++  virtual void SetFrameCapInterval(base::TimeDelta interval) {}
+   virtual void OutputSurfaceLost() = 0;
+   // ReportFrameTime can use ADPF hints. If ADPF hints are used they will be run
+   // with the |boost_type| boost type.
+diff --git a/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc b/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc
+index 0f22973a60c99..e58aa6a691dae 100644
+--- a/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc
++++ b/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc
+@@ -386,6 +386,12 @@ void RootCompositorFrameSinkImpl::SetOutputIsSecure(bool secure) {
+   display_->SetOutputIsSecure(secure);
+ }
+ 
++void RootCompositorFrameSinkImpl::SetFrameCapInterval(
++    base::TimeDelta interval) {
++  // KCC: runs on the viz thread, same as the scheduler -- direct call.
++  display_->SetFrameCapInterval(interval);
++}
++
+ void RootCompositorFrameSinkImpl::SetDisplayVSyncParameters(
+     base::TimeTicks timebase,
+     base::TimeDelta interval) {
+diff --git a/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.h b/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.h
+index f25321df3b980..7707ca2b55969 100644
+--- a/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.h
++++ b/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.h
+@@ -89,6 +89,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
+   void SetOutputIsSecure(bool secure) override;
+   void SetDisplayVSyncParameters(base::TimeTicks timebase,
+                                  base::TimeDelta interval) override;
++  void SetFrameCapInterval(base::TimeDelta interval) override;
+   void ForceImmediateDrawAndSwapIfPossible() override;
+ #if BUILDFLAG(IS_ANDROID)
+   void UpdateRefreshRate(float refresh_rate) override;
+diff --git a/services/viz/privileged/mojom/compositing/display_private.mojom b/services/viz/privileged/mojom/compositing/display_private.mojom
+index a1cbb5c050cca..58fadb4ab0dff 100644
+--- a/services/viz/privileged/mojom/compositing/display_private.mojom
++++ b/services/viz/privileged/mojom/compositing/display_private.mojom
+@@ -66,6 +66,12 @@ interface DisplayPrivate {
+     mojo_base.mojom.TimeTicks timebase,
+     mojo_base.mojom.TimeDelta interval);
+ 
++  // KCC: runtime frame-cap for this display. Zero interval = uncapped.
++  // Deliberately a dedicated method rather than a reuse of the vsync
++  // parameters above: real display vsync updates must never be interpretable
++  // as cap commands.
++  SetFrameCapInterval(mojo_base.mojom.TimeDelta interval);
++
+   // Attempts to immediately draw and swap a frame if possible. Note that this
+   // is not a sync IPC, as all current uses are during tear down of the root
+   // compositor frame sink and are immediately followed by a call to
+diff --git a/ui/compositor/compositor.cc b/ui/compositor/compositor.cc
+index 40f706f4a7bfe..058a701fbde44 100644
+--- a/ui/compositor/compositor.cc
++++ b/ui/compositor/compositor.cc
+@@ -382,6 +382,9 @@ void Compositor::SetLayerTreeFrameSink(
+       display_private_->SetDisplayVSyncParameters(vsync_timebase_,
+                                                   vsync_interval_);
+     }
++    // KCC: re-send the frame cap; display-side properties were just reset.
++    if (!frame_cap_interval_.is_zero())
++      display_private_->SetFrameCapInterval(frame_cap_interval_);
+     display_private_->SetMaxVSyncAndVrr(max_vsync_interval_, vrr_state_);
+ #if BUILDFLAG(IS_CHROMEOS)
+     display_private_->SetSupportedRefreshRates(seamless_refresh_rates_);
+@@ -685,6 +688,14 @@ void Compositor::SetDisplayVSyncParameters(base::TimeTicks timebase,
+     display_private_->SetDisplayVSyncParameters(timebase, interval);
+ }
+ 
++void Compositor::SetFrameCapInterval(base::TimeDelta interval) {
++  // Deliberately no kDisableFrameRateLimit early-out (unlike the vsync setter
++  // above): the cap exists precisely for when that switch is active.
++  frame_cap_interval_ = interval;
++  if (display_private_)
++    display_private_->SetFrameCapInterval(interval);
++}
++
+ void Compositor::AddVSyncParameterObserver(
+     mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer) {
+   if (display_private_)
+diff --git a/ui/compositor/compositor.h b/ui/compositor/compositor.h
+index 1b72613e79b2b..4a6fdba71bef8 100644
+--- a/ui/compositor/compositor.h
++++ b/ui/compositor/compositor.h
+@@ -317,6 +317,12 @@ class COMPOSITOR_EXPORT Compositor
+   // update it via the BrowserCompositorLayerTreeFrameSink directly.
+   void SetDisplayVSyncParameters(base::TimeTicks timebase,
+                                  base::TimeDelta interval);
++
++  // KCC CustomFrameCap. Sets and caches the swap-ack pacing interval for this
++  // display; a zero interval means uncapped. Cached so the cap survives a
++  // frame sink re-bind (hide/show), which resets display-side properties.
++  void SetFrameCapInterval(base::TimeDelta interval);
++
+   void AddVSyncParameterObserver(
+       mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer);
+ 
+@@ -689,6 +695,10 @@ class COMPOSITOR_EXPORT Compositor
+   base::TimeTicks vsync_timebase_;
+   base::TimeDelta vsync_interval_ = viz::BeginFrameArgs::DefaultInterval();
+   bool has_vsync_params_ = false;
++
++  // KCC CustomFrameCap. Last cap set through SetFrameCapInterval(); zero means
++  // uncapped. Re-sent whenever |display_private_| is (re)bound.
++  base::TimeDelta frame_cap_interval_;
+   std::optional<base::TimeDelta> max_vsync_interval_ = std::nullopt;
+   display::VariableRefreshRateState vrr_state_ =
+       display::VariableRefreshRateState::kVrrNotCapable;
