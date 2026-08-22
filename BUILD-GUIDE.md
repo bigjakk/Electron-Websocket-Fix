@@ -480,7 +480,23 @@ Semantics:
 
 Applying the diff directly (see below) is easier than editing by hand.
 
-### Patch 4: macOS GPU Crash Guard (macOS builds only)
+### Patch 4: Minimum-Period WASAPI Shared Audio (Windows only)
+
+Apply `wasapi-low-latency-patch.diff` from the Chromium `src` root. It adds a
+disabled-by-default `WASAPILowLatencySharedMode` feature in
+`media/audio/win/audio_manager_win.cc`. When enabled, the feature selects the
+minimum shared-mode period already reported for the active endpoint by
+`IAudioClient3::GetSharedModeEnginePeriod()`; Chromium's existing
+`InitializeSharedAudioStream()` path performs initialization.
+
+The patch remains in shared mode and leaves the normal buffer-selection path
+unchanged when the feature is absent. Enable it at application startup with:
+
+```bash
+--enable-features=WASAPILowLatencySharedMode
+```
+
+### Patch 5: macOS GPU Crash Guard (macOS builds only)
 
 macOS builds need one more change, in
 `components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc`. Under
@@ -516,6 +532,7 @@ root:
 cd C:\electron\electron\src
 git apply /path/to/ws-priority-patch.diff
 git apply /path/to/frame-pacing-patch.diff
+git apply /path/to/wasapi-low-latency-patch.diff
 ```
 
 **Linux:**
@@ -1074,7 +1091,7 @@ gclient sync --with_branch_heads --with_tags
 
 # Re-apply the patches (line numbers may differ between versions)
 # Edit main_thread_scheduler_impl.cc and scheduler_state_machine.cc as in Step 2
-# Or try: git apply ws-priority-patch.diff && git apply frame-pacing-patch.diff
+# Or try: git apply ws-priority-patch.diff && git apply frame-pacing-patch.diff && git apply wasapi-low-latency-patch.diff
 
 # Clean, generate, and build
 buildtools/win/gn.exe clean out/Release
@@ -1122,12 +1139,14 @@ The raw diffs are saved alongside this guide:
 
 - `ws-priority-patch.diff` -- input-priority patch (this project)
 - `frame-pacing-patch.diff` -- runtime-tunable frame-pacing patch (builds on [thegu5](https://github.com/thegu5)'s Electron commit `733d1c2`)
+- `wasapi-low-latency-patch.diff` -- Windows-only opt-in minimum-period WASAPI shared audio (Chromium 150 / `7871`)
 - `macos-gpu-crash-patch.diff` -- macOS-only GPU-crash guard for `external_begin_frame_source()` under `--disable-frame-rate-limit` (Chromium 150 / `7871`)
 
 They apply cleanly to recent Chromium milestones (input-priority and frame-pacing
-verified on 148 / Electron v42.5.1 and 150 / Electron v43.0.0; the macOS GPU-crash
-guard verified on 150 / Electron v43.0.0). Line numbers may shift between versions;
-regenerate against the real checkout if `git apply` reports drift.
+verified on 148 / Electron v42.5.1 and 150 / Electron v43.0.0; the WASAPI and
+macOS GPU-crash patches verified on 150 / Electron v43.0.0). Line numbers may
+shift between versions; regenerate against the real checkout if `git apply`
+reports drift.
 
 ---
 
@@ -1195,5 +1214,7 @@ Apply manually -- search for `PrioritisationType::kInput` returning
 `ComputeCompositorPriority()` and add the `std::max` cap. For the frame-pacing
 patch, add the `CustomMaxPendingFrames` feature/param/accessor (see Patch 3) and
 route `IsDrawThrottled()` (and the `DCHECK_LT` in `DidSubmitCompositorFrame()`)
-through `MaxPendingSubmitFrames()`. The surrounding code structure should be
-recognizable even if line numbers differ.
+through `MaxPendingSubmitFrames()`. For the WASAPI patch, find
+`AudioManagerWin::GetPreferredOutputStreamParameters()` and select the reported
+`min_buffer_size` only when the disabled-by-default feature is enabled. The
+surrounding code structure should be recognizable even if line numbers differ.

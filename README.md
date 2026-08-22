@@ -36,7 +36,7 @@ This regression was introduced in Chromium 84 when `PrioritizeCompositingAfterIn
 
 ## The Fix
 
-The latest builds apply **three complementary patches**, plus a macOS-only crash guard:
+The latest builds apply **four complementary patches**, plus a macOS-only crash guard:
 
 ### 1. Input priority (this project)
 
@@ -117,7 +117,17 @@ Measured on Electron v43.0.0 / Chromium 150.0.7871.46, win32-x64 (uncapped contr
 
 The change spans two git repos, so it ships as two patch files: [`patches/frame-cap-patch.diff`](patches/frame-cap-patch.diff) (apply from the Chromium `src` root) and [`patches/frame-cap-electron-patch.diff`](patches/frame-cap-electron-patch.diff) (apply from `src/electron`).
 
-### 4. macOS GPU crash guard (macOS builds only)
+### 4. Minimum-period WASAPI shared audio (Windows, opt-in)
+
+Chromium already asks the active Windows output endpoint for its supported shared-mode engine periods through `IAudioClient3::GetSharedModeEnginePeriod()`. The opt-in patch makes `AudioManagerWin` select the reported minimum instead of the usual requested/default size. Chromium's existing `WASAPIAudioOutputStream` then automatically initializes that period through `IAudioClient3::InitializeSharedAudioStream()`.
+
+```bash
+electron.exe myapp --enable-features=WASAPILowLatencySharedMode
+```
+
+The feature is disabled by default, remains WASAPI shared mode, and does not replace Chromium's audio backend. If `IAudioClient3` does not expose a minimum period, selection falls back to the existing behavior. An explicit `--audio-buffer-size` remains the final override. See [`patches/wasapi-low-latency-patch.diff`](patches/wasapi-low-latency-patch.diff).
+
+### 5. macOS GPU crash guard (macOS builds only)
 
 On macOS, `--disable-frame-rate-limit` switches the display to a *synthetic* begin-frame source, so `external_begin_frame_source()` returns null. A June 2026 Chromium regression (commit `0348f5809af17d`) then calls a virtual method on that null pointer in `RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams()`, crashing the GPU process (`exit_code=11`, black screen). This affects the entire Electron 43.x / Chromium 150 (`7871`) line — the upstream fix (`f0d1fd614eefb`) was not backported — so every macOS build needs a one-line null guard:
 
@@ -239,6 +249,7 @@ cd .. && gclient sync --with_branch_heads --with_tags
 git apply path/to/ws-priority-patch.diff     # input priority (this repo)
 git apply path/to/frame-pacing-patch.diff    # frame pacing (thegu5)
 git apply path/to/frame-cap-patch.diff       # exact FPS cap (Chromium half)
+git apply path/to/wasapi-low-latency-patch.diff # Windows only: opt-in shared audio period
 git apply path/to/macos-gpu-crash-patch.diff # macOS only: GPU crash guard
 
 # ...and the Electron half of the frame cap, from src/electron
@@ -261,7 +272,7 @@ Expect 6-10+ hours for a full build on a modern machine (24 cores, 64GB RAM).
 
 ## Patch Details
 
-Most of these patches modify Chromium source (not Electron source), so they apply to any Electron version since Electron 10 (Chromium 84+) — the exception is the frame cap, whose runtime-adjustment half touches Electron's shell. The input-priority, frame-pacing, and frame-cap patches are cross-platform (Windows, Linux, macOS); the GPU-crash guard is macOS-only. Line numbers may shift between versions but the function names remain the same.
+Most of these patches modify Chromium source (not Electron source), so they apply to any Electron version since Electron 10 (Chromium 84+) — the exception is the frame cap, whose runtime-adjustment half touches Electron's shell. The input-priority, frame-pacing, and frame-cap patches are cross-platform (Windows, Linux, macOS); the WASAPI low-latency patch is Windows-only and the GPU-crash guard is macOS-only. Line numbers may shift between versions but the function names remain the same.
 
 **Input priority** -- `third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc`:
 
@@ -277,6 +288,10 @@ Most of these patches modify Chromium source (not Electron source), so they appl
 - `components/viz/service/display/display_scheduler.cc` -- `DidReceiveSwapBuffersAck()` becomes a pacing gate; the stock body moves verbatim into `DidReceiveSwapBuffersAckImpl()`. Every gate-deferred ack owes exactly one `Impl()` call, tracked by `pending_release_count_`, with a single `base::DeadlineTimer` scheduling the next payout
 - `components/viz/service/display/display.cc` -- `Resize()` and `DisableSwapUntilResize()` flush the pending delay, the latter *before* `ForceImmediateSwapIfPossible()`, or a held ack makes the forced pre-resize swap a silent no-op
 - `shell/browser/api/electron_api_base_window.cc` (in `src/electron`) -- adds the `setFrameCap` method, clamped to 30..1000 with 0 or negative meaning uncapped
+
+**Minimum-period WASAPI shared audio** (Windows only) -- `media/audio/win/audio_manager_win.cc`:
+
+- `GetPreferredOutputStreamParameters()` -- when `WASAPILowLatencySharedMode` is enabled, select the active endpoint's `min_frames_per_buffer` already reported by `IAudioClient3`; the existing output stream uses that value with `InitializeSharedAudioStream()`
 
 **macOS GPU crash guard** (macOS only) -- `components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc`:
 
