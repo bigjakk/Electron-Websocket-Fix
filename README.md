@@ -228,6 +228,14 @@ The test uses CDP `Input.dispatchMouseEvent` to simulate continuous mouse input 
 
 Expected output for a patched build: **0% of WebSocket messages >50ms**.
 
+### Audio latency A/B check (Windows)
+
+[`test/audio-console-test.js`](test/audio-console-test.js) is a small script for KCC's DevTools console. Paste the whole file into the console, click back into the game, and press **F8** to play a short tone. It also reports the Web Audio sample rate, render quantum, `baseLatency`, and `outputLatency` when Chromium exposes them.
+
+Run it once after launching KCC with **Low-latency shared audio** disabled, then restart with the setting enabled and repeat. Use `kccAudioLatencyTest.report()` to print the values again or `kccAudioLatencyTest.stop()` to clean up.
+
+The script is useful for a direct A/B comparison and a subjective key-to-sound check. Browser-reported timing is not a physical end-to-end latency measurement; measuring that requires an audio loopback rig.
+
 ## Building From Source
 
 Full build instructions are in [`BUILD-GUIDE.md`](BUILD-GUIDE.md).
