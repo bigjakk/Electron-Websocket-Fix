@@ -127,6 +127,8 @@ electron.exe myapp --enable-features=WASAPILowLatencySharedMode
 
 The feature is disabled by default, remains WASAPI shared mode, and does not replace Chromium's audio backend. If `IAudioClient3` does not expose a minimum period, selection falls back to the existing behavior. An explicit `--audio-buffer-size` remains the final override. See [`patches/wasapi-low-latency-patch.diff`](patches/wasapi-low-latency-patch.diff).
 
+One same-device Windows A/B run with the included console probe reported **42 ms** with the feature disabled and **29 ms** with it enabled: 13 ms, or about 31%, lower. This result is endpoint-specific and is not a physical loopback measurement.
+
 ### 5. macOS GPU crash guard (macOS builds only)
 
 On macOS, `--disable-frame-rate-limit` switches the display to a *synthetic* begin-frame source, so `external_begin_frame_source()` returns null. A June 2026 Chromium regression (commit `0348f5809af17d`) then calls a virtual method on that null pointer in `RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams()`, crashing the GPU process (`exit_code=11`, black screen). This affects the entire Electron 43.x / Chromium 150 (`7871`) line — the upstream fix (`f0d1fd614eefb`) was not backported — so every macOS build needs a one-line null guard:
