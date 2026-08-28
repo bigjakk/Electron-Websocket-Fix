@@ -1,0 +1,87 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Tue, 30 Jun 2026 09:30:00 -0700
+Subject: feat: runtime-tunable frame-queue depth (CustomMaxPendingFrames)
+
+Builds on thegu5's frame-throttle fix (drop the !disable_frame_rate_limit
+exemption from IsDrawThrottled, Electron commit 733d1c2) by exposing the
+pending-submit-frame queue depth as a runtime feature param, so a client's
+"Higher Max FPS" toggle can raise it without recompiling.
+
+  * No flag                                          -> 1 (stock behavior)
+  * --enable-features=CustomMaxPendingFrames:count/2 -> 2
+  * --disable-features=CustomMaxPendingFrames        -> 1
+
+The feature param propagates to the renderer via field trials (the scheduler
+runs in the renderer, not the browser). The accessor floors the value at 1 so
+0/negative can't disable throttling and reintroduce the unbounded-frame flood
+this patch exists to prevent.
+
+Testing on Electron v42.5.1 (Chromium 148): count=2 gave ~+27% frame
+throughput vs count=1 (default), with 0% of WebSocket messages delayed >50ms.
+
+Ported to Chromium 152.0.7977 (Electron 44) on 2026-08-25. Only change from the
+Chromium 150 revision: upstream turned kMaxPendingSubmitFrames from `const int`
+into `constexpr int` and added kFrameThrottlingSlackFactor beside it, so the
+anonymous-namespace hunk is re-anchored. No behavioural difference.
+
+diff --git a/cc/scheduler/scheduler_state_machine.cc b/cc/scheduler/scheduler_state_machine.cc
+index ce6e121..d86080d 100644
+--- a/cc/scheduler/scheduler_state_machine.cc
++++ b/cc/scheduler/scheduler_state_machine.cc
+@@ -7,7 +7,9 @@
+ #include <algorithm>
+ 
+ #include "base/check_op.h"
++#include "base/feature_list.h"
+ #include "base/format_macros.h"
++#include "base/metrics/field_trial_params.h"
+ #include "base/metrics/histogram_macros.h"
+ #include "base/notreached.h"
+ #include "base/rand_util.h"
+@@ -30,7 +32,25 @@ namespace cc {
+ 
+ namespace {
+ // Surfaces and CompositorTimingHistory don't support more than 1 pending swap.
+-constexpr int kMaxPendingSubmitFrames = 1;
++constexpr int kMaxPendingSubmitFrames = 1;  // unchanged — safe default
++
++// KCC: expose the frame-queue depth as a runtime-tunable feature param.
++// Feature params propagate to the renderer process automatically (field
++// trials), which is required because this scheduler runs in the renderer,
++// not the browser. The "Higher Max FPS" toggle in the client sets:
++//   --enable-features=CustomMaxPendingFrames:count/2
++BASE_FEATURE(kCustomMaxPendingFrames,
++             "CustomMaxPendingFrames",
++             base::FEATURE_ENABLED_BY_DEFAULT);
++constexpr base::FeatureParam<int> kMaxPendingFramesCount{
++    &kCustomMaxPendingFrames, "count", kMaxPendingSubmitFrames};  // default 1
++
++// Read once and cache. Floor of 1 — 0/negative would disable throttling and
++// reintroduce the unbounded-queue flood the patch exists to prevent.
++int MaxPendingSubmitFrames() {
++  static const int value = std::max(1, kMaxPendingFramesCount.Get());
++  return value;
++}
+ 
+ constexpr float kFrameThrottlingSlackFactor = 0.9;
+ 
+@@ -1507,8 +1527,7 @@ bool SchedulerStateMachine::IsDrawThrottled() const {
+   if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+     return false;
+   }
+-  return pending_submit_frames_ >= kMaxPendingSubmitFrames &&
+-         !settings_.disable_frame_rate_limit;
++  return pending_submit_frames_ >= MaxPendingSubmitFrames();
+ }
+ 
+ void SchedulerStateMachine::SetVisible(bool visible) {
+@@ -1577,7 +1596,7 @@ void SchedulerStateMachine::DidSubmitCompositorFrame() {
+     // We should remove or change this once VRR support is implemented for
+     // Windows and other platforms potentially.
+     if (!settings_.disable_frame_rate_limit) {
+-      DCHECK_LT(pending_submit_frames_, kMaxPendingSubmitFrames);
++      DCHECK_LT(pending_submit_frames_, MaxPendingSubmitFrames());
+     }
+ 
+     pending_submit_frames_++;
