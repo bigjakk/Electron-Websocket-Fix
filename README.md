@@ -7,7 +7,7 @@ This is critical for competitive browser-based games (like [Krunker](https://kru
 
 ## Downloads
 
-Pre-built patched binaries for **Windows x64** and **Linux x64** are available on the [Releases page](https://github.com/bigjakk/Electron-Websocket-Fix/releases). Each release targets a specific Electron version — download the asset matching your platform from the release you need.
+Pre-built patched binaries for **Windows x64**, **Linux x64**, and **macOS arm64** are available on the [Releases page](https://github.com/bigjakk/Electron-Websocket-Fix/releases). Each release targets a specific Electron version — download the asset matching your platform from the release you need.
 
 All builds are full release builds (`is_official_build = true`) with maximum optimizations. Additional versions can be built from source -- see [`BUILD-GUIDE.md`](BUILD-GUIDE.md).
 
@@ -36,7 +36,9 @@ This regression was introduced in Chromium 84 when `PrioritizeCompositingAfterIn
 
 ## The Fix
 
-The latest builds apply **three complementary patches**, plus a macOS-only crash guard:
+The latest builds apply **three complementary patches**. A fourth, macOS-only crash
+guard was required for the Electron 43.x builds; it is obsolete from Chromium 151
+onward and is **not** applied to the Electron 44 builds — see section 4.
 
 ### 1. Input priority (this project)
 
@@ -111,15 +113,21 @@ Measured on Electron v43.0.0 / Chromium 150.0.7871.46, win32-x64 (uncapped contr
 | `setFrameCap(150)`, after hide/show | 150.03 | +0.02% |
 | `setFrameCap(0)` at runtime | 264.3 (uncapped) | — |
 
+The cap was re-verified on the Electron v44.0.0 / Chromium 152.0.7977.54 builds and holds
+within the same tolerance, including across hide/show. Chromium 152 added a second way for
+max-pending-swaps to exceed 1 (`MaxPendingSwapsForDeadline`), which would loosen the cap if
+it fired; it does not, because `kAllowMultipleSwapsPerVsync` is disabled by default and
+`BackToBackBeginFrameSource` emits `BeginFrameArgs` with no `possible_deadlines`.
+
 > **Known limitation — do not co-emit with `CustomMaxPendingFrames:count/N` where N >= 2.** The two features don't merely cancel out, they *invert*: measured rAF rates **rise** as the cap tightens. On a machine whose depth-2 uncapped ceiling is 551 FPS, a cap of 285 gave 555, 240 gave 666, 120 gave 804, 60 gave 1008, and 30 gave 1381.
 >
 > This is by design, not a bug in the implementation: `CustomMaxPendingFrames` exists to let the renderer run *ahead* of the draw loop, and this cap works by *pacing* that same draw loop. The decoupling happens in cc's scheduler in the renderer process, upstream of anything `DisplayScheduler` can influence, so no change confined to viz can fix it. Use one feature or the other — at the default `count/1`, the cap behaves correctly.
 
 The change spans two git repos, so it ships as two patch files: [`patches/frame-cap-patch.diff`](patches/frame-cap-patch.diff) (apply from the Chromium `src` root) and [`patches/frame-cap-electron-patch.diff`](patches/frame-cap-electron-patch.diff) (apply from `src/electron`).
 
-### 4. macOS GPU crash guard (macOS builds only)
+### 4. macOS GPU crash guard (Electron 43.x macOS builds only)
 
-On macOS, `--disable-frame-rate-limit` switches the display to a *synthetic* begin-frame source, so `external_begin_frame_source()` returns null. A June 2026 Chromium regression (commit `0348f5809af17d`) then calls a virtual method on that null pointer in `RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams()`, crashing the GPU process (`exit_code=11`, black screen). This affects the entire Electron 43.x / Chromium 150 (`7871`) line — the upstream fix (`f0d1fd614eefb`) was not backported — so every macOS build needs a one-line null guard:
+On macOS, `--disable-frame-rate-limit` switches the display to a *synthetic* begin-frame source, so `external_begin_frame_source()` returns null. A June 2026 Chromium regression (commit `0348f5809af17d`) then calls a virtual method on that null pointer in `RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams()`, crashing the GPU process (`exit_code=11`, black screen). This affects the entire Electron 43.x / Chromium 150 (`7871`) line — the upstream fix (`f0d1fd614eefb`) was not backported — so every macOS build **on that line** needs a one-line null guard:
 
 ```cpp
 // Guard the call the same way the adjacent display_client_ call is guarded.
@@ -128,6 +136,34 @@ if (auto* ebfs = external_begin_frame_source())
 ```
 
 Windows and Linux are unaffected and don't need this patch. See [`patches/macos-gpu-crash-patch.diff`](patches/macos-gpu-crash-patch.diff).
+
+> **Obsolete from Chromium 151 onward — do not apply it to Electron 44 builds.** The
+> unguarded deref exists in `branch-heads/7871` only; it is absent from 7900, 7938 and
+> 7977. Upstream `f0d1fd614eefb` did not add a null check — it moved the DisplayLink
+> switch into `ExternalBeginFrameSourceMojoMac` and deleted the call site outright, so on
+> Chromium 152 every remaining Mac use of `external_begin_frame_source()` in that file is
+> already guarded. The patch stays in the repo for any further Electron 43.x build.
+
+### Which patch set to apply
+
+The diffs at the top of [`patches/`](patches/) are cut against Chromium 150 (Electron 43.x).
+[`patches/electron-44/`](patches/electron-44/) holds the same patches re-anchored for
+Chromium 152 (Electron 44.x). All four differ from their Chromium 150 counterparts, and the
+150 versions reject on 152 — pick the set that matches your target, don't force-fit.
+
+| Target | Patch set | macOS GPU guard |
+|---|---|---|
+| Electron 43.x (Chromium 150) | [`patches/`](patches/) | required on macOS |
+| Electron 44.x (Chromium 152) | [`patches/electron-44/`](patches/electron-44/) | **do not apply** -- obsolete |
+
+The one substantive port between them: `Display::DisableSwapUntilResize()` was deleted
+upstream in Chromium 152, so the frame cap's pending swap-ack flush moved into
+`Display::ForceImmediateDrawAndSwapIfPossible()`. It still runs *before* the forced swap --
+`AttemptDrawAndSwap()` gates on `pending_swaps_ < MaxPendingSwaps(args)`, so a held-back ack
+would otherwise turn the forced swap into a silent no-op. The remaining differences are
+context re-anchors, enumerated in
+[`patches/electron-44/README.md`](patches/electron-44/README.md) for whoever bumps to the
+next milestone.
 
 ### Test Results
 
@@ -171,7 +207,7 @@ mv node_modules/electron/dist node_modules/electron/dist-original
 # Extract patched version
 mkdir node_modules/electron/dist
 cd node_modules/electron/dist
-unzip path/to/electron-v40.6.1-release-patched-win32-x64.zip
+unzip path/to/electron-v44.0.0-ws-frameThrottle-frameCap2-patched-windows-x64.zip
 ```
 
 ### Option C: electron-builder
@@ -182,7 +218,7 @@ In `package.json`:
 {
   "build": {
     "electronDist": "path/to/extracted/dist",
-    "electronVersion": "40.6.1"
+    "electronVersion": "44.0.0"
   }
 }
 ```
@@ -232,17 +268,20 @@ e init --root=C:\electron my-build --import release      # Windows
 e sync
 
 # 3. Check out desired version
-cd src/electron && git checkout v40.6.1
+cd src/electron && git checkout v44.0.0
 cd .. && gclient sync --with_branch_heads --with_tags
 
-# 4. Apply patches -- from the Chromium src root
-git apply path/to/ws-priority-patch.diff     # input priority (this repo)
-git apply path/to/frame-pacing-patch.diff    # frame pacing (thegu5)
-git apply path/to/frame-cap-patch.diff       # exact FPS cap (Chromium half)
-git apply path/to/macos-gpu-crash-patch.diff # macOS only: GPU crash guard
+# 4. Apply patches -- from the Chromium src root.
+#    For Electron 44.x use patches/electron-44/; for 43.x use patches/ .
+git apply path/to/electron-44/ws-priority-patch.diff   # input priority (this repo)
+git apply path/to/electron-44/frame-pacing-patch.diff  # frame pacing (thegu5)
+git apply path/to/electron-44/frame-cap-patch.diff     # exact FPS cap (Chromium half)
+
+# Electron 43.x macOS builds ONLY -- obsolete on Chromium 151+, skip it on 44.x
+# git apply path/to/macos-gpu-crash-patch.diff
 
 # ...and the Electron half of the frame cap, from src/electron
-cd electron && git apply path/to/frame-cap-electron-patch.diff && cd ..
+cd electron && git apply path/to/electron-44/frame-cap-electron-patch.diff && cd ..
 
 # 5. Configure and build
 mkdir -p out/Release
@@ -261,7 +300,7 @@ Expect 6-10+ hours for a full build on a modern machine (24 cores, 64GB RAM).
 
 ## Patch Details
 
-Most of these patches modify Chromium source (not Electron source), so they apply to any Electron version since Electron 10 (Chromium 84+) — the exception is the frame cap, whose runtime-adjustment half touches Electron's shell. The input-priority, frame-pacing, and frame-cap patches are cross-platform (Windows, Linux, macOS); the GPU-crash guard is macOS-only. Line numbers may shift between versions but the function names remain the same.
+Most of these patches modify Chromium source (not Electron source), so they apply to any Electron version since Electron 10 (Chromium 84+) — the exception is the frame cap, whose runtime-adjustment half touches Electron's shell. The input-priority, frame-pacing, and frame-cap patches are cross-platform (Windows, Linux, macOS); the GPU-crash guard is macOS-only *and* Electron 43.x-only. Line numbers may shift between versions but the function names remain the same.
 
 **Input priority** -- `third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc`:
 
@@ -278,9 +317,9 @@ Most of these patches modify Chromium source (not Electron source), so they appl
 - `components/viz/service/display/display.cc` -- `Resize()` and `DisableSwapUntilResize()` flush the pending delay, the latter *before* `ForceImmediateSwapIfPossible()`, or a held ack makes the forced pre-resize swap a silent no-op
 - `shell/browser/api/electron_api_base_window.cc` (in `src/electron`) -- adds the `setFrameCap` method, clamped to 30..1000 with 0 or negative meaning uncapped
 
-**macOS GPU crash guard** (macOS only) -- `components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc`:
+**macOS GPU crash guard** (macOS, Electron 43.x only) -- `components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc`:
 
-- `DisplayDidReceiveCALayerParams()` -- null-check `external_begin_frame_source()` before calling `DidReceiveNewCALayerParams()` on it; it returns null under `--disable-frame-rate-limit`, which otherwise crashes the GPU process on Chromium 150 (`7871`, all of Electron 43.x)
+- `DisplayDidReceiveCALayerParams()` -- null-check `external_begin_frame_source()` before calling `DidReceiveNewCALayerParams()` on it; it returns null under `--disable-frame-rate-limit`, which otherwise crashes the GPU process on Chromium 150 (`7871`, all of Electron 43.x). Not needed on Chromium 151+ -- the call site is gone upstream
 
 ## License
 

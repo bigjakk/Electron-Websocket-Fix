@@ -480,7 +480,7 @@ Semantics:
 
 Applying the diff directly (see below) is easier than editing by hand.
 
-### Patch 4: macOS GPU Crash Guard (macOS builds only)
+### Patch 4: macOS GPU Crash Guard (Electron 43.x macOS builds only)
 
 macOS builds need one more change, in
 `components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc`. Under
@@ -505,10 +505,26 @@ Replace with a null guard (mirrors the `display_client_` guard just above):
 
 Windows and Linux don't need this patch.
 
+**Skip this patch entirely on Chromium 151 and later (Electron 44+).** The unguarded
+deref exists in `branch-heads/7871` only; it is absent from 7900, 7938 and 7977. The
+upstream fix `f0d1fd614eefb` did not add a null check -- it moved the DisplayLink switch
+into `ExternalBeginFrameSourceMojoMac` and deleted the call site, so there is nothing left
+to guard. Applying it to a 152 tree will simply reject.
+
 ### Using the diff file
 
 Alternatively, if you have the `.diff` files, apply them from the Chromium src
 root:
+
+First pick the right set. The diffs at the top of `patches/` are cut against Chromium 150
+(Electron 43.x); `patches/electron-44/` holds the same patches re-anchored for Chromium 152
+(Electron 44.x). All four differ, and the 150 versions reject on 152 -- do not force-fit
+them across.
+
+| Target | Patch set | macOS GPU guard |
+|---|---|---|
+| Electron 43.x (Chromium 150) | `patches/` | required on macOS |
+| Electron 44.x (Chromium 152) | `patches/electron-44/` | **do not apply** -- obsolete |
 
 **Windows:**
 
@@ -516,6 +532,7 @@ root:
 cd C:\electron\electron\src
 git apply /path/to/ws-priority-patch.diff
 git apply /path/to/frame-pacing-patch.diff
+git apply /path/to/frame-cap-patch.diff
 ```
 
 **Linux:**
@@ -524,13 +541,22 @@ git apply /path/to/frame-pacing-patch.diff
 cd ~/electron/src
 git apply /path/to/ws-priority-patch.diff
 git apply /path/to/frame-pacing-patch.diff
+git apply /path/to/frame-cap-patch.diff
 ```
 
-**macOS (additionally, after the two above):**
+**macOS -- Electron 43.x only (additionally, after the three above):**
 
 ```bash
 cd ~/electron/src
 git apply /path/to/macos-gpu-crash-patch.diff
+```
+
+The frame cap's runtime-adjustment half lives in the Electron repo, so it applies from
+`src/electron` rather than the Chromium root:
+
+```bash
+cd electron
+git apply /path/to/frame-cap-electron-patch.diff
 ```
 
 ### Verify the patch
@@ -563,7 +589,8 @@ You should see `return pending_submit_frames_ >= MaxPendingSubmitFrames();` (no
 `disable_frame_rate_limit` check) plus the `BASE_FEATURE(kCustomMaxPendingFrames, ...)`
 and `MaxPendingSubmitFrames()` definitions.
 
-On macOS, confirm the GPU-crash guard is in place:
+On macOS **Electron 43.x builds only**, confirm the GPU-crash guard is in place (on
+Chromium 151+ there is no call site to guard, so skip this check):
 
 ```bash
 grep -n "external_begin_frame_source" components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc
@@ -1109,7 +1136,8 @@ ninja -C out/Release electron
 ninja -C out/Release electron:electron_dist_zip
 ```
 
-**Note:** The patches modify Chromium source (not Electron source), so line numbers
+**Note:** Most of the patches modify Chromium source rather than Electron source (the
+exception is the frame cap's runtime-adjustment half), so line numbers
 may shift between versions. The function names and structure should remain the same
 across Chromium versions. Search for `PrioritisationType::kInput`,
 `ComputeCompositorPriority()`, and `IsDrawThrottled()` to find the right locations.
@@ -1118,16 +1146,28 @@ across Chromium versions. Search for `PrioritisationType::kInput`,
 
 ## Patch File
 
-The raw diffs are saved alongside this guide:
+The raw diffs are saved alongside this guide, in two sets. Use the one that matches your
+target -- all four differ between sets, and the Chromium 150 versions reject on 152.
+
+**`patches/` -- cut against Chromium 150 (Electron 43.x):**
 
 - `ws-priority-patch.diff` -- input-priority patch (this project)
 - `frame-pacing-patch.diff` -- runtime-tunable frame-pacing patch (builds on [thegu5](https://github.com/thegu5)'s Electron commit `733d1c2`)
+- `frame-cap-patch.diff` -- exact FPS cap, Chromium half (apply from the `src` root)
+- `frame-cap-electron-patch.diff` -- exact FPS cap, Electron half (apply from `src/electron`)
 - `macos-gpu-crash-patch.diff` -- macOS-only GPU-crash guard for `external_begin_frame_source()` under `--disable-frame-rate-limit` (Chromium 150 / `7871`)
 
-They apply cleanly to recent Chromium milestones (input-priority and frame-pacing
-verified on 148 / Electron v42.5.1 and 150 / Electron v43.0.0; the macOS GPU-crash
-guard verified on 150 / Electron v43.0.0). Line numbers may shift between versions;
-regenerate against the real checkout if `git apply` reports drift.
+**`patches/electron-44/` -- re-anchored for Chromium 152 (Electron 44.x):**
+
+- `ws-priority-patch.diff`, `frame-pacing-patch.diff`, `frame-cap-patch.diff` (from the `src` root)
+- `frame-cap-electron-patch.diff` (from `src/electron`)
+- No macOS GPU-crash guard -- the upstream call site is gone, so the patch is obsolete and
+  will reject. Do not carry it forward.
+
+Verified milestones: input-priority and frame-pacing on 148 / Electron v42.5.1 and 150 /
+Electron v43.0.0; the full four-patch set on 150 / Electron v43.0.0 and 152 / Electron
+v44.0.0; the macOS GPU-crash guard on 150 / Electron v43.0.0 only. Line numbers may shift
+between versions; regenerate against the real checkout if `git apply` reports drift.
 
 ---
 
