@@ -1,0 +1,106 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: keep raw-input mouse motion from packets that also report a wheel tick
+
+Stock behaviour (ui/views/win/hwnd_message_handler.cc,
+HWNDMessageHandler::OnInputEvent, the WM_INPUT handler used while pointer
+lock with unadjustedMovement is active): a raw mouse packet is turned into a
+mouse-move event only if
+
+  input->data.mouse.usButtonFlags != RI_MOUSE_WHEEL
+
+so a packet whose button flags are exactly RI_MOUSE_WHEEL is skipped as a
+whole, including any lLastX/lLastY it carries. A HID mouse report holds
+buttons, X, Y and wheel together, so every wheel tick made while the mouse
+is moving throws away one report worth of motion (1 ms at 1000 Hz). Krunker
+players bind the wheel to jump or weapon switch and scroll while aiming.
+
+What is and is not dropped by the stock test:
+  - usButtonFlags == RI_MOUSE_WHEEL (vertical wheel only): dropped, with
+    its motion. This is the only case this patch changes.
+  - RI_MOUSE_HWHEEL only, wheel + button transition in one packet,
+    button-only packets, plain moves: all forwarded already (button-only
+    and h-wheel-only packets become a zero-movement move that carries the
+    updated button state from UpdateRawInputButtonState). Unchanged.
+  - MOUSE_MOVE_ABSOLUTE packets (RDP, VMs, tablets): forwarded, but
+    set_movement() is not called for them, so they reach the renderer as
+    ordinary (non raw-movement) moves at the current cursor position.
+    Unchanged; an absolute wheel-only packet is still skipped.
+
+With the feature enabled a wheel-only packet is skipped only when it has no
+relative motion (lLastX == 0 && lLastY == 0, or MOUSE_MOVE_ABSOLUTE); if it
+has relative motion it goes through the same code as any other move.
+UpdateRawInputButtonState() is a no-op for it because no button bit is set.
+
+Wheel handling does not change and nothing is delivered twice: OnInputEvent
+never reads the wheel delta (usButtonData). Raw input is registered with
+RIDEV_INPUTSINK only (no RIDEV_NOLEGACY, see
+scoped_enable_unadjusted_mouse_events_win.cc), so the legacy WM_MOUSEWHEEL /
+WM_MOUSEHWHEEL is still posted and is dispatched by
+HandleMouseEventInternal() as a ui::MouseWheelEvent before the
+"using_wm_input_" check that suppresses legacy moves. Motion is not
+duplicated either, because that same check drops every legacy WM_MOUSEMOVE
+while raw input is in use.
+
+Gating: base::Feature KccRawInputKeepWheelMotion, disabled by default,
+defined in the anonymous namespace of hwnd_message_handler.cc and read once.
+Browser process only. With the feature off the condition is the stock one.
+
+A/B: --enable-features=KccRawInputKeepWheelMotion. Hold pointer lock with
+unadjustedMovement, move the mouse at constant speed while spinning the
+wheel, and sum mousemove movementX/Y over a fixed physical distance; stock
+comes up short by one report per wheel tick, the patched build does not.
+Check that wheel events still arrive exactly once per tick.
+
+Platforms: Windows only (file is Windows-only).
+
+Not verified: nothing was compiled. The claim that real mice put motion and
+a wheel tick in one RAWMOUSE packet follows from the HID report layout and
+was not measured on hardware here.
+
+diff --git a/ui/views/win/hwnd_message_handler.cc b/ui/views/win/hwnd_message_handler.cc
+index 1b89cd94b..b0eed3081 100644
+--- a/ui/views/win/hwnd_message_handler.cc
++++ b/ui/views/win/hwnd_message_handler.cc
+@@ -17,6 +17,7 @@
+ #include "base/auto_reset.h"
+ #include "base/containers/heap_array.h"
+ #include "base/debug/gdi_debug_util_win.h"
++#include "base/feature_list.h"
+ #include "base/functional/bind.h"
+ #include "base/functional/callback_helpers.h"
+ #include "base/location.h"
+@@ -306,6 +307,22 @@ constexpr int kSynthesizedMouseMessagesTimeDifference = 500;
+ // True if any browser window is in a menu loop.
+ bool g_is_in_native_menu_loop = false;
+ 
++// kcc: When enabled, a WM_INPUT mouse packet whose button flags are exactly
++// RI_MOUSE_WHEEL still delivers the relative motion it carries. Stock code
++// skips such a packet as a whole, so motion reported in the same packet as a
++// wheel tick is lost. The wheel delta itself is never read from WM_INPUT; it
++// keeps arriving through WM_MOUSEWHEEL.
++BASE_FEATURE(kKccRawInputKeepWheelMotion, base::FEATURE_DISABLED_BY_DEFAULT);
++
++// Returns true if |mouse|, a raw packet that stock code would skip as
++// wheel-only, carries relative motion that should be delivered anyway.
++bool RawWheelPacketHasMotion(const RAWMOUSE& mouse) {
++  static const bool enabled =
++      base::FeatureList::IsEnabled(kKccRawInputKeepWheelMotion);
++  return enabled && !(mouse.usFlags & MOUSE_MOVE_ABSOLUTE) &&
++         (mouse.lLastX != 0 || mouse.lLastY != 0);
++}
++
+ }  // namespace
+ 
+ class HWNDMessageHandler::ScopedWndProcDepth {
+@@ -2463,7 +2480,8 @@ LRESULT HWNDMessageHandler::OnInputEvent(UINT message,
+   DCHECK_EQ(size, result);
+ 
+   if (input->header.dwType == RIM_TYPEMOUSE &&
+-      input->data.mouse.usButtonFlags != RI_MOUSE_WHEEL) {
++      (input->data.mouse.usButtonFlags != RI_MOUSE_WHEEL ||
++       RawWheelPacketHasMotion(input->data.mouse))) {
+     // Update the tracked button state based on any button transitions in this
+     // event. This must be done before creating the MouseEvent so the event
+     // reflects the correct current button state.

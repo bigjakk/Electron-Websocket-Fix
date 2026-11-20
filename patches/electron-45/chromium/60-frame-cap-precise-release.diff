@@ -1,0 +1,652 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: precise frame-cap ack release without the viz busy loop (Windows)
+
+Feature: KccFrameCapPreciseRelease (default off), param spin_us (default
+200, clamped to 0..200). Windows only; the flag does not exist on Linux and
+macOS and nothing changes there.
+
+What the stock code does
+------------------------
+The survey expected the CustomFrameCap release timer to fire 0-2 ms late on
+Windows because the viz thread waits in whole milliseconds. That is what
+would happen if the thread slept, and it does not sleep:
+
+* --disable-frame-rate-limit selects BackToBackBeginFrameSource, driven by
+  a DelayBasedTimeSource with a zero interval
+  (components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc,
+  RootCompositorFrameSinkImpl::Create).
+* DelayBasedTimeSource::OnTimerTick() posts the next tick (an immediate
+  task) before it calls the client.
+* BackToBackBeginFrameSource::OnTimerTick() starts with
+  "if (RequestCallbackOnGpuAvailable()) return;" and so returns before its
+  "time_source_->SetActive(false)" whenever the gpu is busy and the one
+  BeginFrame allowed after busy has been used.
+
+The frame cap keeps the gpu-busy latch set until it releases the swap ack.
+So from the moment the renderer has submitted its frame (which re-arms the
+tick through CompositorFrameSinkSupport -> DidFinishFrame) until the ack
+release, the VizCompositorThread runs an endless chain of immediate tick
+tasks: one core flat out for (cap period - renderer frame time) of every
+frame, roughly 75% of a core at a 240 cap and 85% at 144 with a 1 ms frame.
+A side effect is that |ack_release_timer_| is serviced within microseconds,
+because a thread that never goes idle never reaches the millisecond wait.
+
+When the thread does sleep, the wake-up really is coarse:
+MessagePumpDefault::Run() -> WaitableEvent::TimedWaitImpl()
+(base/synchronization/waitable_event_win.cc) waits with
+"remaining.InMillisecondsRoundedUp()" and expires on the system clock tick,
+which ThreadControllerWithMessagePumpImpl::DoIdleWork() raises to 1 ms on
+mains and only to 8 ms on battery (base/time/time_win.cc,
+kMinTimerIntervalHighResMs / kMinTimerIntervalLowResMs). That is 0-2 ms
+late on mains and up to ~8 ms on battery.
+
+What this patch changes
+-----------------------
+1. components/viz/common/frame_sinks/begin_frame_source.{h,cc}:
+   BeginFrameSource::SetParkThrottledBeginFrames(). While set,
+   BackToBackBeginFrameSource::OnTimerTick() stops the time source when the
+   tick is withheld for gpu-busy, and OnGpuNoLongerBusy() restarts it. The
+   restarted tick is a posted task rather than an inline call, because the
+   time source drops its tick time when stopped.
+2. components/viz/service/display/frame_cap_precise_timer_win.{h,cc} (new):
+   a CREATE_WAITABLE_TIMER_HIGH_RESOLUTION waitable timer (Windows 10
+   1803+), set with a relative due time and watched with
+   base::win::ObjectWatcher::StartWatchingMultipleTimes(), so the viz
+   thread is never blocked on it. The kernel expires such a timer on the
+   first clock tick at or after the due time, with the clock running at its
+   maximum rate (0.5 ms on common hardware), so it is set spin_us before
+   the grid time and the viz thread spins for the remainder, never longer
+   than spin_us. Notifications are posted from the thread pool and can be
+   stale; they are treated as a hint and the clock decides (too early: set
+   the timer again; cancelled: ignore).
+3. components/viz/service/display/display_scheduler.{h,cc}: the ack release
+   goes through StartAckReleaseTimer() / StopAckReleaseTimer() /
+   IsAckReleaseTimerRunning(), which use the precise timer when there is
+   one and |ack_release_timer_| otherwise or when the OS timer cannot be
+   set. Still exactly one armed timer and one
+   DidReceiveSwapBuffersAckImpl() per deferred ack;
+   FlushPendingSwapAckDelay() and SetFrameCapInterval() cancel whichever is
+   armed. Parking is requested only while a cap is in force and the precise
+   timer exists.
+
+Net effect with the flag on: under a cap the viz thread sleeps through the
+hold and is woken for the release. Expected release error, assuming the
+0.5 ms kernel granularity: never early, late by 0 to about 0.35 ms, about
+0.12 ms on average with spin_us/200. This is LESS exact than the accidental
+spin it replaces (microseconds) and far cheaper; the same on battery as on
+mains. With the flag off every call made is the same as before
+(|precise_ack_timer_| is null, |tick_parked_| is never set).
+
+Other platforms (not patched)
+-----------------------------
+The same spin exists on Linux and macOS, so their release is on time too.
+Parking needs a wake-up that is better than the pump's:
+* Linux/X11: the viz thread runs MessagePumpGlib
+  (ui/ozone/platform/x11/ozone_platform_x11.cc sets
+  message_pump_type_for_viz_compositor = UI), whose poll timeout is whole
+  milliseconds rounded up (GetTimeIntervalMilliseconds), i.e. 0-1 ms late.
+  A timerfd is not an option: timerfd_create/settime are in
+  SyscallSets::IsAdvancedTimer and crash the sandboxed gpu process with
+  SIGSYS (sandbox/linux/seccomp-bpf-helpers/baseline_policy.cc). It would
+  need a helper thread; left for a follow-up.
+* macOS: NS_RUNLOOP pump, CFRunLoopTimer with zero tolerance. Not
+  millisecond-quantised by Chromium; kernel timer coalescing for a
+  USER_INTERACTIVE thread could not be established from this tree.
+
+How to A/B
+----------
+--enable-features=KccFrameCapPreciseRelease (optionally
+:spin_us/0 or :spin_us/100) with a cap that the machine can exceed, e.g.
+CustomFrameCap:fps/240 or win.setFrameCap(240), against the same run
+without it.
+* CPU time of VizCompositorThread in the GPU process: should drop from
+  most of a core to a few percent.
+* Frame pacing: present-to-present interval spread (PresentMon
+  msBetweenPresents, or the "DisplayScheduler:pending_swaps" slices in a
+  viz trace). Expect a slightly wider spread than without the flag (see
+  above) and no change in mean FPS.
+* On battery, compare as well: with the flag off the release stays exact
+  only because of the spin.
+
+Not verified (nothing was compiled or run)
+------------------------------------------
+* The 0.5 ms granularity of high-resolution waitable timers is from
+  Microsoft's driver documentation ("limited only by the maximum supported
+  resolution of the system clock", "never expires early"), not measured.
+* Latency of the thread-pool wait -> PostTask -> viz thread hop. It eats
+  into spin_us; under full CPU saturation the normal-priority pool thread
+  could be delayed, which would delay the release.
+* When the cap is not binding (renderer slower than the cap) the viz
+  thread now sleeps between swap and swap ack instead of spinning, which
+  costs one thread wake-up per frame.
+
+diff --git a/components/viz/common/frame_sinks/begin_frame_source.cc b/components/viz/common/frame_sinks/begin_frame_source.cc
+index 9b5c568c3..943494cb1 100644
+--- a/components/viz/common/frame_sinks/begin_frame_source.cc
++++ b/components/viz/common/frame_sinks/begin_frame_source.cc
+@@ -314,6 +314,17 @@ void BackToBackBeginFrameSource::DidFinishFrame(
+ }
+ 
+ void BackToBackBeginFrameSource::OnGpuNoLongerBusy() {
++  if (tick_parked_) {
++    // KCC KccFrameCapPreciseRelease: |time_source_| forgot its tick time when
++    // it was stopped, so OnTimerTick() cannot run inline here as it does below.
++    // Restart the time source and let it deliver the tick; it may already be
++    // running again if an observer was added or finished a frame meanwhile.
++    tick_parked_ = false;
++    if (!pending_begin_frame_observers_.empty()) {
++      time_source_->SetActive(true);
++    }
++    return;
++  }
+   OnTimerTick();
+ }
+ 
+@@ -333,8 +344,17 @@ void BackToBackBeginFrameSource::SetMaxVrrInterval(
+ }
+ 
+ void BackToBackBeginFrameSource::OnTimerTick() {
+-  if (RequestCallbackOnGpuAvailable())
++  if (RequestCallbackOnGpuAvailable()) {
++    // KCC KccFrameCapPreciseRelease: |time_source_| has a zero interval, so by
++    // now it has already posted the next tick, which would be dropped right
++    // here as well: the thread never goes idle while the gpu is busy. Stop the
++    // time source instead; OnGpuNoLongerBusy() restarts it.
++    if (park_throttled_begin_frames()) {
++      tick_parked_ = true;
++      time_source_->SetActive(false);
++    }
+     return;
++  }
+   if (!time_source_->Active()) {
+     return;
+   }
+diff --git a/components/viz/common/frame_sinks/begin_frame_source.h b/components/viz/common/frame_sinks/begin_frame_source.h
+index 6c80d236d..001f395ef 100644
+--- a/components/viz/common/frame_sinks/begin_frame_source.h
++++ b/components/viz/common/frame_sinks/begin_frame_source.h
+@@ -216,6 +216,17 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
+   // RequestCallbackOnGpuAvailable() for more details.
+   void SetIsGpuBusy(bool busy);
+ 
++  // KCC KccFrameCapPreciseRelease. While set, a BackToBackBeginFrameSource
++  // whose tick is withheld because the gpu is busy stops its zero-interval
++  // timer and restarts it once the gpu is no longer busy, instead of posting
++  // (and dropping) the tick again and again, which keeps its thread running
++  // flat out for as long as the gpu stays busy. Set by the DisplayScheduler
++  // only while it holds swap acks back for a frame cap and has a precise timer
++  // to wake up with.
++  void SetParkThrottledBeginFrames(bool park) {
++    park_throttled_begin_frames_ = park;
++  }
++
+   void SetSchedulerClient(SchedulerClient* scheduler_client);
+   void SetInputClient(InputClient* input_client);
+ 
+@@ -260,6 +271,9 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
+   // dispatched to clients again.
+   bool RequestCallbackOnGpuAvailable();
+   virtual void OnGpuNoLongerBusy() = 0;
++  bool park_throttled_begin_frames() const {
++    return park_throttled_begin_frames_;
++  }
+ #if BUILDFLAG(IS_MAC)
+   void RecordBeginFrameSourceAccuracy(base::TimeDelta delta);
+ #endif
+@@ -297,6 +311,9 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
+   GpuBusyThrottlingState gpu_busy_response_state_ =
+       GpuBusyThrottlingState::kIdle;
+ 
++  // KCC KccFrameCapPreciseRelease. See SetParkThrottledBeginFrames().
++  bool park_throttled_begin_frames_ = false;
++
+ #if BUILDFLAG(IS_MAC)
+   base::TimeDelta total_delta_;
+   // The frame count since this histogram was recorded last time. It is recorded
+@@ -373,6 +390,9 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
+   uint64_t next_sequence_number_;
+   base::TimeDelta vsync_interval_ = BeginFrameArgs::DefaultInterval();
+   std::optional<base::TimeDelta> max_vrr_interval_ = std::nullopt;
++  // KCC KccFrameCapPreciseRelease. True from the moment a gpu-busy tick stopped
++  // |time_source_| until OnGpuNoLongerBusy() has dealt with it.
++  bool tick_parked_ = false;
+   base::WeakPtrFactory<BackToBackBeginFrameSource> weak_factory_{this};
+ };
+ 
+diff --git a/components/viz/service/BUILD.gn b/components/viz/service/BUILD.gn
+index 2dff02a63..283fed000 100644
+--- a/components/viz/service/BUILD.gn
++++ b/components/viz/service/BUILD.gn
+@@ -486,6 +486,8 @@ viz_component("service") {
+     sources += [
+       "display/dc_layer_overlay.cc",
+       "display/dc_layer_overlay.h",
++      "display/frame_cap_precise_timer_win.cc",
++      "display/frame_cap_precise_timer_win.h",
+       "display/overlay_processor_delegated_support.cc",
+       "display/overlay_processor_delegated_support.h",
+       "display/overlay_processor_win.cc",
+diff --git a/components/viz/service/display/display_scheduler.cc b/components/viz/service/display/display_scheduler.cc
+index 74b8d8303..f756ad13e 100644
+--- a/components/viz/service/display/display_scheduler.cc
++++ b/components/viz/service/display/display_scheduler.cc
+@@ -27,6 +27,10 @@
+ #include "third_party/perfetto/include/perfetto/tracing/track.h"
+ #include "ui/gfx/presentation_feedback.h"
+ 
++#if BUILDFLAG(IS_WIN)
++#include "components/viz/service/display/frame_cap_precise_timer_win.h"
++#endif
++
+ namespace viz {
+ 
+ namespace {
+@@ -65,6 +69,25 @@ base::TimeDelta FrameCapIntervalFromFps(int fps) {
+   return base::Hertz(std::clamp(fps, 30, 1000));
+ }
+ 
++#if BUILDFLAG(IS_WIN)
++// KCC: while a frame cap holds swap acks back, release them from a
++// high-resolution OS timer and let the viz thread sleep until then. Without
++// this the thread never sleeps during the hold (BackToBackBeginFrameSource
++// keeps re-posting a tick that is dropped while the gpu is busy), which is the
++// only reason |ack_release_timer_| fires on time: a viz thread that does sleep
++// is woken by its message pump up to 2 ms late.
++BASE_FEATURE(kKccFrameCapPreciseRelease, base::FEATURE_DISABLED_BY_DEFAULT);
++// The OS timer only expires on a clock tick, so it is set this long before the
++// release time and the viz thread spins for whatever is left of it. 0 trades
++// the spin for a release that is up to one clock tick (0.5 ms) late.
++// --enable-features=KccFrameCapPreciseRelease:spin_us/200
++constexpr base::FeatureParam<int> kKccFrameCapPreciseReleaseSpinUs{
++    &kKccFrameCapPreciseRelease, "spin_us", 200};
++// Upper bound for spin_us: the viz thread serves every frame sink, so it must
++// not be held in a spin for longer than this.
++constexpr int kMaxPreciseReleaseSpinUs = 200;
++#endif
++
+ }  // namespace
+ 
+ DisplayScheduler::BeginFrameObserver::BeginFrameObserver(
+@@ -134,6 +157,19 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
+   }
+   begin_frame_deadline_timer_.SetTaskRunner(task_runner);
+   ack_release_timer_.SetTaskRunner(task_runner);
++#if BUILDFLAG(IS_WIN)
++  // The precise timer runs its callback on the current sequence, which has to
++  // be the one |ack_release_timer_| would have used.
++  if (base::FeatureList::IsEnabled(kKccFrameCapPreciseRelease) && task_runner &&
++      task_runner->BelongsToCurrentThread()) {
++    precise_ack_timer_ = FrameCapPreciseTimerWin::Create(
++        base::BindRepeating(&DisplayScheduler::RunDelayedSwapBuffersAck,
++                            base::Unretained(this)),
++        base::Microseconds(std::clamp(kKccFrameCapPreciseReleaseSpinUs.Get(), 0,
++                                      kMaxPreciseReleaseSpinUs)));
++    UpdateParkThrottledBeginFrames();
++  }
++#endif
+   begin_frame_deadline_closure_ = base::BindRepeating(
+       &DisplayScheduler::OnBeginFrameDeadline, weak_ptr_factory_.GetWeakPtr());
+   session_states_.emplace_back(HintSession::SessionType::kAnimation);
+@@ -147,6 +183,11 @@ DisplayScheduler::~DisplayScheduler() {
+   if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
+     begin_frame_source_->SetSchedulerClient(nullptr);
+   }
++#if BUILDFLAG(IS_WIN)
++  if (precise_ack_timer_) {
++    begin_frame_source_->SetParkThrottledBeginFrames(false);
++  }
++#endif
+   // It is possible for DisplayScheduler to be destroyed while there's an
+   // in-flight swap. So always mark the gpu as not busy during destruction.
+   begin_frame_source_->SetIsGpuBusy(false);
+@@ -911,13 +952,9 @@ void DisplayScheduler::DidReceiveSwapBuffersAck() {
+     next_ack_release_ += cap_interval_;
+     if (now < next_ack_release_) {
+       ++pending_release_count_;
+-      if (!ack_release_timer_.IsRunning()) {
++      if (!IsAckReleaseTimerRunning()) {
+         armed_deadline_ = next_ack_release_;
+-        ack_release_timer_.Start(
+-            FROM_HERE, armed_deadline_,
+-            base::BindOnce(&DisplayScheduler::RunDelayedSwapBuffersAck,
+-                           base::Unretained(this)),
+-            base::subtle::DelayPolicy::kPrecise);
++        StartAckReleaseTimer();
+       }
+       return;
+     }
+@@ -934,16 +971,50 @@ void DisplayScheduler::RunDelayedSwapBuffersAck() {
+   if (pending_release_count_ > 0) {
+     // FIFO: the next queued release fires one grid step later.
+     armed_deadline_ += cap_interval_;
+-    ack_release_timer_.Start(
+-        FROM_HERE, armed_deadline_,
+-        base::BindOnce(&DisplayScheduler::RunDelayedSwapBuffersAck,
+-                       base::Unretained(this)),
+-        base::subtle::DelayPolicy::kPrecise);
++    StartAckReleaseTimer();
+   }
+ }
+ 
+-void DisplayScheduler::FlushPendingSwapAckDelay() {
++void DisplayScheduler::StartAckReleaseTimer() {
++#if BUILDFLAG(IS_WIN)
++  if (precise_ack_timer_ && precise_ack_timer_->Start(armed_deadline_)) {
++    return;
++  }
++#endif
++  ack_release_timer_.Start(
++      FROM_HERE, armed_deadline_,
++      base::BindOnce(&DisplayScheduler::RunDelayedSwapBuffersAck,
++                     base::Unretained(this)),
++      base::subtle::DelayPolicy::kPrecise);
++}
++
++void DisplayScheduler::StopAckReleaseTimer() {
+   ack_release_timer_.Stop();
++#if BUILDFLAG(IS_WIN)
++  if (precise_ack_timer_) {
++    precise_ack_timer_->Stop();
++  }
++#endif
++}
++
++bool DisplayScheduler::IsAckReleaseTimerRunning() const {
++#if BUILDFLAG(IS_WIN)
++  if (precise_ack_timer_ && precise_ack_timer_->IsRunning()) {
++    return true;
++  }
++#endif
++  return ack_release_timer_.IsRunning();
++}
++
++#if BUILDFLAG(IS_WIN)
++void DisplayScheduler::UpdateParkThrottledBeginFrames() {
++  begin_frame_source_->SetParkThrottledBeginFrames(precise_ack_timer_ &&
++                                                   !cap_interval_.is_zero());
++}
++#endif
++
++void DisplayScheduler::FlushPendingSwapAckDelay() {
++  StopAckReleaseTimer();
+   next_ack_release_ = base::TimeTicks();
+   // Drain the ledger COMPLETELY -- each deferred ack owes one Impl(); paying
+   // fewer corrupts pending_swaps_ and wedges the SetIsGpuBusy gate.
+@@ -955,6 +1026,9 @@ void DisplayScheduler::FlushPendingSwapAckDelay() {
+ 
+ void DisplayScheduler::SetFrameCapInterval(base::TimeDelta interval) {
+   cap_interval_ = interval;
++#if BUILDFLAG(IS_WIN)
++  UpdateParkThrottledBeginFrames();
++#endif
+   // New cadence starts fresh; queued releases pay out immediately (a cap
+   // change is a user action -- no re-gridding of in-flight acks).
+   FlushPendingSwapAckDelay();
+diff --git a/components/viz/service/display/display_scheduler.h b/components/viz/service/display/display_scheduler.h
+index 90c3e25b1..76a718200 100644
+--- a/components/viz/service/display/display_scheduler.h
++++ b/components/viz/service/display/display_scheduler.h
+@@ -15,6 +15,7 @@
+ #include "base/task/single_thread_task_runner.h"
+ #include "base/time/time.h"
+ #include "base/timer/timer.h"
++#include "build/build_config.h"
+ #include "components/viz/common/display/display_scheduler_draw_result.h"
+ #include "components/viz/common/display/renderer_settings.h"
+ #include "components/viz/common/frame_sinks/begin_frame_args.h"
+@@ -28,6 +29,9 @@
+ 
+ namespace viz {
+ 
++#if BUILDFLAG(IS_WIN)
++class FrameCapPreciseTimerWin;
++#endif
+ class HintSession;
+ class HintSessionFactory;
+ 
+@@ -117,6 +121,18 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
+   // Pays out one entry from the |pending_release_count_| ledger and re-arms
+   // for the next if any remain.
+   void RunDelayedSwapBuffersAck();
++  // The one timer that schedules RunDelayedSwapBuffersAck() for
++  // |armed_deadline_|: |ack_release_timer_|, or |precise_ack_timer_| where
++  // KccFrameCapPreciseRelease provides one. Never both.
++  void StartAckReleaseTimer();
++  void StopAckReleaseTimer();
++  bool IsAckReleaseTimerRunning() const;
++#if BUILDFLAG(IS_WIN)
++  // KCC KccFrameCapPreciseRelease. Lets |begin_frame_source_| stop ticking
++  // while swap acks are held back, which is only worth doing when
++  // |precise_ack_timer_| is there to wake the thread up on time.
++  void UpdateParkThrottledBeginFrames();
++#endif
+ 
+   base::TimeTicks current_frame_display_time(
+       const BeginFrameArgs& begin_frame_args) const {
+@@ -214,6 +230,12 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
+   base::TimeTicks armed_deadline_;
+   int pending_release_count_ = 0;
+   base::DeadlineTimer ack_release_timer_;
++#if BUILDFLAG(IS_WIN)
++  // KCC KccFrameCapPreciseRelease. Null unless the feature is enabled and the
++  // OS timer could be created; |ack_release_timer_| is used whenever this is
++  // null or fails to start.
++  std::unique_ptr<FrameCapPreciseTimerWin> precise_ack_timer_;
++#endif
+ 
+   bool observing_begin_frame_source_;
+ 
+diff --git a/components/viz/service/display/frame_cap_precise_timer_win.cc b/components/viz/service/display/frame_cap_precise_timer_win.cc
+new file mode 100644
+index 000000000..4bc425105
+--- /dev/null
++++ b/components/viz/service/display/frame_cap_precise_timer_win.cc
+@@ -0,0 +1,122 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "components/viz/service/display/frame_cap_precise_timer_win.h"
++
++#include <windows.h>
++
++#include <stdint.h>
++
++#include <algorithm>
++#include <utility>
++
++#include "base/memory/ptr_util.h"
++#include "base/task/sequenced_task_runner.h"
++
++// Defined by the Windows SDK since 10.0.17134.
++#ifndef CREATE_WAITABLE_TIMER_HIGH_RESOLUTION
++#define CREATE_WAITABLE_TIMER_HIGH_RESOLUTION 0x00000002
++#endif
++
++namespace viz {
++
++// static
++std::unique_ptr<FrameCapPreciseTimerWin> FrameCapPreciseTimerWin::Create(
++    base::RepeatingClosure on_fire,
++    base::TimeDelta max_spin) {
++  // The watcher posts its notifications to the current sequence.
++  if (!base::SequencedTaskRunner::HasCurrentDefault()) {
++    return nullptr;
++  }
++
++  // No CREATE_WAITABLE_TIMER_MANUAL_RESET: the wait that observes an expiry
++  // must also consume it, or a watcher that stays registered would be notified
++  // forever. Fails on Windows versions without high-resolution timers.
++  base::win::ScopedHandle timer(::CreateWaitableTimerExW(
++      nullptr, nullptr, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION,
++      TIMER_ALL_ACCESS));
++  if (!timer.is_valid()) {
++    return nullptr;
++  }
++
++  auto precise_timer = base::WrapUnique(new FrameCapPreciseTimerWin(
++      std::move(timer), std::move(on_fire), max_spin));
++  // Registered once for the lifetime of the timer: starting and stopping a
++  // watch costs a blocking round trip to the thread pool, which is too much to
++  // pay on every frame.
++  if (!precise_timer->watcher_.StartWatchingMultipleTimes(
++          precise_timer->timer_.get(), precise_timer.get())) {
++    return nullptr;
++  }
++  return precise_timer;
++}
++
++FrameCapPreciseTimerWin::FrameCapPreciseTimerWin(base::win::ScopedHandle timer,
++                                                 base::RepeatingClosure on_fire,
++                                                 base::TimeDelta max_spin)
++    : on_fire_(std::move(on_fire)),
++      max_spin_(max_spin),
++      timer_(std::move(timer)) {}
++
++FrameCapPreciseTimerWin::~FrameCapPreciseTimerWin() = default;
++
++bool FrameCapPreciseTimerWin::Start(base::TimeTicks deadline) {
++  deadline_ = deadline;
++  armed_ = Arm();
++  return armed_;
++}
++
++void FrameCapPreciseTimerWin::Stop() {
++  if (!armed_) {
++    return;
++  }
++  armed_ = false;
++  // An expiry that the watcher has already picked up still arrives as a
++  // notification; OnObjectSignaled() drops it.
++  ::CancelWaitableTimer(timer_.get());
++}
++
++bool FrameCapPreciseTimerWin::Arm() {
++  // A negative due time is relative, in 100 ns units. Relative rather than
++  // absolute because absolute due times are wall-clock times. Rounded up so
++  // that the timer is never due before the time asked for, and at least one
++  // unit because zero would be read as an absolute time. Setting the timer
++  // also resets its signaled state and replaces any pending expiry.
++  const base::TimeDelta delay =
++      deadline_ - max_spin_ - base::TimeTicks::Now();
++  LARGE_INTEGER due_time;
++  due_time.QuadPart =
++      -std::max<int64_t>((delay.InMicroseconds() + 1) * 10, 1);
++  return ::SetWaitableTimer(timer_.get(), &due_time, 0, nullptr, nullptr,
++                            FALSE) != 0;
++}
++
++void FrameCapPreciseTimerWin::OnObjectSignaled(HANDLE object) {
++  // Notifications are posted from the thread pool, so one can arrive after
++  // Stop(), or after a later Start() than the one it belongs to. They are
++  // therefore only a hint to look at the clock: |armed_| and |deadline_| decide
++  // what happens.
++  if (!armed_) {
++    return;
++  }
++
++  if (deadline_ - base::TimeTicks::Now() > max_spin_) {
++    // Too early to belong to the current schedule. Wait out the rest, unless
++    // the timer cannot be set, in which case running the callback early is
++    // better than never running it.
++    if (Arm()) {
++      return;
++    }
++  } else {
++    while (base::TimeTicks::Now() < deadline_) {
++      // Spin: at most |max_spin_|, checked above.
++    }
++  }
++
++  armed_ = false;
++  on_fire_.Run();
++  // |this| may have been deleted by |on_fire_|.
++}
++
++}  // namespace viz
+diff --git a/components/viz/service/display/frame_cap_precise_timer_win.h b/components/viz/service/display/frame_cap_precise_timer_win.h
+new file mode 100644
+index 000000000..830516bda
+--- /dev/null
++++ b/components/viz/service/display/frame_cap_precise_timer_win.h
+@@ -0,0 +1,78 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_FRAME_CAP_PRECISE_TIMER_WIN_H_
++#define COMPONENTS_VIZ_SERVICE_DISPLAY_FRAME_CAP_PRECISE_TIMER_WIN_H_
++
++#include <memory>
++
++#include "base/functional/callback.h"
++#include "base/time/time.h"
++#include "base/win/object_watcher.h"
++#include "base/win/scoped_handle.h"
++
++namespace viz {
++
++// KCC KccFrameCapPreciseRelease. Runs a callback on the current sequence at an
++// absolute base::TimeTicks with sub-millisecond accuracy.
++//
++// A delayed task cannot do that on Windows: the message pump waits with a
++// whole-millisecond timeout and wakes on the system clock tick. This uses a
++// high-resolution waitable timer (Windows 10 1803+) instead, watched from the
++// thread pool so that the calling thread is never blocked. The kernel expires
++// such a timer on the first clock tick at or after its due time, with the clock
++// temporarily running at its maximum rate (0.5 ms on most hardware), so the
++// timer is armed |max_spin| ahead of the deadline and the remainder, if any, is
++// spent spinning on the calling thread.
++//
++// All methods must be called on the sequence that called Create().
++class FrameCapPreciseTimerWin : public base::win::ObjectWatcher::Delegate {
++ public:
++  // Returns null if the timer cannot be created or watched. |on_fire| is run at
++  // most once per Start() and may call Start() or Stop().
++  static std::unique_ptr<FrameCapPreciseTimerWin> Create(
++      base::RepeatingClosure on_fire,
++      base::TimeDelta max_spin);
++
++  FrameCapPreciseTimerWin(const FrameCapPreciseTimerWin&) = delete;
++  FrameCapPreciseTimerWin& operator=(const FrameCapPreciseTimerWin&) = delete;
++
++  ~FrameCapPreciseTimerWin() override;
++
++  // Schedules |on_fire| for |deadline|, replacing any earlier schedule. Returns
++  // false, with nothing scheduled, if the OS timer could not be set.
++  bool Start(base::TimeTicks deadline);
++
++  // Cancels the schedule, if any. |on_fire| will not run until the next
++  // Start().
++  void Stop();
++
++  bool IsRunning() const { return armed_; }
++
++ private:
++  FrameCapPreciseTimerWin(base::win::ScopedHandle timer,
++                          base::RepeatingClosure on_fire,
++                          base::TimeDelta max_spin);
++
++  // Sets the OS timer to expire |max_spin_| before |deadline_|.
++  bool Arm();
++
++  // base::win::ObjectWatcher::Delegate:
++  void OnObjectSignaled(HANDLE object) override;
++
++  const base::RepeatingClosure on_fire_;
++  const base::TimeDelta max_spin_;
++
++  base::TimeTicks deadline_;
++  bool armed_ = false;
++
++  // |watcher_| is declared after |timer_| so that it stops watching the handle
++  // before the handle is closed.
++  base::win::ScopedHandle timer_;
++  base::win::ObjectWatcher watcher_;
++};
++
++}  // namespace viz
++
++#endif  // COMPONENTS_VIZ_SERVICE_DISPLAY_FRAME_CAP_PRECISE_TIMER_WIN_H_

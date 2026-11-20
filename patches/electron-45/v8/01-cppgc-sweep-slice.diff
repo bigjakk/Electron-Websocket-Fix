@@ -1,0 +1,206 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: --cppheap-max-incremental-sweep-duration-ms (tunable Oilpan sweep slice)
+
+Stock behaviour (V8 15.6.75.57)
+-------------------------------
+src/heap/cppgc-internal/sweeper.cc, Sweeper::SweeperImpl::IncrementalSweepTask:
+
+  static constexpr auto kMaxSweepDuration =
+      v8::base::TimeDelta::FromMilliseconds(5);
+
+After a CppHeap (Oilpan) GC with incremental sweeping, Start() posts two
+foreground tasks on the mutator (renderer main) thread: a low priority one
+(TaskPriority::kUserVisible) immediately and a regular priority one
+(kUserBlocking) after 100 ms. Each task run finalizes and sweeps pages for
+up to kMaxSweepDuration and, if main-thread work remains, reposts itself
+(low priority: immediately; regular priority: after 1 ms; the regular task
+only re-arms its 100 ms timer as long as the low priority one keeps
+running). Both priorities use the same 5 ms constant.
+In a trace of the game this shows up as 2-5 back-to-back
+CppGC.SweepInLowPriorityTask / CppGC.SweepInTask slices of almost exactly
+5 ms after every major GC (every 5-13 s); at 1000 FPS each slice is a
+multi-frame hitch.
+
+Change
+------
+- New V8 flag --cppheap-max-incremental-sweep-duration-ms (int, default 5,
+  defined next to the other cppheap_* flags). Values below 1 are treated
+  as 1.
+- cppgc must not include V8 headers (src/heap/cppgc-internal/DEPS has
+  "-src" with only src/base, src/heap/base and the trace-event headers
+  re-allowed), so the value is plumbed the way CppHeap already hands
+  per-cycle sweeping options to cppgc: a new field
+  SweepingConfig::max_incremental_sweep_duration (heap-config.h, default
+  5 ms) that CppHeap::CompactAndSweep() fills from the flag when it builds
+  the SweepingConfig for Sweeper::Start().
+- IncrementalSweepTask::Run() reads the duration from the sweeper's stored
+  config instead of the constant; the constant is removed (it had no other
+  user).
+- Standalone cppgc (cppgc::internal::Heap) and all tests build
+  SweepingConfig with two or three initializers and therefore keep the
+  5 ms default.
+- flags.cc, ComputeFlagListHash(): the new flag is skipped, like the
+  memory tuning flags above it. It does not affect generated code, and
+  without this every change of the value would change
+  ScriptCompiler::CachedDataVersionTag() and make V8 reject all existing
+  JS/Wasm code caches (kFlagsMismatch), which would also disturb A/B runs.
+  This hunk is independent of the rest and can be dropped.
+
+With the flag at its default the task passes TimeDelta::FromMilliseconds(5)
+exactly as before, and the flag hash is unchanged (default-valued flags are
+never hashed).
+
+How to use
+----------
+--js-flags reaches V8 in the Electron main process
+(shell/browser/javascript_environment.cc) and is forwarded to renderers
+(content RenderProcessHostImpl), which is where it matters:
+  kcc.exe --js-flags="--cppheap-max-incremental-sweep-duration-ms=1"
+or, in the main script before app 'ready':
+  app.commandLine.appendSwitch('js-flags',
+      '--cppheap-max-incremental-sweep-duration-ms=1')
+(combine with any other V8 flags in the same --js-flags string, separated
+by spaces).
+
+Trade-off
+---------
+The amount of sweeping work is unchanged; it is cut into more, shorter
+main-thread slices. Sweeping therefore finishes later: free-list memory
+becomes available later (the allocator prefers growing the heap over
+waiting, so peak Oilpan memory can be slightly higher), allocation slow
+paths stay in "sweeping in progress" mode longer, and if the next GC
+starts before sweeping finished the remainder is completed synchronously
+inside that GC (Sweeper::FinishIfRunning). With GCs 5-13 s apart and
+10-25 ms of total sweep work that last case should not occur.
+
+Limits of the knob
+- The deadline is only looked at after every 4th page per page list
+  (DeadlineChecker::kInterval = 4, and a new checker is created for each
+  space's list), and one page's finalizers cannot be interrupted, so a
+  slice can overshoot a 1 ms budget. Expect "about 1 ms", not a hard cap.
+- Low priority slices are reposted with no delay, so several short slices
+  can still run back to back if the scheduler has nothing else queued; the
+  renderer gets a chance to run a frame between them, which is the point.
+
+Other fixed main-thread sweeping budgets (not changed)
+- object-allocator.cc: allocation-triggered sweeping,
+  SweepForAllocationIfRunning(..., TimeDelta::FromMicroseconds(500)), for
+  both normal and large allocations; only after heap expansion fails does
+  it sweep the space unbounded (TimeDelta::Max()) and then FinishIfRunning.
+- cpp-heap.cc: CollectCustomSpaceStatisticsAtLastGCTask::kStepSizeMs =
+  5 ms slices every 10 ms; only runs for Blink's detailed memory
+  measurement (ThreadState::CollectNodeAndCssStatistics), not after normal
+  GCs.
+- sweeper.cc: the repost delays kDelayForRegularPrioritySweeping (1 ms),
+  kDelayWhileConcurrentSweepingMakesProgress (5 ms) and
+  kDelayWhileLowPrioritySweepingMakesProgress (100 ms) are delays, not
+  budgets.
+- There is no separate idle-task sweeper at this version; the low priority
+  task is that mechanism and is covered by the new flag.
+
+A/B
+---
+Same binary, with and without
+  --js-flags="--cppheap-max-incremental-sweep-duration-ms=1" (try 1 and 2).
+In a trace with the "cppgc" category, CppGC.SweepInTask and
+CppGC.SweepInLowPriorityTask carry a max_duration_ms argument that must
+show the configured value; compare the longest main-thread task and the
+frame-time spike right after each major GC, and check that the time from
+GC end to the last sweep slice stays well below the GC interval.
+
+Platforms: all. Not compiled here.
+
+diff --git a/src/flags/flag-definitions.h b/src/flags/flag-definitions.h
+index 528cf0e9..e948c088 100644
+--- a/src/flags/flag-definitions.h
++++ b/src/flags/flag-definitions.h
+@@ -2852,6 +2852,9 @@ DEFINE_NEG_NEG_IMPLICATION(cppheap_incremental_marking,
+                            cppheap_concurrent_marking)
+ DEFINE_NEG_NEG_IMPLICATION(concurrent_marking, cppheap_concurrent_marking)
+ DEFINE_WEAK_IMPLICATION(concurrent_marking, cppheap_concurrent_marking)
++DEFINE_INT(cppheap_max_incremental_sweep_duration_ms, 5,
++           "maximum duration in ms of a single incremental sweeping task of "
++           "CppHeap on the mutator thread (values below 1 are treated as 1)")
+ 
+ DEFINE_BOOL(memory_balancer, false,
+             "use membalancer, "
+diff --git a/src/flags/flags.cc b/src/flags/flags.cc
+index 3a87e4c7..69ef3462 100644
+--- a/src/flags/flags.cc
++++ b/src/flags/flags.cc
+@@ -631,6 +631,12 @@ uint32_t ComputeFlagListHash() {
+       continue;
+     }
+ 
++    // The CppHeap sweeping slice only tunes pause times and has no effect on
++    // generated code, so changing it should not invalidate code caches.
++    if (flag.PointsTo(&v8_flags.cppheap_max_incremental_sweep_duration_ms)) {
++      continue;
++    }
++
+     // The following flags are implied by --predictable (some negated).
+     if (flag.PointsTo(&v8_flags.concurrent_sparkplug) ||
+         flag.PointsTo(&v8_flags.concurrent_recompilation) ||
+diff --git a/src/heap/cppgc-internal/heap-config.h b/src/heap/cppgc-internal/heap-config.h
+index d2c0e4a4..3917aab2 100644
+--- a/src/heap/cppgc-internal/heap-config.h
++++ b/src/heap/cppgc-internal/heap-config.h
+@@ -52,6 +52,10 @@ struct SweepingConfig {
+   CompactableSpaceHandling compactable_space_handling =
+       CompactableSpaceHandling::kSweep;
+   FreeMemoryHandling free_memory_handling = FreeMemoryHandling::kRetainMemory;
++  // Upper bound for a single slice of incremental sweeping that runs in a
++  // foreground task on the mutator thread.
++  v8::base::TimeDelta max_incremental_sweep_duration =
++      v8::base::TimeDelta::FromMilliseconds(5);
+ };
+ 
+ struct GCConfig {
+diff --git a/src/heap/cppgc-internal/sweeper.cc b/src/heap/cppgc-internal/sweeper.cc
+index b771a1b5..7b9cd8ba 100644
+--- a/src/heap/cppgc-internal/sweeper.cc
++++ b/src/heap/cppgc-internal/sweeper.cc
+@@ -1445,9 +1445,6 @@ class Sweeper::SweeperImpl final {
+    public:
+     using Handle = SingleThreadedHandle;
+ 
+-    static constexpr auto kMaxSweepDuration =
+-        v8::base::TimeDelta::FromMilliseconds(5);
+-
+     IncrementalSweepTask(SweeperImpl& sweeper, cppgc::TaskPriority priority)
+         : sweeper_(sweeper),
+           handle_(Handle::NonEmptyTag{}),
+@@ -1472,12 +1469,14 @@ class Sweeper::SweeperImpl final {
+       if (handle_.IsCanceled()) {
+         return;
+       }
++      const v8::base::TimeDelta max_sweep_duration =
++          sweeper_.config_.max_incremental_sweep_duration;
+       switch (priority_) {
+         case kForegroundRegularPriority:
+-          sweeper_.SweepForTask(kMaxSweepDuration);
++          sweeper_.SweepForTask(max_sweep_duration);
+           return;
+         case kForegroundLowPriority:
+-          sweeper_.SweepForLowPriorityTask(kMaxSweepDuration);
++          sweeper_.SweepForLowPriorityTask(max_sweep_duration);
+           return;
+         default:
+           UNREACHABLE();
+diff --git a/src/heap/cppgc-js/cpp-heap.cc b/src/heap/cppgc-js/cpp-heap.cc
+index c23ec777..e65bc815 100644
+--- a/src/heap/cppgc-js/cpp-heap.cc
++++ b/src/heap/cppgc-js/cpp-heap.cc
+@@ -1081,7 +1081,9 @@ void CppHeap::CompactAndSweep() {
+             ? cppgc::internal::SweepingConfig::FreeMemoryHandling::
+                   kReleaseMemory
+             : cppgc::internal::SweepingConfig::FreeMemoryHandling::
+-                  kRetainMemory};
++                  kRetainMemory,
++        v8::base::TimeDelta::FromMilliseconds(std::max(
++            1, v8_flags.cppheap_max_incremental_sweep_duration_ms.value()))};
+     DCHECK_IMPLIES(!isolate_,
+                    SweepingType::kAtomic == sweeping_config.sweeping_type);
+     sweeper().Start(sweeping_config);

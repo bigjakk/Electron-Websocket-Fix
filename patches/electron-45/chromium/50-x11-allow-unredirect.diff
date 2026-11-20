@@ -1,0 +1,119 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: let X11 compositors unredirect the game window (KccX11AllowUnredirect)
+
+Stock: X11Window::Initialize() (ui/ozone/platform/x11/x11_window.cc) sets
+_NET_WM_BYPASS_COMPOSITOR = 2 ("never bypass") on every window it creates,
+with the comment "Always composite Chromium windows if a compositing WM is
+used ... this can lead to tearing of fullscreen videos".  That is the right
+call for a browser playing video, and the wrong one for an uncapped game:
+with a compositing window manager every frame is copied through the
+compositor and shown on the compositor's own vsync, which adds up to about
+one refresh interval of latency and makes --disable-gpu-vsync unable to
+tear, fullscreen or not.
+
+Change: with the feature enabled, ordinary top-level windows set the hint
+to 1 ("prefer bypass") instead.  These keep the stock value 2:
+  - every PlatformWindowType other than kWindow (kMenu, kPopup, kBubble,
+    kTooltip, kDrag): they are small, often translucent or shaped, and sit
+    on top of other windows;
+  - any other override-redirect window (non-activatable windows, and
+    windows whose X11ExtensionDelegate asks for override-redirect);
+  - windows with an ARGB visual or created with
+    PlatformWindowOpacity::kTranslucentWindow (Electron "transparent"
+    windows): they need the compositor to blend;
+  - the XEMBED status icon window.
+The value is written once in Initialize(), exactly where stock writes it;
+it is not changed on fullscreen transitions, so a borderless
+monitor-sized window is treated the same as a real fullscreen one.
+
+Gating: base::Feature KccX11AllowUnredirect, disabled by default, file
+local.  With it off the property value is 2 for every window, as stock.
+Browser process only.
+
+What users will see with it on:
+  - Tearing when vsync is off (that is the point), and lower input to
+    photon latency.
+  - A flicker or one-frame glitch when the compositor has to redirect the
+    window again: a desktop notification, the client's own menu, tooltip
+    or popup window, a volume OSD, or alt-tab appearing over the game.
+  - On KWin/X11 desktop effects are suspended for the whole session while
+    such a window exists (same as SDL games, which set this hint too).
+  - Other top-level windows of the client (settings, devtools, splash) get
+    the hint as well; a window made translucent after creation with
+    setOpacity() or a shape still carries hint 1.
+
+Who honours the hint (read from their sources, not tested here):
+  - Mutter / GNOME on X11: reads it as on/off/auto.
+  - KWin on X11: hint 1 suspends compositing while the window exists,
+    unless "Allow applications to block compositing" is turned off.
+  - xfwm4: unredirects a fullscreen, opaque, unshaped window only when the
+    hint is 1 (so stock Chromium is never unredirected there).
+  - picom: hint 1 forces unredirection of the screen while the window is
+    mapped, but only when unredir-if-possible is enabled in its config.
+  - No compositor (plain i3, openbox, ...): the hint means nothing, there
+    is nothing to bypass.
+  - XWayland: the Wayland compositor decides about direct scanout on its
+    own; expect no effect.
+
+A/B: run a compositing X11 session, fullscreen, with
+  --ozone-platform=x11 --disable-gpu-vsync --disable-frame-rate-limit
+with and without --enable-features=KccX11AllowUnredirect.  Check
+  xprop -id <window> _NET_WM_BYPASS_COMPOSITOR   (1 vs 2)
+then look for tearing above the refresh rate and measure click to photon
+latency.  Open a menu and a desktop notification over the game to see how
+bad the redirect flicker is on that compositor.
+
+Not verified: nothing was compiled or run.  Compositor behaviour above is
+from reading current upstream sources of each project, not from testing.
+
+Platforms: Linux/X11 only (file is only built for the Ozone X11 platform).
+
+diff --git a/ui/ozone/platform/x11/x11_window.cc b/ui/ozone/platform/x11/x11_window.cc
+index 7f3275d01..abfb4a6cf 100644
+--- a/ui/ozone/platform/x11/x11_window.cc
++++ b/ui/ozone/platform/x11/x11_window.cc
+@@ -8,6 +8,7 @@
+ #include <vector>
+ 
+ #include "base/compiler_specific.h"
++#include "base/feature_list.h"
+ #include "base/memory/scoped_refptr.h"
+ #include "base/nix/xdg_util.h"
+ #include "base/no_destructor.h"
+@@ -66,6 +67,11 @@ namespace {
+ 
+ using mojom::DragOperation;
+ 
++// kcc: when enabled, ordinary opaque top-level windows set
++// _NET_WM_BYPASS_COMPOSITOR to 1 ("prefer bypass") instead of 2 ("never
++// bypass"), so a compositing window manager may unredirect them.
++BASE_FEATURE(kKccX11AllowUnredirect, base::FEATURE_DISABLED_BY_DEFAULT);
++
+ // Opacity for drag widget windows.
+ constexpr float kDragWidgetOpacity = .75f;
+ 
+@@ -470,9 +476,21 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
+   // Always composite Chromium windows if a compositing WM is used.  Sometimes,
+   // WMs will not composite fullscreen windows as an optimization, but this can
+   // lead to tearing of fullscreen videos.
++  uint32_t bypass_compositor = 2;
++  // kcc: let the WM unredirect ordinary top-level windows instead.  Everything
++  // that only looks right when composited keeps the stock value: menus,
++  // popups, bubbles, tooltips, drag icons and other override-redirect
++  // windows, translucent (ARGB) windows and the embedded status icon.
++  if (base::FeatureList::IsEnabled(kKccX11AllowUnredirect) &&
++      properties.type == PlatformWindowType::kWindow && !override_redirect_ &&
++      !visual_has_alpha_ &&
++      properties.opacity != PlatformWindowOpacity::kTranslucentWindow &&
++      properties.wm_role_name != kStatusIconWmRoleName) {
++    bypass_compositor = 1;
++  }
+   connection_->SetProperty<uint32_t>(xwindow_,
+                                      x11::GetAtom("_NET_WM_BYPASS_COMPOSITOR"),
+-                                     x11::Atom::CARDINAL, 2);
++                                     x11::Atom::CARDINAL, bypass_compositor);
+ 
+   if (properties.icon) {
+     SetWindowIcons(gfx::ImageSkia(), *properties.icon);

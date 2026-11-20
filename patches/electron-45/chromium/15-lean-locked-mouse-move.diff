@@ -1,0 +1,170 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: lean main-thread dispatch for raw-movement (pointer-locked) mouse moves
+
+Stock path of a mouse move in the renderer:
+  compositor thread: WidgetInputHandlerManager::DispatchEvent ->
+    InputHandlerProxy (kMouseMove -> HandlePointerMove ->
+    cc::InputHandler::MouseMoveAt) -> MainThreadEventQueue::HandleEvent ->
+    QueueEvent, where the move is coalesced into the queued one
+    (QueuedWebInputEvent::FilterNewEvent ->
+    WebCoalescedInputEvent::CoalesceWith: WebMouseEvent::Coalesce() adds
+    movement_x/y onto the kept event and a clone of every sample is appended
+    to the coalesced list);
+  main thread, once per main frame (mouse moves are rAF aligned):
+    MainThreadEventQueue::DispatchRafAlignedInput -> HandleEventResampling
+    -> InputEventPrediction::HandleEvents, then
+    WidgetBaseInputHandler::HandleInputEvent ->
+    WebFrameWidgetImpl::HandleInputEvent -> PointerLockMouseEvent ->
+    PointerLockController::DispatchLockedMouseEvent ->
+    EventHandler::HandleTargetedMouseEvent ->
+    PointerEventManager::DirectDispatchMousePointerEvent ->
+    PointerEventFactory::Create, then MouseEventManager::DispatchMouseEvent.
+
+What that costs for a pointer-locked game that only reads
+mousemove.movementX/Y:
+  - InputEventPrediction::HandleEvents (input_event_prediction.cc) calls
+    UpdatePrediction() for every coalesced sample (Kalman predictor by
+    default: three Kalman filter updates per sample) and then
+    AddPredictedEvents(), which adds predicted events every
+    max(2.5 ms, sample interval) up to 25 ms ahead: up to 10 per dispatched
+    move for a 1000 Hz or faster mouse, each with two event clones and one
+    InputData allocation.
+  - PointerEventFactory::Create (pointer_event_factory.cc) calls
+    CreateEventSequence() for the coalesced list and for the predicted
+    list of every pointermove, building one PointerEventInit and one
+    PointerEvent (both garbage collected) per entry, after
+    WebFrameWidgetImpl and PointerEventManager have each copied both lists
+    (Vector<WebMouseEvent>, then Vector<WebPointerEvent>).
+  So an 8000 Hz mouse at 1000 FPS allocates about 8 + 10 PointerEvent /
+  PointerEventInit pairs per frame that nothing reads. The positions the
+  predictor works on are those of the hidden cursor, and Blink overwrites
+  them with the lock position anyway
+  (MouseEvent::SetCoordinatesFromWebPointerProperties).
+
+Change (main_thread_event_queue.cc only): in
+MainThreadEventQueue::HandleEventResampling, a kMouseMove whose
+WebMouseEvent::is_raw_movement_event is set
+  1. is not passed to InputEventPrediction::HandleEvents: no predictor
+     update, no predicted events;
+  2. has its coalesced list reduced to the event itself
+     (QueuedWebInputEvent::DropCoalescedSamples rebuilds the
+     WebCoalescedInputEvent from Event() and latency_info(), the layout of
+     an event that was never coalesced; skipped when there is only one
+     sample).
+movementX/Y of the dispatched mousemove and pointermove are unchanged: they
+come from the event itself, on which WebMouseEvent::Coalesce() has already
+summed the movement of all samples, and the event keeps the newest
+timestamp. Visible difference: for these pointermove events
+getCoalescedEvents() returns one entry (carrying the full movement) and
+getPredictedEvents() returns an empty list.
+
+Why the raw-movement flag: MainThreadEventQueue has no pointer-lock state,
+and is_raw_movement_event is existing per-event state that the browser sets
+only while pointer lock with unadjustedMovement is held (Windows:
+HWNDMessageHandler::OnInputEvent via MouseEvent::DispatcherApi::set_movement;
+macOS: unaccelerated movement in web_input_event_builders_mac.mm). Limits
+that follow from it:
+  - pointer lock without unadjustedMovement is not affected. Linux has no
+    unadjusted movement at this tag (WindowTreeHost::
+    RequestUnadjustedMovement is not implemented there), so the patch does
+    nothing on Linux unless raw-movement events are added there;
+  - a few raw-movement moves can be dispatched while Blink is not (or no
+    longer) locked, e.g. just after document.exitPointerLock() and before
+    the browser stops raw input. Those also get one coalesced entry and no
+    predicted events.
+Skipping the predictor is safe for later unlocked moves: every predictor
+resets itself when the gap to its previous sample exceeds 20 ms
+(InputPredictor::kMaxTimeDelta).
+
+Not done: skipping the compositor-thread scrollbar work for these moves.
+InputHandlerProxy already knows the lock state (is_pointer_locked_), but
+cc::InputHandler::MouseMoveAt only hit-tests when
+HasAnimatedScrollbars() is true, i.e. when the page has composited overlay
+scrollbars. Overlay scrollbars are off by default on Windows and Linux, so
+there the call is a few branches; and HandlePointerMove also drives and
+cancels scrollbar thumb drags, which should not change.
+
+Gating: base::Feature KccLeanLockedMouseMove, disabled by default, defined
+in the anonymous namespace of main_thread_event_queue.cc and read once.
+Renderer process, main thread only (HandleEventResampling is called from
+DispatchEvents and DispatchRafAlignedInput). With the feature off
+HandleEventResampling behaves as before. Mouse moves without the
+raw-movement flag and all other event types are not touched.
+
+A/B: --enable-features=KccLeanLockedMouseMove. Under pointer lock with
+unadjustedMovement and a 1000-8000 Hz mouse in motion, compare renderer
+main-thread time in InputEventPrediction::HandleEvents and
+PointerEventFactory::Create / CreateEventSequence, Oilpan allocation rate
+and GC frequency, and frame-time 1% lows. Functional check from the
+console: a pointermove listener logging getCoalescedEvents().length,
+getPredictedEvents().length and movementX should show N and up to 10 on
+stock, 1 and 0 with the feature, and the same movementX/Y sums over the
+same physical swipe in both.
+
+Platforms: the file builds on all platforms; it has an effect on Windows
+and macOS (see above).
+
+Not verified: nothing was compiled or measured; the allocation counts above
+come from reading the code.
+
+diff --git a/third_party/blink/renderer/platform/widget/input/main_thread_event_queue.cc b/third_party/blink/renderer/platform/widget/input/main_thread_event_queue.cc
+index 7a59c1756..7da797f92 100644
+--- a/third_party/blink/renderer/platform/widget/input/main_thread_event_queue.cc
++++ b/third_party/blink/renderer/platform/widget/input/main_thread_event_queue.cc
+@@ -88,6 +88,22 @@ bool IsGestureScroll(WebInputEvent::Type type) {
+   }
+ }
+ 
++// kcc: Lean main-thread dispatch for mouse moves that carry raw device
++// movement. The browser only produces such events while pointer lock with
++// unadjustedMovement is held; the page then reads movementX/Y, which
++// WebMouseEvent::Coalesce() has already accumulated on the event itself. When
++// enabled, these events skip input prediction and are dispatched without
++// their per-sample coalesced list, so Blink does not build one PointerEvent
++// per coalesced sample and per predicted point for every dispatched move.
++BASE_FEATURE(kKccLeanLockedMouseMove, base::FEATURE_DISABLED_BY_DEFAULT);
++
++bool IsLeanLockedMouseMove(const WebInputEvent& event) {
++  static const bool enabled =
++      base::FeatureList::IsEnabled(kKccLeanLockedMouseMove);
++  return enabled && event.GetType() == WebInputEvent::Type::kMouseMove &&
++         static_cast<const WebMouseEvent&>(event).is_raw_movement_event;
++}
++
+ }  // namespace
+ 
+ class QueuedWebInputEvent : public MainThreadEventQueueTask {
+@@ -291,6 +307,18 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
+ 
+   WebCoalescedInputEvent* mutable_coalesced_event() { return event_.get(); }
+ 
++  // kcc: Replaces the event with a copy whose coalesced list holds only the
++  // event itself, which is what an event that was never coalesced looks like.
++  // The event keeps the movement accumulated by WebMouseEvent::Coalesce() and
++  // the timestamp of the newest sample.
++  void DropCoalescedSamples() {
++    if (event_->CoalescedEventSize() <= 1) {
++      return;
++    }
++    event_ = std::make_unique<WebCoalescedInputEvent>(event_->Event(),
++                                                      event_->latency_info());
++  }
++
+   void SetQueuedTimeStamp(base::TimeTicks queued_time) {
+     event_->EventPointer()->SetQueuedTimeStamp(queued_time);
+   }
+@@ -914,6 +942,12 @@ void MainThreadEventQueue::HandleEventResampling(
+     base::TimeTicks frame_time) {
+   if (item->IsWebInputEvent() && allow_raf_aligned_input_ && event_predictor_) {
+     QueuedWebInputEvent* event = static_cast<QueuedWebInputEvent*>(item.get());
++    // kcc: no predictor update, no predicted events and no per-sample
++    // coalesced list for raw-movement (pointer-locked) mouse moves.
++    if (IsLeanLockedMouseMove(event->Event())) {
++      event->DropCoalescedSamples();
++      return;
++    }
+     event_predictor_->HandleEvents(*event->mutable_coalesced_event(),
+                                    frame_time);
+   }

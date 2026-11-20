@@ -1,0 +1,223 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: coalesce same-time setTargetAtTime events in AudioParam timelines
+
+Stock behaviour (third_party/blink/renderer/modules/webaudio/
+audio_param_handler.cc, AudioParamHandler::InsertEvent):
+
+Howler 2.2.3 implements Howler.pos()/orientation() as nine
+AudioParam.setTargetAtTime(v, ctx.currentTime, 0.1) calls on the
+AudioListener params, and Krunker calls them every frame.  currentTime
+only advances once per 128-frame render quantum and not at all while the
+context is suspended (Howler suspends it after 30 s of silence), so many
+consecutive calls insert an event at exactly the same time.
+
+ - Each call appends one ParamEvent.  The overlap scan
+   ("for (int i = ub; i >= 0; i--)") only stops at
+   "if (events_[i]->Time() < insert_time) break;", so it walks every
+   event that shares the new event's time: the N-th call costs N pointer
+   chases, N^2 in total.
+ - Events are only removed by the audio thread (RemoveOldEvents from
+   ValuesForFrameRangeImpl and HandleAllEventsInThePast), by the prune
+   loop at the top of InsertEvent, and by the cancel calls.  On a
+   running context AudioListenerHandler::UpdateState() evaluates the
+   listener params every quantum, so the lists stay at a handful of
+   events.  On a suspended context the audio thread does not run, and
+   the prune loop uses IsEventCurrent(), i.e.
+   "next_event->Time() * sample_rate >= current_frame".  For same-time
+   events that is true unless (F / rate) * rate rounds to less than F,
+   which happens for about 8% of quantum-aligned frames at 44.1 and
+   48 kHz.  For the other 92% (and always at frame 0, i.e. before the
+   context first starts) nothing is pruned.
+ - So while suspended each of the nine lists (and new_events_) grows by
+   one event per call for as long as the game runs, every call gets
+   slower in proportion, memory grows by roughly 100+ bytes per event,
+   and on resume the audio thread has to clamp, stable_sort and free the
+   whole list under events_lock_.  This is the frame rate that decays
+   over a couple of minutes in the menu.
+
+Change (feature KccAudioParamCoalesce, disabled by default):
+
+When a SetTarget event is inserted at the end of the list and the three
+events before it are SetTargets at exactly the same time, the middle one
+of those three is erased before the new event is appended.  A same-time
+run therefore holds at most its first event and its last two, and the
+per-call cost is constant.  The dropped event always sits between two
+SetTargets that start at its own time, so it has zero duration.
+
+It is restricted to the case that could be checked:
+ - the new event is a SetTarget and goes at the end of the list;
+ - its time is <= the context's current time (scheduled for "now");
+ - the dropped event and its successor are still in new_events_ (the
+   audio thread has not run the timeline since they were inserted);
+ - every event in the list is a SetTarget, and the list holds <= 32.
+Nothing else is coalesced: not SetValue/SetValue, not SetTarget followed
+by SetValue, nothing involving ramps, curves, or the synthetic
+kCancelValues / kSetValueCurveEnd events.  The last event at a given
+time is never the one dropped.
+
+Why first + last two rather than "replace the previous event":
+ - When (F / rate) * rate rounds to more than F (also ~8% of frames),
+   ValuesForFrameRangeImpl gives the first event of a run one frame
+   (one k-rate step in AudioParamHandler::Value()) before the last one
+   takes over.
+ - CancelAndHoldAtTime(t) with t equal to the run's time removes only
+   the last SetTarget and leaves the one before it running.
+ - ProcessSetTargetFollowedByRamp rewrites the last one in place.
+
+What is not identical to stock:
+ - Float rounding (the only difference the intended workload can show).
+   When a zero-length SetTarget is processed at its own start frame,
+   ProcessSetTarget still executes
+   "value = target + (value - target) * exp(-0 / tau)".  That is a
+   mathematical no-op, but (value - target) is rounded to float, so each
+   such event can move value by up to 2^-24 * |value - target| (not at
+   all when value and target are within a factor of two of each other).
+   Stock does this for every stacked event, the patch for at most two,
+   so the patched result is the one closer to the specified curve.
+ - cancelAndHoldAtTime() at exactly the run's time, called twice with no
+   setTargetAtTime in between, after at least four same-time
+   setTargetAtTime calls: stock leaves the third-from-last target
+   running, the patch the first.  (The spec says hold.)  A single such
+   call leaves the same target running as stock.
+ - RemoveOldEvents(skipped_count) removes the first N events whichever
+   ones were skipped (existing behaviour).  In a SetTarget-only timeline
+   at the current time the skipped events are a prefix and nothing
+   differs.  If other automation (ramps, set-values, future events, a
+   cancelAndHoldAtTime at the run's time) is added to the same param
+   before the audio thread next runs it, that prefix can cover
+   different events in the shorter list.  In the model below this only
+   showed up as a one-quantum difference in a second evaluation of the
+   param within the same quantum.
+The last two cannot happen on a param that only ever receives
+setTargetAtTime(v, currentTime, tau), which is what Howler does to the
+listener.
+
+Verification: nothing was compiled.  The timeline code was ported by
+hand to a JS model (float via Math.fround, x86 and non-x86 paths,
+without SetValueCurve) and the stock and patched lists were driven with
+the same random call/render sequences.  With the re-rounding step
+idealised away the outputs were bit-identical over 8000 random
+SetTarget-only sequences (2.2M dropped events); with real float
+arithmetic a realistic listener workload differed by at most 1.1e-6
+(position, world units) and 5.4e-7 (direction component).  A model is
+not the real code: treat this as evidence, not proof.
+
+Threading: InsertEvent runs on the main thread with events_lock_ held
+(EXCLUSIVE_LOCKS_REQUIRED); the audio thread only touches events_ /
+new_events_ under AutoTryLock and keeps no index or pointer into them
+across a lock release.  The erased event's pointer is removed from
+new_events_ first.
+
+A/B: --enable-features=KccAudioParamCoalesce
+ - Leave the game where the AudioContext is suspended (30+ s without
+   sound, or before the first click) and log frame time for 3 minutes:
+   stock climbs steadily, patched stays flat.  If stock stays flat the
+   suspend landed on one of the ~8% self-pruning frames; resume and
+   suspend again.
+ - Renderer private bytes over the same period (stock grows by roughly
+   1 MB/s at 1000 fps).
+ - Hitch on the first sound after a long suspend.
+ - Deterministic check from devtools: suspend an AudioContext, then
+   time batches of 1000 x listener.positionX.setTargetAtTime(
+   Math.random(), ctx.currentTime, 0.1); stock time per batch grows
+   linearly with the number of batches, patched is constant.
+
+Platforms: all (no platform-specific code).
+
+Not verified: compilation; whether Krunker touches the listener params
+in any other way (a SetValue or ramp event left in a listener timeline
+disables coalescing for that param until it is pruned).
+
+diff --git a/third_party/blink/renderer/modules/webaudio/audio_param_handler.cc b/third_party/blink/renderer/modules/webaudio/audio_param_handler.cc
+index 2f4828436..20991d915 100644
+--- a/third_party/blink/renderer/modules/webaudio/audio_param_handler.cc
++++ b/third_party/blink/renderer/modules/webaudio/audio_param_handler.cc
+@@ -10,6 +10,7 @@
+ 
+ #include "base/check_op.h"
+ #include "base/containers/span.h"
++#include "base/feature_list.h"
+ #include "base/memory/ptr_util.h"
+ #include "build/build_config.h"
+ #include "media/base/audio_bus.h"
+@@ -47,6 +48,23 @@ namespace {
+ constexpr float kTimeConstantsToConverge = 10.0f;
+ constexpr float kSetTargetThreshold = 4.539992976248485e-05f;
+ 
++// KCC: when enabled, `InsertEvent()` keeps a run of setTargetAtTime events that
++// all start at the same, already reached, time down to three events (the
++// first and the last two) instead of letting it grow by one event per call.
++// See the comment in `InsertEvent()`.
++BASE_FEATURE(kKccAudioParamCoalesce, base::FEATURE_DISABLED_BY_DEFAULT);
++
++// `InsertEvent()` only coalesces while the timeline holds no more than this
++// many events, which bounds the extra work per call.  A timeline that is being
++// coalesced stays far below this.
++constexpr wtf_size_t kKccCoalesceMaxEvents = 32;
++
++bool IsKccAudioParamCoalesceEnabled() {
++  static const bool enabled =
++      base::FeatureList::IsEnabled(kKccAudioParamCoalesce);
++  return enabled;
++}
++
+ // Replace NaN values in `values` with `default_value`.
+ void HandleNaNValues(base::span<float> values, float default_value) {
+   unsigned k = 0;
+@@ -1004,6 +1022,54 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
+     }
+   }
+ 
++  // KccAudioParamCoalesce.  A page that calls setTargetAtTime(v, currentTime,
++  // tau) once per animation frame passes the same time many times, because
++  // currentTime only advances once per render quantum and not at all while the
++  // context is suspended.  Every such call appends an event, and the scan above
++  // walks all the events that share the new event's time.
++  //
++  // When the three events that would precede the new one are all SetTarget
++  // events at exactly the new event's time, the middle one of those three is
++  // dropped: it sits between two SetTargets that start at its own time, so the
++  // timeline can never run it for any length of time.  A run therefore keeps
++  // its first event and its last two.  Those are the ones that the rest of
++  // this file can tell apart from an interior event: the first event of a run
++  // can own the first frame of a render quantum in
++  // `ValuesForFrameRangeImpl()`, `CancelAndHoldAtTime()` removes only the last
++  // SetTarget at the cancel time and so re-exposes the one before it, and
++  // `ProcessSetTargetFollowedByRamp()` rewrites the last one.
++  //
++  // This is only done when
++  //  - the time has already been reached, so that nothing can later be
++  //    inserted in front of the run and the audio thread first sees the run
++  //    at the start of a render quantum;
++  //  - the event to drop and its successor are still in `new_events_`, i.e.
++  //    the audio thread has not run the timeline since they were inserted, so
++  //    they have rendered nothing and will be clamped to the same time;
++  //  - the new event goes at the end of the list and every event already in
++  //    the list is a SetTarget, so that the events the audio thread skips form
++  //    a prefix of the list, which is what `RemoveOldEvents()` assumes.
++  if (IsKccAudioParamCoalesceEnabled() &&
++      event->GetType() == ParamEvent::Type::kSetTarget &&
++      insertion_idx == events_.size() && insertion_idx >= 3 &&
++      insertion_idx <= kKccCoalesceMaxEvents &&
++      insert_time <= DestinationHandler().CurrentTime()) {
++    ParamEvent* const previous = events_[insertion_idx - 1].get();
++    ParamEvent* const interior = events_[insertion_idx - 2].get();
++    bool can_coalesce =
++        previous->Time() == insert_time && interior->Time() == insert_time &&
++        events_[insertion_idx - 3]->Time() == insert_time &&
++        new_events_.Contains(previous) && new_events_.Contains(interior);
++    for (wtf_size_t i = 0; can_coalesce && i < insertion_idx; ++i) {
++      can_coalesce = events_[i]->GetType() == ParamEvent::Type::kSetTarget;
++    }
++    if (can_coalesce) {
++      new_events_.erase(interior);
++      events_.EraseAt(insertion_idx - 2);
++      --insertion_idx;
++    }
++  }
++
+   events_.insert(insertion_idx, std::move(event));
+   new_events_.insert(events_[insertion_idx].get());
+   return true;

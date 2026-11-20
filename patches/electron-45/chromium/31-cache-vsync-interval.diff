@@ -1,0 +1,170 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: cache the vsync interval in DCompPresenter when GPU vsync is off
+
+Stock behaviour
+---------------
+ui/gl/dcomp_presenter.cc, DCompPresenter::EnqueuePendingFrame(), called
+from DCompPresenter::Present() for every frame on the GPU main thread.
+When use_gpu_vsync_ is false (features::UseGpuVsync(): --disable-gpu-vsync
+or GpuVsync disabled) it does
+
+  last_vsync_time_ = base::TimeTicks::Now();
+  last_vsync_interval_ = VSyncThreadWin::GetInstance()->GetVsyncInterval();
+
+VSyncThreadWin is VSyncThreadWinDXGI unless UseCompositorClockVSyncInterval
+is enabled (off by default). VSyncThreadWinDXGI::GetVsyncInterval()
+(ui/gl/vsync_thread_win_dxgi.cc) picks by OS version:
+
+  static bool use_sv3_workaround =
+      base::win::GetVersion() > base::win::Version::WIN11_22H2;
+
+- newer than Windows 11 22H2: VSyncProviderWin::GetVSyncIntervalIfAvailable()
+  -> TryGetVsyncIntervalFromDisplayConfig(nullptr) ->
+  MonitorFromWindow(primary), GetMonitorInfo(), then
+  display::win::GetDisplayConfigPathInfo(): GetDisplayConfigBufferSizes(),
+  two std::vector allocations, QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS) and
+  one DisplayConfigGetDeviceInfo() per active path until the primary is
+  found. DwmGetCompositionTimingInfo / EnumDisplaySettings are only fallbacks.
+- 22H2 and older: GetVSyncParametersIfAvailable() ->
+  DwmGetCompositionTimingInfo(), with the QueryDisplayConfig path as fallback.
+
+So with --disable-gpu-vsync every present pays for a display-configuration
+query that goes to win32k. The owner's trace shows it at about 30 us per
+frame with spikes of 0.45-1.35 ms, on the GPU main thread that is already
+67-74% busy.
+
+What consumes the value: CheckPendingFrames() puts it in
+gfx::PresentationFeedback(last_vsync_time_, last_vsync_interval_, kVSync).
+From there SkiaOutputSurfaceImpl::BufferPresented() forwards it to
+RootCompositorFrameSinkImpl::SetDisplayVSyncParameters(), which feeds
+BeginFrameSource::OnUpdateVSyncParameters() (BackToBackBeginFrameSource just
+stores it as the nominal interval of its BeginFrameArgs;
+DelayBasedBeginFrameSource uses it as its tick interval), and it travels in
+FrameTimingDetails to clients for metrics and presentation-time bookkeeping
+(viz::Display also uses it as the tolerance when sanitising timestamps).
+Nothing aligns to a real vblank here: the timebase in this mode is
+"now at present", not a vsync time. A value that is stale for up to one
+refresh period after the primary display's refresh rate changes only means
+those estimates use the old rate for that long.
+
+Change
+------
+With KccCacheVsyncInterval enabled the presenter reuses
+last_vsync_interval_ and calls GetVsyncInterval() again only when
+refresh_ms have passed since the last query (new member
+kcc_vsync_interval_query_time_), or when the cached interval is zero (the
+last query failed; stock would also retry on the next present).
+In this mode nothing else writes last_vsync_interval_: the presenter only
+registers as a VSyncThreadWin observer when use_gpu_vsync_ is true, so
+HandleVSyncOnMainThread() never runs.
+
+All state is touched on the thread that calls Present() (GPU main), the same
+one that already owns last_vsync_time_/last_vsync_interval_.
+
+Gating / A-B
+------------
+base::Feature KccCacheVsyncInterval, disabled by default, file-local.
+FeatureParam refresh_ms (int, default 1000, clamped to 100..10000). Feature
+state and param are read once (function-local static). With the feature off
+the query happens on every present exactly as before.
+  --enable-features=KccCacheVsyncInterval
+  --enable-features=KccCacheVsyncInterval:refresh_ms/250
+Only has an effect together with --disable-gpu-vsync.
+Measure: number and duration of "WinVSyncProvider::GetVSyncIntervalIfAvailable"
+slices (trace category gpu) under DCompPresenter::Present - expect one per
+refresh_ms instead of one per frame - plus GPU main-thread time per frame
+and 1% low frame times. Sanity check: change the primary display's refresh
+rate while running; presentation keeps working and the interval reported in
+PresentationFeedback follows within refresh_ms.
+
+Platforms: Windows only (dcomp_presenter.* are in the is_win sources of
+ui/gl/BUILD.gn; nothing else is touched).
+
+Not verified
+------------
+- Nothing was compiled.
+- The per-call cost figures are from the owner's trace, not re-measured.
+
+diff --git a/ui/gl/dcomp_presenter.cc b/ui/gl/dcomp_presenter.cc
+index c66c1319f..fd8b2374b 100644
+--- a/ui/gl/dcomp_presenter.cc
++++ b/ui/gl/dcomp_presenter.cc
+@@ -6,13 +6,16 @@
+ 
+ #include <winerror.h>
+ 
++#include <algorithm>
+ #include <memory>
+ #include <string_view>
+ #include <utility>
+ 
+ #include "base/debug/crash_logging.h"
+ #include "base/debug/dump_without_crashing.h"
++#include "base/feature_list.h"
+ #include "base/functional/bind.h"
++#include "base/metrics/field_trial_params.h"
+ #include "base/strings/string_number_conversions.h"
+ #include "base/task/single_thread_task_runner.h"
+ #include "base/trace_event/trace_event.h"
+@@ -113,6 +116,26 @@ constexpr bool CommitErrorReasonStringsFitInCrashKey() {
+ static_assert(CommitErrorReasonStringsFitInCrashKey(),
+               "Commit error reason strings must fit in a Size64 crash key.");
+ 
++// KCC: when GPU vsync is off (--disable-gpu-vsync) EnqueuePendingFrame() asks
++// VSyncThreadWin for the vsync interval on every present, which on current
++// Windows 11 is a QueryDisplayConfig() round trip. With this feature the
++// presenter reuses the last answer and asks again at most once per
++// |refresh_ms| (default 1000, clamped to 100..10000).
++BASE_FEATURE(kKccCacheVsyncInterval, base::FEATURE_DISABLED_BY_DEFAULT);
++constexpr base::FeatureParam<int> kKccCacheVsyncIntervalRefreshMs{
++    &kKccCacheVsyncInterval, "refresh_ms", 1000};
++
++// How long a queried vsync interval may be reused. Zero when the feature is
++// disabled, i.e. query on every present as upstream does.
++base::TimeDelta KccVsyncIntervalRefreshPeriod() {
++  static const base::TimeDelta period =
++      base::FeatureList::IsEnabled(kKccCacheVsyncInterval)
++          ? base::Milliseconds(
++                std::clamp(kKccCacheVsyncIntervalRefreshMs.Get(), 100, 10000))
++          : base::TimeDelta();
++  return period;
++}
++
+ }  // namespace
+ 
+ DCompPresenter::PendingFrame::PendingFrame(PresentationCallback callback)
+@@ -345,7 +368,16 @@ void DCompPresenter::EnqueuePendingFrame(PresentationCallback callback) {
+     StartOrStopVSyncThread();
+   } else {
+     last_vsync_time_ = base::TimeTicks::Now();
+-    last_vsync_interval_ = VSyncThreadWin::GetInstance()->GetVsyncInterval();
++    // KCC: see kKccCacheVsyncInterval. In this mode nothing else writes
++    // |last_vsync_interval_| (the presenter never observes the vsync thread),
++    // so it doubles as the cached value. A zero interval means the last query
++    // failed; retry on the next present as upstream would.
++    const base::TimeDelta refresh_period = KccVsyncIntervalRefreshPeriod();
++    if (refresh_period.is_zero() || last_vsync_interval_.is_zero() ||
++        last_vsync_time_ - kcc_vsync_interval_query_time_ >= refresh_period) {
++      last_vsync_interval_ = VSyncThreadWin::GetInstance()->GetVsyncInterval();
++      kcc_vsync_interval_query_time_ = last_vsync_time_;
++    }
+     // Handle pending frames asynchronously to avoid reentrancy issues in the
+     // caller.
+     task_runner_->PostTask(FROM_HERE,
+diff --git a/ui/gl/dcomp_presenter.h b/ui/gl/dcomp_presenter.h
+index 6d7a4636c..c7f9a7b3d 100644
+--- a/ui/gl/dcomp_presenter.h
++++ b/ui/gl/dcomp_presenter.h
+@@ -140,6 +140,10 @@ class GL_EXPORT DCompPresenter : public Presenter,
+   base::TimeTicks last_vsync_time_;
+   base::TimeDelta last_vsync_interval_;
+ 
++  // KCC (KccCacheVsyncInterval): when |last_vsync_interval_| was last queried
++  // from VSyncThreadWin on the non-GPU-vsync path of EnqueuePendingFrame().
++  base::TimeTicks kcc_vsync_interval_query_time_;
++
+   std::unique_ptr<DCLayerTree> layer_tree_;
+ 
+   // Set in the ctor. Indicates whether vsync is enabled for the process.

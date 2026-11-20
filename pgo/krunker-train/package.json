@@ -1,0 +1,7 @@
+{
+  "name": "krunker-pgo-train",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Training harness: runs Krunker in an instrumented Electron build to collect a PGO profile",
+  "main": "main.js"
+}

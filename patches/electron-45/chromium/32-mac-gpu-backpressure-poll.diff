@@ -1,0 +1,263 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: finer GPU back-pressure polling on macOS
+
+NOTE: this patch could not be measured where it was written (no macOS
+build, no trace) and is the least certain of the gp series. It rests on
+reading the code only. Treat the expected gain as a hypothesis to A/B.
+
+Stock behaviour
+---------------
+Two waits on the GPU main thread (CrGpuMain) apply back-pressure to a WebGL
+canvas on macOS. Both only wait when the previous frame's GPU work has not
+finished yet, and both have a 1-2 ms granularity.
+
+1. Command buffer deschedule.
+   third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.cc,
+   DrawingBuffer::FinishPrepareTransferableResourceGpu(), under
+   IS_MAC || IS_ANDROID, ends every exported frame with
+     gl_->DescheduleUntilFinishedCHROMIUM();
+   GLES2DecoderPassthroughImpl::DoDescheduleUntilFinishedCHROMIUM()
+   (gles2_cmd_decoder_passthrough_doers.cc) creates a gl::GLFence, keeps at
+   most two in deschedule_until_finished_fences_, and if the older one (the
+   previous frame) has not completed calls client()->OnDescheduleUntilFinished()
+   and returns error::kDeferLaterCommands. CommandBufferStub then does
+   command_buffer_->SetScheduled(false). The only thing that ever looks at
+   the fence again is the stub's timer:
+   gpu/ipc/service/command_buffer_stub.cc
+     const int64_t kHandleMoreWorkPeriodMs = 2;      // first poll
+     const int64_t kHandleMoreWorkPeriodBusyMs = 1;  // every poll after
+   ~ScopedContextOperation() -> ScheduleDelayedWork(2 ms) -> PollWork() ->
+   PerformWork() -> decoder->PerformPollingWork() ->
+   ProcessDescheduleUntilFinished() (HasCompleted() on the fence, then
+   OnRescheduleAfterFinished()) -> ScheduleDelayedWork(1 ms) and so on.
+   So once descheduled, the WebGL context resumes no earlier than 2 ms later
+   and then on a 1 ms grid.
+   The same two constants also pace, on every platform, the polling of
+   pending queries, idle work (GPU tracer, async ReadPixels) and WebGPU's
+   Dawn polling (WebGPUDecoderImpl::HasPollingWork). None of that is touched.
+
+2. Presenter fence wait.
+   ui/accelerated_widget_mac/ca_layer_tree_coordinator.mm,
+   CALayerTreeCoordinator::ApplyBackpressure(), called from
+   ImageTransportSurfaceOverlayMacEGL::CommitPresentedFrameToCA() for every
+   presented compositor frame, waits for the MTLSharedEvent fences of the
+   previously committed frame's overlay IOSurfaces (for the WebGL canvas:
+   the event ANGLE/Metal records when the context ends its write access, see
+   IOSurfaceImageBacking) in a loop around
+     base::PlatformThread::Sleep(base::Milliseconds(1));
+   This blocks the GPU main thread itself, i.e. also WebGL command decoding
+   for the next frame.
+
+Both are on the per-frame path with --disable-gpu-vsync
+--disable-frame-rate-limit: neither flag is consulted on these paths, and
+with VSyncAlignedPresentation off (the default) Present() normally commits
+to CoreAnimation immediately, through ApplyBackpressure() (frames flagged
+is_handling_interaction are held until the display link callback, which
+takes the same path). When the GPU is the
+limiting side at several hundred FPS, a wait that should last a fraction of
+a millisecond is rounded up to 1-2 ms, which is of the order of a frame.
+
+Change
+------
+macOS only (every changed line is inside BUILDFLAG(IS_MAC)), behind
+KccMacFineGpuBackpressure:
+
+- CommandBufferStub::ScheduleDelayedWork(): when the command buffer is
+  unscheduled - which in CommandBufferStub happens only between
+  OnDescheduleUntilFinished() and OnRescheduleAfterFinished() - the
+  requested delay is scaled so that the 1 ms repeat delay becomes poll_us
+  and the 2 ms first delay becomes 2 * poll_us. The upstream comment on the
+  constants explains that the first poll is deliberately longer ("or else
+  the timing of the fences could allow a pattern of alternating fast and
+  slow frames"), so the 2:1 shape is kept rather than flattened. Every
+  other use of the constants (command buffer scheduled) is unchanged.
+- CALayerTreeCoordinator::ApplyBackpressure(): the sleep between fence
+  checks is poll_us instead of 1 ms.
+
+The wait conditions themselves are untouched: back-pressure is exactly as
+strong as before, it is only noticed sooner.
+
+Because one feature is read from two components (gpu/ipc/service and
+ui/accelerated_widget_mac) and base::Feature must have a single definition
+per name, the feature and its param live in the anonymous namespace of
+ui/gl/gl_features.cc and both users call the exported accessor
+features::KccMacFineGpuBackpressurePollPeriod() (ui/gl/gl_features.h, IS_MAC
+only), which returns zero when the feature is off. Both components already
+depend on //ui/gl.
+
+Gating / A-B
+------------
+base::Feature KccMacFineGpuBackpressure, disabled by default.
+FeatureParam poll_us (int, microseconds, default 250, clamped to
+100..2000); feature state and param are read once. poll_us/1000 reproduces
+the stock timing with the feature on; values above 1000 are slower than
+stock.
+  --enable-features=KccMacFineGpuBackpressure
+  --enable-features=KccMacFineGpuBackpressure:poll_us/500
+With the feature off the accessor returns zero and both sites use the stock
+delays.
+Measure on macOS arm64, uncapped, in a GPU-heavy scene (the patch does
+nothing when the GPU keeps up): FPS and 1% lows; in a trace (categories
+gpu, cc) the duration of "GLES2DecoderPassthroughImpl::DescheduleUntilFinished"
+async slices, of "CALayerTreeCoordinator::ApplyBackpressure" and the
+Gpu.Mac.BackpressureUs histogram, and the count of
+"CommandBufferStub::PerformWork". If the two waits never show up in a stock
+trace of the game, this patch is not worth carrying.
+
+Risks / not verified
+--------------------
+- Nothing was compiled; macOS-only code paths, including an Objective-C++
+  file.
+- Timer precision: the deschedule poll is a base::DeadlineTimer (kPrecise)
+  on the GPU main thread's NS run loop pump, i.e. a CFRunLoopTimer with zero
+  tolerance; the presenter wait is nanosleep. Whether macOS actually
+  delivers ~250 us wake-ups there was not measured.
+- More wake-ups while GPU-bound: up to 1/poll_us PollWork tasks per second
+  per descheduled context, each doing MakeCurrent + query/readback/fence
+  checks, instead of 1000/s. With heavy GPU-bound content at low FPS this is
+  extra GPU-main-thread CPU for no benefit.
+- The upstream warning about alternating fast and slow frames was written
+  for the 2 ms first-poll delay; whether 2 * poll_us is still enough to
+  avoid that pattern is unknown. If frame times start alternating, raise
+  poll_us.
+- TimeDelta * double is used for the scaling (as upstream does elsewhere).
+
+diff --git a/gpu/ipc/service/command_buffer_stub.cc b/gpu/ipc/service/command_buffer_stub.cc
+index a8dc0b439..3c63876b8 100644
+--- a/gpu/ipc/service/command_buffer_stub.cc
++++ b/gpu/ipc/service/command_buffer_stub.cc
+@@ -49,6 +49,10 @@
+ #include "base/win/win_util.h"
+ #endif
+ 
++#if BUILDFLAG(IS_MAC)
++#include "ui/gl/gl_features.h"
++#endif
++
+ namespace gpu {
+ 
+ struct WaitForCommandState {
+@@ -247,6 +251,22 @@ void CommandBufferStub::ScheduleDelayedWork(base::TimeDelta delay) {
+     return;
+   }
+ 
++#if BUILDFLAG(IS_MAC)
++  // KCC (KccMacFineGpuBackpressure): the command buffer is unscheduled only
++  // between OnDescheduleUntilFinished() and OnRescheduleAfterFinished(), i.e.
++  // while WebGL back-pressure waits for the previous frame's fence, and this
++  // timer is the only thing that notices the fence completing. Scale the
++  // upstream 2 ms (first poll) / 1 ms (repeat) delays so that the 1 ms one
++  // becomes the configured period. Nothing else is affected.
++  if (!command_buffer_->scheduled()) {
++    const base::TimeDelta poll_period =
++        features::KccMacFineGpuBackpressurePollPeriod();
++    if (!poll_period.is_zero()) {
++      delay = poll_period * delay.InMillisecondsF();
++    }
++  }
++#endif  // BUILDFLAG(IS_MAC)
++
+   base::TimeTicks current_time = base::TimeTicks::Now();
+   // Just update the time if already scheduled.
+   if (process_delayed_work_timer_.IsRunning()) {
+diff --git a/ui/accelerated_widget_mac/ca_layer_tree_coordinator.mm b/ui/accelerated_widget_mac/ca_layer_tree_coordinator.mm
+index b71a9cab7..663e9d999 100644
+--- a/ui/accelerated_widget_mac/ca_layer_tree_coordinator.mm
++++ b/ui/accelerated_widget_mac/ca_layer_tree_coordinator.mm
+@@ -26,6 +26,7 @@
+ #if BUILDFLAG(IS_MAC)
+ #include "ui/display/mac/display_link_mac.h"
+ #include "ui/gl/gl_context.h"
++#include "ui/gl/gl_features.h"
+ #endif
+ 
+ namespace ui {
+@@ -115,7 +116,18 @@ void CALayerTreeCoordinator::ApplyBackpressure() {
+       }
+     }
+     if (!fences_signaled) {
+-      base::PlatformThread::Sleep(base::Milliseconds(1));
++      base::TimeDelta poll_period = base::Milliseconds(1);
++#if BUILDFLAG(IS_MAC)
++      // KCC (KccMacFineGpuBackpressure): this sleeps on the GPU main thread
++      // once per presented frame whose predecessor's GPU work is still in
++      // flight; at several hundred FPS a 1 ms quantum is most of a frame.
++      const base::TimeDelta kcc_poll_period =
++          features::KccMacFineGpuBackpressurePollPeriod();
++      if (!kcc_poll_period.is_zero()) {
++        poll_period = kcc_poll_period;
++      }
++#endif  // BUILDFLAG(IS_MAC)
++      base::PlatformThread::Sleep(poll_period);
+     }
+   }
+ 
+diff --git a/ui/gl/gl_features.cc b/ui/gl/gl_features.cc
+index 882ac8560..2e75aa146 100644
+--- a/ui/gl/gl_features.cc
++++ b/ui/gl/gl_features.cc
+@@ -4,6 +4,8 @@
+ 
+ #include "ui/gl/gl_features.h"
+ 
++#include <algorithm>
++
+ #include "base/byte_size.h"
+ #include "base/command_line.h"
+ #include "base/feature_list.h"
+@@ -92,6 +94,15 @@ void SplitAndAppendANGLEFeatureList(const std::string& list,
+   }
+ }
+ 
++#if BUILDFLAG(IS_MAC)
++// KCC: see KccMacFineGpuBackpressurePollPeriod(). |poll_us| is the polling
++// period in microseconds (default 250, clamped to 100..2000); 1000 reproduces
++// the upstream timing.
++BASE_FEATURE(kKccMacFineGpuBackpressure, base::FEATURE_DISABLED_BY_DEFAULT);
++constexpr base::FeatureParam<int> kKccMacFineGpuBackpressurePollUs{
++    &kKccMacFineGpuBackpressure, "poll_us", 250};
++#endif  // BUILDFLAG(IS_MAC)
++
+ }  // namespace
+ 
+ #if BUILDFLAG(IS_APPLE)
+@@ -164,6 +175,17 @@ bool UseGpuVsync() {
+          base::FeatureList::IsEnabled(features::kGpuVsync);
+ }
+ 
++#if BUILDFLAG(IS_MAC)
++base::TimeDelta KccMacFineGpuBackpressurePollPeriod() {
++  static const base::TimeDelta period =
++      base::FeatureList::IsEnabled(kKccMacFineGpuBackpressure)
++          ? base::Microseconds(
++                std::clamp(kKccMacFineGpuBackpressurePollUs.Get(), 100, 2000))
++          : base::TimeDelta();
++  return period;
++}
++#endif  // BUILDFLAG(IS_MAC)
++
+ bool IsAndroidFrameDeadlineEnabled() {
+ #if BUILDFLAG(IS_ANDROID)
+   static bool enabled = base::android::android_info::sdk_int() >=
+diff --git a/ui/gl/gl_features.h b/ui/gl/gl_features.h
+index cdba376f6..b99828daf 100644
+--- a/ui/gl/gl_features.h
++++ b/ui/gl/gl_features.h
+@@ -21,6 +21,15 @@ GL_EXPORT bool UseGpuVsync();
+ // Controls if vsync interval should be based on compositor clock.
+ GL_EXPORT bool UseCompositorClockVSyncInterval();
+ 
++#if BUILDFLAG(IS_MAC)
++// KCC: polling period for the two places where the GPU main thread waits for a
++// previous frame's GPU work on macOS: the command buffer's
++// DescheduleUntilFinished poll (CommandBufferStub) and CALayerTreeCoordinator's
++// back-pressure fence wait. Zero when the KccMacFineGpuBackpressure feature is
++// disabled, in which case callers keep their upstream 1-2 ms timing.
++GL_EXPORT base::TimeDelta KccMacFineGpuBackpressurePollPeriod();
++#endif  // BUILDFLAG(IS_MAC)
++
+ #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
+ // All features in alphabetical order. The features should be documented
+ // alongside the definition of their values in the .cc file.

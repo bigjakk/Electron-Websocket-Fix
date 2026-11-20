@@ -1,0 +1,196 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: cheaper WM_INPUT handling while raw mouse input is in use
+
+Two independent savings in ui/views/win/hwnd_message_handler.cc for the
+time pointer lock with unadjustedMovement is held (using_wm_input_ true).
+Both run on the browser UI thread once per mouse report (1000-8000 Hz).
+
+1. HWNDMessageHandler::OnInputEvent
+
+Stock: every WM_INPUT costs two GetRawInputData() calls (a size query with
+a null buffer, then the read) and one heap allocation:
+
+  auto buffer = std::make_unique<uint8_t[]>(size);
+
+With the feature enabled the packet is read with a single GetRawInputData()
+call into a RAWINPUT on the stack. RAWINPUT's data union is sized by
+RAWMOUSE, so a mouse packet is exactly sizeof(RAWINPUT) bytes. The stack
+copy is used only if the call returns exactly sizeof(RAWINPUT); if it
+returns (UINT)-1 (for example ERROR_INSUFFICIENT_BUFFER for a larger HID
+packet) or any other size, the code falls through to the unchanged stock
+two-call path, which also keeps the stock error logging. Calling
+GetRawInputData() again for the same handle is what stock already does.
+The rest of the handler (button state, event construction,
+DefRawInputProc) is shared and unchanged. The stock lines are only
+re-indented into an "if (!input)" block.
+
+2. HWNDMessageHandler::HandleMouseEventInternal
+
+Raw input is registered without RIDEV_NOLEGACY, so Windows still posts a
+legacy WM_MOUSEMOVE for the (hidden, clipped) cursor. Stock drops it late:
+
+  if (using_wm_input_ && (event.type() == ui::EventType::kMouseMoved ||
+                          event.type() == ui::EventType::kMouseDragged)) {
+    return 0;
+  }
+
+Before reaching that line it has already built a ui::MouseEvent from the
+message (event type/flags/location from the MSG, several GetKeyState()
+calls for modifiers and lock keys, two clock reads, GetTickCount(), latency
+info) and run IsSynthesizedMouseMessage(). With the feature enabled a
+WM_MOUSEMOVE received while using_wm_input_ returns 0 just before that
+construction. What stock does for such a message before dropping it, and
+how the early return treats it:
+  - pen-active filter and the touch-synthesized-message block at the top of
+    the function: still run, the early return sits after them;
+  - TrackMouseEvents(TME_LEAVE) when the message is a plain move (no button
+    in wParam, i.e. EventType::kMouseMoved), track_mouse is set and the
+    window does not hold capture: kept, same condition;
+  - return value 0 with the message left marked handled: same;
+  - building the ui::MouseEvent: skipped. Its only lasting effect for a
+    move is refreshing the function-static "last_known_location" inside
+    ui::EventLocationFromMSG(), a fallback position used for a later
+    WM_MOUSELEAVE or scroll message if GetCursorPos() fails. Other mouse
+    messages keep refreshing it. Not preserved on purpose.
+No tooltip, activity or delegate call happens on the stock path before the
+drop, so nothing else is lost. WM_NCMOUSEMOVE is left on the stock path
+(the cursor is clipped to the client area while locked, so it is not hot).
+Messages forwarded from the legacy child HWND arrive through
+HandleMouseMessage() with track_mouse == false and take the same early
+return.
+
+GetRawInputBuffer() batching was considered and left out: it drains the
+pending raw packets ahead of the legacy button, key and wheel messages
+queued between them, and the page receives presses from those legacy
+messages, so motion made after a click could be delivered before the click.
+I could not show that this is safe.
+
+Gating: base::Feature KccRawInputFastPath, disabled by default, defined in
+the anonymous namespace of hwnd_message_handler.cc and read once. Browser
+process only. With the feature off OnInputEvent takes the stock two-call
+path and HandleMouseEventInternal is unchanged.
+
+A/B: --enable-features=KccRawInputFastPath. With an 8000 Hz mouse moving
+continuously under pointer lock, compare browser-process UI-thread CPU
+(ETW/WPA: time under HWNDMessageHandler::OnInputEvent and
+HandleMouseEventInternal, NtUserGetRawInputData call count). Expect a small
+gain: one syscall and one malloc/free per report, plus the event
+construction per legacy move; none of this was measured. Functional checks:
+movementX/Y sums unchanged, buttons and wheel unchanged, mouseleave still
+fires after pointer lock ends and the cursor leaves the window.
+
+Platforms: Windows only.
+
+Not verified: nothing was compiled. Whether Windows keeps posting
+WM_MOUSEMOVE at the full report rate while the hidden cursor is pinned
+against the clip rectangle was not measured; if it does not, part 2 simply
+runs less often.
+
+diff --git a/ui/views/win/hwnd_message_handler.cc b/ui/views/win/hwnd_message_handler.cc
+index b0eed3081..bedcf0593 100644
+--- a/ui/views/win/hwnd_message_handler.cc
++++ b/ui/views/win/hwnd_message_handler.cc
+@@ -323,6 +323,18 @@ bool RawWheelPacketHasMotion(const RAWMOUSE& mouse) {
+          (mouse.lLastX != 0 || mouse.lLastY != 0);
+ }
+ 
++// kcc: Cheaper per-packet handling while raw mouse input (WM_INPUT) is in use:
++// one GetRawInputData() call into a stack buffer instead of a size query plus
++// a heap allocation, and no ui::MouseEvent construction for the legacy
++// WM_MOUSEMOVE messages that are dropped anyway.
++BASE_FEATURE(kKccRawInputFastPath, base::FEATURE_DISABLED_BY_DEFAULT);
++
++bool RawInputFastPathEnabled() {
++  static const bool enabled =
++      base::FeatureList::IsEnabled(kKccRawInputFastPath);
++  return enabled;
++}
++
+ }  // namespace
+ 
+ class HWNDMessageHandler::ScopedWndProcDepth {
+@@ -2458,26 +2470,43 @@ LRESULT HWNDMessageHandler::OnInputEvent(UINT message,
+ 
+   HRAWINPUT input_handle = reinterpret_cast<HRAWINPUT>(l_param);
+ 
+-  // Get the size of the input record.
+-  UINT size = 0;
+-  UINT result = ::GetRawInputData(input_handle, RID_INPUT, nullptr, &size,
+-                                  sizeof(RAWINPUTHEADER));
+-  if (result == static_cast<UINT>(-1)) {
+-    PLOG(ERROR) << "GetRawInputData() failed";
+-    return 0;
++  // kcc: a mouse packet is exactly sizeof(RAWINPUT) bytes, so try to read it
++  // into a stack RAWINPUT with one GetRawInputData() call. Anything else (the
++  // call fails, e.g. because the packet is larger, or returns a different
++  // size) falls through to the stock size-query + heap-buffer path below.
++  RAWINPUT stack_input;
++  RAWINPUT* input = nullptr;
++  std::unique_ptr<uint8_t[]> buffer;
++  if (RawInputFastPathEnabled()) {
++    UINT stack_size = sizeof(stack_input);
++    if (::GetRawInputData(input_handle, RID_INPUT, &stack_input, &stack_size,
++                          sizeof(RAWINPUTHEADER)) == sizeof(stack_input)) {
++      input = &stack_input;
++    }
+   }
+-  DCHECK_EQ(0u, result);
+ 
+-  // Retrieve the input record.
+-  auto buffer = std::make_unique<uint8_t[]>(size);
+-  RAWINPUT* input = reinterpret_cast<RAWINPUT*>(buffer.get());
+-  result = ::GetRawInputData(input_handle, RID_INPUT, buffer.get(), &size,
+-                             sizeof(RAWINPUTHEADER));
+-  if (result == static_cast<UINT>(-1)) {
+-    PLOG(ERROR) << "GetRawInputData() failed";
+-    return 0;
++  if (!input) {
++    // Get the size of the input record.
++    UINT size = 0;
++    UINT result = ::GetRawInputData(input_handle, RID_INPUT, nullptr, &size,
++                                    sizeof(RAWINPUTHEADER));
++    if (result == static_cast<UINT>(-1)) {
++      PLOG(ERROR) << "GetRawInputData() failed";
++      return 0;
++    }
++    DCHECK_EQ(0u, result);
++
++    // Retrieve the input record.
++    buffer = std::make_unique<uint8_t[]>(size);
++    input = reinterpret_cast<RAWINPUT*>(buffer.get());
++    result = ::GetRawInputData(input_handle, RID_INPUT, buffer.get(), &size,
++                               sizeof(RAWINPUTHEADER));
++    if (result == static_cast<UINT>(-1)) {
++      PLOG(ERROR) << "GetRawInputData() failed";
++      return 0;
++    }
++    DCHECK_EQ(size, result);
+   }
+-  DCHECK_EQ(size, result);
+ 
+   if (input->header.dwType == RIM_TYPEMOUSE &&
+       (input->data.mouse.usButtonFlags != RI_MOUSE_WHEEL ||
+@@ -3503,6 +3532,21 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
+     }
+   }
+ 
++  // kcc: while raw input is in use a legacy WM_MOUSEMOVE is always dropped by
++  // the |using_wm_input_| check further down. Drop it here instead, before a
++  // ui::MouseEvent is built for it. The one thing the stock path does for such
++  // a message before dropping it, starting WM_MOUSELEAVE tracking, is kept.
++  if (using_wm_input_ && message == WM_MOUSEMOVE && RawInputFastPathEnabled()) {
++    // As in ui::EventTypeFromMSG(): with a button down the message is an
++    // EventType::kMouseDragged, which does not start tracking.
++    const bool is_drag = (w_param & (MK_LBUTTON | MK_MBUTTON | MK_RBUTTON |
++                                     MK_XBUTTON1 | MK_XBUTTON2)) != 0;
++    if (!is_drag && track_mouse && !HasCapture()) {
++      TrackMouseEvents(TME_LEAVE);
++    }
++    return 0;
++  }
++
+   LONG message_time = GetMessageTime();
+   CHROME_MSG msg = {hwnd(),
+                     message,

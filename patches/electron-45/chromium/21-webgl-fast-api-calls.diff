@@ -1,0 +1,209 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: [NoAllocDirectCall] on 8 more hot WebGL methods (V8 fast API calls)
+
+Build-time only (IDL); no runtime flag, no C++ change.
+
+Stock state at 156.0.8078.100
+-----------------------------
+[NoAllocDirectCall] makes the bindings generator emit, next to the normal
+FunctionCallbackInfo callback, a C function that TurboFan-optimised code
+calls directly (v8::CFunction registered through
+FunctionTemplate::NewWithCFunctionOverloads in
+platform/bindings/idl_member_installer.cc).
+
+webgl_rendering_context_base.idl has it on (42 declarations): bindBuffer,
+bindFramebuffer, bindTexture, clear, clearColor, clearDepth, clearStencil,
+colorMask, disableVertexAttribArray, drawArrays, drawElements,
+enableVertexAttribArray, scissor, uniform{1,2,3,4}{f,i},
+uniform{1,2,3,4}{f,i}v, uniformMatrix{2,3,4}fv, vertexAttrib{1,2,3,4}f,
+vertexAttrib{1,2,3,4}fv, vertexAttribPointer, viewport.
+webgl2_rendering_context_base.idl has it on (28): the
+uniform{1,2,3,4}{f,i,ui}v and uniformMatrix{2,3,4,2x3,3x2,2x4,4x2,3x4,4x3}fv
+overloads, vertexAttribI4iv, vertexAttribI4uiv, drawBuffers,
+clearBuffer{iv,uiv,fv,fi}.
+It is absent from activeTexture, enable, disable, useProgram (WebGL1 base)
+and bindVertexArray, drawArraysInstanced, drawElementsInstanced,
+vertexAttribDivisor (WebGL2 base). three.js calls bindVertexArray,
+useProgram, activeTexture and drawElements[Instanced] per draw, and
+bindVertexArray was the most expensive single binding in the game trace.
+
+The contract at this tag (differs from the task description)
+------------------------------------------------------------
+The "no allocation" contract no longer exists in this tree:
+- platform/bindings/no_alloc_direct_call_host.{h,cc} do not exist; there
+  is no NoAllocDirectCallHost, no IsInFastMode, no deferrable-action
+  mechanism anywhere under third_party/blink.
+- bindings/IDLExtendedAttributes.md, [NoAllocDirectCall]: "the NoAlloc
+  portion of the name is historical only, as nowadays it is allowed to
+  allocate memory, and it is also allowed to throw exceptions and to call
+  back to JavaScript." The only stated requirement is that all overloads
+  with the same argument count are annotated consistently (asserted in
+  web_idl/idl_compiler.py).
+- V8 15.6 agrees (src/compiler/turboshaft/fast-api-call-lowering-reducer.h):
+  the C call is emitted with a lazy frame state (kNeedsFrameState,
+  CanThrow), the current context is stored into the isolate before the
+  call, and isolate->exception is checked and propagated after it. (The
+  header comment in include/v8-fast-api-calls.h still says "should not
+  allocate", but FastApiCallbackOptions has no fallback field any more.)
+- The already-annotated methods confirm it: bindBuffer, drawArrays and
+  drawElements call SynthesizeGLError() directly, which allocates a
+  ConsoleMessage on the Oilpan heap, calls AddConsoleMessage and
+  probe::DidFireWebGLError, and they write Member<> fields, all with no
+  deferral.
+So a wrong annotation is no longer a memory-safety bug by itself. What is
+left to check is what the generated fast callback does differently from
+the slow one.
+
+What the generator emits (bind_gen/interface.py,
+make_no_alloc_direct_call_callback_def)
+- Signature: (v8::Local<v8::Object> receiver, args...,
+  v8::FastApiCallbackOptions&). Numeric and boolean IDL types become the
+  same C++ value types the slow path produces (unsigned long -> uint32_t,
+  long -> int32_t, long long -> int64_t). Interface types, nullable or not,
+  are passed as v8::Local<v8::Value> and converted inside the callback with
+  the same NativeValueTraits<IDLNullable<T>>::ArgumentValue() call as the
+  slow path, under a HandleScope and a local ExceptionState; a wrong type
+  throws the same TypeError and returns. So "WebGLVertexArrayObject?" and
+  "WebGLProgram?" are handled exactly like the precedent "WebGLBuffer?".
+- Receiver: ToWrappableUnsafe(), relying on V8 having checked the receiver
+  map against the template signature (JSCallReducer::ReduceCallApiFunction
+  does not inline otherwise). Same as every precedent.
+- It then calls the same C++ member with the same argument expressions.
+- It skips, relative to the slow callback: the RuntimeCallStats scope and
+  BLINK_BINDINGS_TRACE_EVENT (both compiled out unless special build flags
+  are set), the argument-count check (V8 only picks a C function whose
+  parameter count equals the argument count at the call site,
+  fast_api_call::GetFastApiCallTarget), and the [MeasureAs], [DeprecateAs],
+  [LogActivity], [CEReactions], [CallWith], [RaisesException] steps. None
+  of the eight operations carries any extended attribute, so nothing is
+  lost.
+- V8 uses the C function only when a numeric argument is already a Number
+  (CheckedNumberAsWord32 / CheckedSigned64AsWord64); anything else
+  deoptimises to the slow callback, so WebIDL conversion semantics are
+  unchanged.
+
+Per-method audit (GL-backed WebGLRenderingContextBase and
+WebGL2RenderingContextBase)
+- bindVertexArray(WebGLVertexArrayObject?): ANNOTATED. isContextLost ->
+  ValidateNullableWebGLObject (same helper as bindBuffer) ->
+  BindVertexArrayOES -> SetHasEverBeenBound -> SetBoundVertexArrayObject
+  (one Member<> write). A subset of what bindBuffer does.
+- useProgram(WebGLProgram?): ANNOTATED. Virtual; the WebGL2 override
+  checks transform feedback state and then calls the base. Base:
+  ValidateNullableWebGLObject, WebGLProgram::LinkStatus (may issue one
+  synchronous GetProgramiv the first time after a link; plain GL, no V8),
+  WebGLObject::OnDetached (may DeleteProgram), a Member<> write,
+  OnAttached. Virtual dispatch from a fast callback is already exercised
+  by the annotated bindFramebuffer.
+- activeTexture(GLenum): ANNOTATED. Range check, SynthesizeGLError on
+  failure, one integer write, ActiveTexture.
+- enable(GLenum), disable(GLenum): ANNOTATED. ValidateCapability (WebGL2
+  override plus base; ExtensionEnabled lookups, SynthesizeGLError), bool
+  writes, ApplyDepthAndStencilTest (reads framebuffer / drawing buffer
+  state, then Enable/Disable).
+- drawArraysInstanced, drawElementsInstanced: ANNOTATED. Identical to the
+  annotated drawArrays / drawElements (ValidateDrawArrays /
+  ValidateDrawElements + DrawWrapper) except for the GL entry point. The
+  GLintptr (int64_t) argument has the drawElements precedent.
+- vertexAttribDivisor(GLuint, GLuint): ANNOTATED. Same shape as the
+  annotated enableVertexAttribArray.
+Rejected: none. No C++ change was needed for any of them.
+
+Neighbours
+- None of the eight names is declared a second time in the other mixin or
+  in a partial interface, so no overload group changes (the WebGL1
+  extension variants drawArraysInstancedANGLE, vertexAttribDivisorANGLE and
+  bindVertexArrayOES live on extension objects and are untouched).
+- The two mixins are also included by WebGLRenderingContextWebGPU and
+  WebGL2RenderingContextWebGPU (RuntimeEnabled=WebGLOnWebGPU, no status,
+  i.e. off). They get the same fast callbacks. Their implementations in
+  webgl_rendering_context_webgpu_base.cc were read too: activeTexture,
+  enable, disable, useProgram and vertexAttribDivisor forward to driver_gl_
+  with the same ValidateNullableObject / RETURN_IF_GL_ERROR helpers as the
+  annotated bindBuffer there; bindVertexArray, drawArraysInstanced and
+  drawElementsInstanced are NOTIMPLEMENTED(). Nothing new.
+- modules/webgpu IDL is separate and untouched. There is no webgl2_compute
+  context at this tag.
+
+A/B
+- Per patch: build with and without this commit.
+- At runtime, --js-flags=--no-turbo-fast-api-calls turns off all fast API
+  calls (the pre-existing ones too); useful as a kill switch and to bound
+  the total gain, not to isolate this patch.
+- Measure: FPS / frame time in a scene with many draw calls; renderer
+  main-thread samples under the V8 API-callback builtin
+  (Builtins_CallApiCallbackOptimized*) for these methods should move to the
+  direct C++ frames.
+
+Platforms: all. On 32-bit targets V8 does not use C functions with 64-bit
+parameters (drawElementsInstanced), as for drawElements today.
+
+Not verified: nothing was generated or compiled here. The fast path is
+taken only from TurboFan code, so the gain depends on the call sites being
+optimised and monomorphic.
+
+diff --git a/third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl b/third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl
+index 716699967..d3d48b0ec 100644
+--- a/third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl
++++ b/third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl
+@@ -444,9 +444,9 @@ interface mixin WebGL2RenderingContextBase {
+     void vertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, GLintptr offset);
+ 
+     /* Writing to the drawing buffer */
+-    void vertexAttribDivisor(GLuint index, GLuint divisor);
+-    void drawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei instanceCount);
+-    void drawElementsInstanced(GLenum mode, GLsizei count, GLenum type, GLintptr offset, GLsizei instanceCount);
++    [NoAllocDirectCall] void vertexAttribDivisor(GLuint index, GLuint divisor);
++    [NoAllocDirectCall] void drawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei instanceCount);
++    [NoAllocDirectCall] void drawElementsInstanced(GLenum mode, GLsizei count, GLenum type, GLintptr offset, GLsizei instanceCount);
+     void drawRangeElements(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, GLintptr offset);
+ 
+     /* Multiple Render Targets */
+@@ -511,7 +511,7 @@ interface mixin WebGL2RenderingContextBase {
+     WebGLVertexArrayObject createVertexArray();
+     void deleteVertexArray(WebGLVertexArrayObject? vertexArray);
+     GLboolean isVertexArray(WebGLVertexArrayObject? vertexArray);
+-    void bindVertexArray(WebGLVertexArrayObject? vertexArray);
++    [NoAllocDirectCall] void bindVertexArray(WebGLVertexArrayObject? vertexArray);
+ 
+     /* Reading */
+     void readPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type,
+diff --git a/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.idl b/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.idl
+index b52eae0a6..9febd38f7 100644
+--- a/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.idl
++++ b/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.idl
+@@ -472,7 +472,7 @@ interface mixin WebGLRenderingContextBase {
+     [RuntimeEnabled=WebGLToneMapping] CanvasToneMapping drawingBufferToneMapping(optional CanvasToneMapping toneMapping);
+     [CallWith=ScriptState, RaisesException=Setter] attribute PredefinedColorSpace unpackColorSpace;
+ 
+-    void activeTexture(GLenum texture);
++    [NoAllocDirectCall] void activeTexture(GLenum texture);
+     void attachShader(WebGLProgram program, WebGLShader shader);
+     void bindAttribLocation(WebGLProgram program, GLuint index, DOMString name);
+     [NoAllocDirectCall] void bindBuffer(GLenum target, WebGLBuffer? buffer);
+@@ -530,12 +530,12 @@ interface mixin WebGLRenderingContextBase {
+     void depthMask(GLboolean flag);
+     void depthRange(GLclampf zNear, GLclampf zFar);
+     void detachShader(WebGLProgram program, WebGLShader shader);
+-    void disable(GLenum cap);
++    [NoAllocDirectCall] void disable(GLenum cap);
+     [NoAllocDirectCall] void disableVertexAttribArray(GLuint index);
+     [NoAllocDirectCall] void drawArrays(GLenum mode, GLint first, GLsizei count);
+     [NoAllocDirectCall] void drawElements(GLenum mode, GLsizei count, GLenum type, GLintptr offset);
+ 
+-    void enable(GLenum cap);
++    [NoAllocDirectCall] void enable(GLenum cap);
+     [NoAllocDirectCall] void enableVertexAttribArray(GLuint index);
+     void finish();
+     void flush();
+@@ -704,7 +704,7 @@ interface mixin WebGLRenderingContextBase {
+     [NoAllocDirectCall] void uniformMatrix3fv(WebGLUniformLocation? location, GLboolean transpose, Float32List array);
+     [NoAllocDirectCall] void uniformMatrix4fv(WebGLUniformLocation? location, GLboolean transpose, Float32List array);
+ 
+-    void useProgram(WebGLProgram? program);
++    [NoAllocDirectCall] void useProgram(WebGLProgram? program);
+     void validateProgram(WebGLProgram program);
+ 
+     [NoAllocDirectCall] void vertexAttrib1f(GLuint indx, GLfloat x);

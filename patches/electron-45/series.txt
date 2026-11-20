@@ -1,0 +1,24 @@
+# <root> <file> <group>
+chromium 01-ws-priority.diff ported
+chromium 02-frame-pacing.diff ported
+chromium 03-frame-cap.diff ported
+electron 01-frame-cap-set-frame-cap.diff ported
+chromium 10-keyup-after-handled-keydown.diff input
+chromium 11-pointer-lock-esc-cooldown.diff input
+chromium 12-pin-raw-pointer-lock.diff input
+chromium 13-raw-input-keep-wheel-motion.diff input
+chromium 14-raw-input-fast-path.diff input
+chromium 15-lean-locked-mouse-move.diff input
+electron 10-skip-unobserved-input-emits.diff input
+chromium 20-skip-canvas-perf-sampling.diff render
+chromium 21-webgl-fast-api-calls.diff render
+v8 01-cppgc-sweep-slice.diff render
+chromium 30-label-textures-once.diff gpu
+chromium 31-cache-vsync-interval.diff gpu
+chromium 32-mac-gpu-backpressure-poll.diff gpu
+chromium 40-audioparam-coalesce.diff audio
+chromium 41-hrtf-panner-krate-angles.diff audio
+chromium 50-x11-allow-unredirect.diff linux
+chromium 51-x11-raw-mouse.diff linux
+chromium 60-frame-cap-precise-release.diff framecap
+chromium 61-frame-cap-late-latch.diff framecap

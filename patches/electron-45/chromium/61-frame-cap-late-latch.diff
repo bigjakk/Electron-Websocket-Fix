@@ -1,0 +1,524 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: frame cap: start the client frame at the ack release (late input latch)
+
+Feature: KccFrameCapLateLatch (default off), param slack_pct (default 25,
+clamped to 0..90). All platforms; it only acts on
+BackToBackBeginFrameSource, i.e. with --disable-frame-rate-limit, and only
+while a frame cap limits the frame rate with room to spare.
+
+What the stock code does (with ws-priority, frame-pacing and frame-cap
+applied; one renderer, cap period P, renderer turnaround r << P, one
+pending swap as on DirectComposition with two buffers)
+-----------------------------------------------------------------------
+At each grid time T_k DisplayScheduler::RunDelayedSwapBuffersAck() ->
+DidReceiveSwapBuffersAckImpl() -> BeginFrameSource::SetIsGpuBusy(false) ->
+BackToBackBeginFrameSource::OnGpuNoLongerBusy() -> OnTimerTick(), which in
+one task
+  1. sends the renderer its next BeginFrame
+     (CompositorFrameSinkSupport::OnBeginFrame), and
+  2. through IssueBeginFrameToSchedulerClient() ->
+     DisplayScheduler::OnBeginFrame() -> OnBeginFrameDeadline() draws and
+     swaps the frame the renderer submitted at T_(k-1) + r. That draw also
+     sends the renderer its DidReceiveCompositorFrameAck
+     (DisplayDamageTracker::RunDrawCallbacks) and sets gpu-busy again.
+The renderer gets BeginFrame then ack, and
+SchedulerStateMachine::ShouldSendBeginMainFrame() turns true as soon as
+the ack clears IsDrawThrottled(): BeginMainFrame (input dispatch, rAF)
+starts at about T_k + 0.1 ms. The frame is submitted at T_k + r and then
+sits in viz: DisplayScheduler::DesiredBeginFrameDeadlineMode() says "Swap
+throttled" until the next release, where it is drawn at T_(k+1).
+
+So the frame presented at T_(k+1) sampled its input at T_k: one full cap
+period earlier (4.2 ms at 240, 6.9 ms at 144), whatever r is.
+
+The survey named the just_submitted_in_deadline exception in
+ShouldSendBeginMainFrame() as the cause. It is not involved:
+did_send_begin_main_frame_for_current_frame_ prevents a second
+BeginMainFrame in the impl frame that submitted, and the next BeginFrame
+does wait for the release. The wait is simply spent after rendering
+instead of before it. What keeps it that way is in viz:
+BeginFrameSource::RequestCallbackOnGpuAvailable() lets one BeginFrame
+through after the display has swapped (kOneBeginFrameAfterBusySent), and a
+client that submits before the display has swapped gets a BeginFrame
+straight away; either gives the client a head start of one frame, and once
+a frame is queued behind the held ack the cycle above repeats forever.
+
+What this patch changes
+-----------------------
+While the latch is engaged (see 3):
+1. components/viz/common/frame_sinks/begin_frame_source.cc,
+   RequestCallbackOnGpuAvailable(): no BeginFrame at all while the gpu is
+   busy; the state goes from kIdle straight to kThrottled. The next
+   BeginFrame is the one OnGpuNoLongerBusy() sends at the ack release.
+2. components/viz/service/frame_sinks/compositor_frame_sink_support.cc,
+   OnBeginFrame(): a sink that still has a submitted frame the display has
+   not drawn (pending_frames_ > 0) skips the BeginFrame and does not call
+   DidFinishFrame(), so the source sends it nothing more;
+   DidReceiveCompositorFrameAck() calls DidFinishFrame() when that frame
+   is drawn. This empties the one-frame queue of the stock order and
+   closes the "submitted before the swap" path. It applies only when the
+   sink is the only frame sink observing the source
+   (BackToBackBeginFrameSource::ShouldHoldBeginFrameUntilFrameAck()), and
+   never to the root sink, a bundled sink, a sink with a LayerContext, a
+   sink with surfaces pending activation or one whose embedder is blocked
+   on it.
+3. components/viz/service/display/display_scheduler.cc decides when the
+   latch is engaged. A client that starts at the release cannot overlap
+   its frame with the previous swap any more, so it must fit r plus the
+   swap-to-ack time into P. MaybeEngageFrameCapLateLatch() runs when a
+   held ack is released in the stock order and measures exactly that:
+   (time the ack has waited) + (time the queued frame has waited) - P is
+   the time the ack would be held without pipelining. The latch engages
+   when that is at least slack_pct of P. DidReceiveSwapBuffersAck()
+   disengages it at the first ack that arrives after its grid slot;
+   SetFrameCapInterval() and the destructor disengage it too.
+
+Resulting order: ack release at T_k -> BeginFrame -> BeginMainFrame at
+T_k + ~0.1 ms -> submit at T_k + r -> drawn at once (no swap pending) ->
+nothing more until T_(k+1). Input is r old at the swap instead of P.
+
+Trade-offs
+----------
+* Pacing. Stock presents sit on the release grid, because a finished frame
+  is always waiting. With the latch they land at T_k + r + draw time, so
+  the present-to-present interval now carries the frame-to-frame variation
+  of r. Mean FPS is unchanged: the grid still paces the releases.
+* A frame that takes longer than P is late by its overrun instead of being
+  hidden by the queue. Its ack then arrives after its slot, the latch
+  drops out, and the stock pipelining is back until a release shows enough
+  slack again. Dropping out and re-engaging each cost one long interval
+  (about P + r), so a client close to the cap should stay in the stock
+  order; that is what slack_pct is for. A cap the machine cannot reach, or
+  can only reach by pipelining, never engages the latch.
+* Several frame sinks animating in one window (a second WebContentsView,
+  the browser UI, a video, a capture): the hold in (2) is off, every sink
+  starts at each release and is drawn at the next, as in the stock code.
+  Only the single-sink case gets the late latch.
+* The root (browser UI) sink can no longer get one BeginFrame during the
+  hold; its next frame starts at the release, at most P later.
+* With CustomMaxPendingFrames:count/2 the renderer could start a frame
+  without waiting for its ack; viz now withholds the BeginFrame, so the
+  latch works the same. Uncapped, nothing is touched: no ack is held, so
+  the latch never engages.
+
+No new waits are introduced: (1) is released by the same swap-ack ledger
+that already releases the gpu-busy latch (timer, FlushPendingSwapAckDelay
+on resize and forced swaps, SetFrameCapInterval, ~DisplayScheduler), and
+(2) by the frame ack that every submitted frame gets.
+
+How to A/B
+----------
+--enable-features=KccFrameCapLateLatch with a cap well below what the
+machine can render (CustomFrameCap:fps/144 or win.setFrameCap(144)).
+* In a trace with viz,cc,benchmark: time from "Scheduler::BeginImplFrame"
+  (or the BeginMainFrame) in the renderer to the
+  "Graphics.Pipeline.DrawAndSwap" that shows that frame. Expect about P
+  without the flag and about r with it.
+* "SendBeginFrameDecision" events with reason HoldUntilFrameAck should be
+  rare in steady state (they mark a queue being drained).
+* End to end: click-to-photon or mouse-to-photon with a latency tester;
+  expect a drop of about P - r.
+* PresentMon msBetweenPresents: mean unchanged, spread wider by the
+  variation of r.
+* Regression checks: resize the window while capped, hide/show it, change
+  the cap at runtime (also to 0 and back), open a second view that
+  animates, and set caps at and above what the machine reaches: FPS must
+  not be lower than with the flag off. If it is, raise slack_pct.
+
+Not verified (nothing was compiled or run)
+------------------------------------------
+* The timeline was read from source, not traced. In particular the task
+  order on the viz thread at frame arrival (deadline task before tick) is
+  inferred from both being immediate tasks posted in that order.
+* The slack measurement and the 25% default are untested.
+* macOS has two pending swaps (three buffers). The latch should work the
+  same way there (gpu-busy is reached at two outstanding swaps), but the
+  slack measurement uses the newest held ack and may be too pessimistic to
+  ever engage it.
+* --disable-features=DisplaySchedulerAsClient was checked by reading only.
+  There the DisplayScheduler draws from inside its own observer callback,
+  so while the latch is engaged BackToBackBeginFrameSource::OnTimerTick()
+  calls that observer after the frame sinks, as the default mode does
+  through IssueBeginFrameToSchedulerClient(). Otherwise a sink could be
+  asked only after the display had drawn (and acked) its queued frame, and
+  the queue would never be emptied.
+
+diff --git a/components/viz/common/frame_sinks/begin_frame_source.cc b/components/viz/common/frame_sinks/begin_frame_source.cc
+index 943494cb1..61194b455 100644
+--- a/components/viz/common/frame_sinks/begin_frame_source.cc
++++ b/components/viz/common/frame_sinks/begin_frame_source.cc
+@@ -171,6 +171,10 @@ void BeginFrameSource::SetIsGpuBusy(bool busy) {
+   }
+ }
+ 
++bool BeginFrameSource::ShouldHoldBeginFrameUntilFrameAck() const {
++  return false;
++}
++
+ void BeginFrameSource::SetSchedulerClient(SchedulerClient* scheduler_client) {
+   scheduler_client_ = scheduler_client;
+ }
+@@ -193,6 +197,13 @@ bool BeginFrameSource::RequestCallbackOnGpuAvailable() {
+ 
+   switch (gpu_busy_response_state_) {
+     case GpuBusyThrottlingState::kIdle:
++      if (no_begin_frame_while_gpu_busy_) {
++        // KCC KccFrameCapLateLatch: a client that got this begin-frame would
++        // render a frame that can only be drawn after the gpu stops being
++        // busy; make it start then instead.
++        gpu_busy_response_state_ = GpuBusyThrottlingState::kThrottled;
++        return true;
++      }
+         gpu_busy_response_state_ =
+             GpuBusyThrottlingState::kOneBeginFrameAfterBusySent;
+         return false;
+@@ -328,6 +339,27 @@ void BackToBackBeginFrameSource::OnGpuNoLongerBusy() {
+   OnTimerTick();
+ }
+ 
++void BackToBackBeginFrameSource::SetFrameCapLateLatch(
++    BeginFrameObserver* scheduler_observer) {
++  frame_cap_scheduler_observer_ = scheduler_observer;
++  set_no_begin_frame_while_gpu_busy(!!scheduler_observer);
++}
++
++bool BackToBackBeginFrameSource::ShouldHoldBeginFrameUntilFrameAck() const {
++  if (!frame_cap_scheduler_observer_) {
++    return false;
++  }
++  // Only while the caller is the one frame sink being driven. Each swap takes
++  // a whole cap period, so with several sinks submitting at different times
++  // the one that comes second always finds the display busy; holding it back
++  // at the next release as well would leave every sink with half the frames.
++  // Without the hold they all start at each release and are drawn at the
++  // next, which is the stock behaviour.
++  const size_t scheduler_observers =
++      observers_.contains(frame_cap_scheduler_observer_.get()) ? 1u : 0u;
++  return observers_.size() - scheduler_observers == 1u;
++}
++
+ void BackToBackBeginFrameSource::OnUpdateVSyncParameters(
+     base::TimeTicks timebase,
+     base::TimeDelta interval) {
+@@ -374,8 +406,21 @@ void BackToBackBeginFrameSource::OnTimerTick() {
+   DCHECK(!pending_observers.empty());
+ 
+   IssueBeginFrameToInputClient(args);
+-  for (BeginFrameObserver* obs : pending_observers)
+-    FilterAndIssueBeginFrame(obs, args);
++  // KCC KccFrameCapLateLatch: while the latch is on, the DisplayScheduler's
++  // observer goes last, which is where IssueBeginFrameToSchedulerClient() puts
++  // the scheduler when it is a SchedulerClient. A frame sink has to be asked
++  // before the display draws the frame that sink is still waiting on; see
++  // CompositorFrameSinkSupport::OnBeginFrame().
++  BeginFrameObserver* const scheduler_observer =
++      frame_cap_scheduler_observer_.get();
++  for (BeginFrameObserver* obs : pending_observers) {
++    if (obs != scheduler_observer) {
++      FilterAndIssueBeginFrame(obs, args);
++    }
++  }
++  if (scheduler_observer && pending_observers.contains(scheduler_observer)) {
++    FilterAndIssueBeginFrame(scheduler_observer, args);
++  }
+   IssueBeginFrameToSchedulerClient(args);
+ }
+ 
+diff --git a/components/viz/common/frame_sinks/begin_frame_source.h b/components/viz/common/frame_sinks/begin_frame_source.h
+index 001f395ef..36b23cf9d 100644
+--- a/components/viz/common/frame_sinks/begin_frame_source.h
++++ b/components/viz/common/frame_sinks/begin_frame_source.h
+@@ -227,6 +227,19 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
+     park_throttled_begin_frames_ = park;
+   }
+ 
++  // KCC KccFrameCapLateLatch. Called by the DisplayScheduler with its own
++  // observer when a frame cap starts to limit the frame rate, and with null
++  // when it no longer does. Only BackToBackBeginFrameSource, the source a
++  // frame cap is used with, acts on it; see there.
++  virtual void SetFrameCapLateLatch(BeginFrameObserver* scheduler_observer) {}
++
++  // KCC KccFrameCapLateLatch. Asked by a frame sink that is about to be sent a
++  // BeginFrame while a frame it submitted earlier has not been drawn yet. True
++  // if it should sit this BeginFrame out and call DidFinishFrame() once that
++  // frame is acked, so that it starts its next frame only after the swap ack of
++  // the draw has been released.
++  virtual bool ShouldHoldBeginFrameUntilFrameAck() const;
++
+   void SetSchedulerClient(SchedulerClient* scheduler_client);
+   void SetInputClient(InputClient* input_client);
+ 
+@@ -274,6 +287,12 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
+   bool park_throttled_begin_frames() const {
+     return park_throttled_begin_frames_;
+   }
++  // KCC KccFrameCapLateLatch. While set, RequestCallbackOnGpuAvailable()
++  // withholds every begin-frame while the gpu is busy, including the one it
++  // otherwise lets through after the gpu became busy.
++  void set_no_begin_frame_while_gpu_busy(bool value) {
++    no_begin_frame_while_gpu_busy_ = value;
++  }
+ #if BUILDFLAG(IS_MAC)
+   void RecordBeginFrameSourceAccuracy(base::TimeDelta delta);
+ #endif
+@@ -314,6 +333,9 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
+   // KCC KccFrameCapPreciseRelease. See SetParkThrottledBeginFrames().
+   bool park_throttled_begin_frames_ = false;
+ 
++  // KCC KccFrameCapLateLatch. See set_no_begin_frame_while_gpu_busy().
++  bool no_begin_frame_while_gpu_busy_ = false;
++
+ #if BUILDFLAG(IS_MAC)
+   base::TimeDelta total_delta_;
+   // The frame count since this histogram was recorded last time. It is recorded
+@@ -372,6 +394,15 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
+   void DidFinishFrame(BeginFrameObserver* obs,
+                       DisplaySchedulerDrawResult result) override;
+   void OnGpuNoLongerBusy() override;
++  // KCC KccFrameCapLateLatch. With a frame cap, the stock order is: the client
++  // is sent a BeginFrame as soon as the swap ack is released, renders, and its
++  // frame then waits in viz for the next release, one cap period later. While
++  // the latch is on, a client is sent no BeginFrame between the display's swap
++  // and the release of its ack, nor while a frame of its own is still waiting
++  // to be drawn. Its frame then arrives when the display is free to draw it at
++  // once: wait first, then sample input, render, present.
++  void SetFrameCapLateLatch(BeginFrameObserver* scheduler_observer) override;
++  bool ShouldHoldBeginFrameUntilFrameAck() const override;
+ 
+   // SyntheticBeginFrameSource implementation.
+   void OnUpdateVSyncParameters(base::TimeTicks timebase,
+@@ -387,6 +418,9 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
+   base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers_;
+   base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>>
+       pending_begin_frame_observers_;
++  // KCC KccFrameCapLateLatch. The DisplayScheduler's observer while the latch
++  // is on, null otherwise. Never a frame sink.
++  raw_ptr<BeginFrameObserver> frame_cap_scheduler_observer_ = nullptr;
+   uint64_t next_sequence_number_;
+   base::TimeDelta vsync_interval_ = BeginFrameArgs::DefaultInterval();
+   std::optional<base::TimeDelta> max_vrr_interval_ = std::nullopt;
+diff --git a/components/viz/service/display/display_scheduler.cc b/components/viz/service/display/display_scheduler.cc
+index f756ad13e..09754b174 100644
+--- a/components/viz/service/display/display_scheduler.cc
++++ b/components/viz/service/display/display_scheduler.cc
+@@ -69,6 +69,24 @@ base::TimeDelta FrameCapIntervalFromFps(int fps) {
+   return base::Hertz(std::clamp(fps, 30, 1000));
+ }
+ 
++// KCC: while a frame cap is what limits the frame rate, have clients start
++// their frame when the swap ack is released and draw that frame as soon as it
++// arrives, instead of starting it one cap period before the release it is
++// drawn at. See BackToBackBeginFrameSource::SetFrameCapLateLatch().
++BASE_FEATURE(kKccFrameCapLateLatch, base::FEATURE_DISABLED_BY_DEFAULT);
++// A client that starts at the release can no longer overlap its frame with the
++// previous swap, so the latch only engages when the client is fast enough to
++// leave this share of the cap period unused even then.
++// --enable-features=KccFrameCapLateLatch:slack_pct/25
++constexpr base::FeatureParam<int> kKccFrameCapLateLatchSlackPct{
++    &kKccFrameCapLateLatch, "slack_pct", 25};
++
++bool IsFrameCapLateLatchEnabled() {
++  static const bool enabled =
++      base::FeatureList::IsEnabled(kKccFrameCapLateLatch);
++  return enabled;
++}
++
+ #if BUILDFLAG(IS_WIN)
+ // KCC: while a frame cap holds swap acks back, release them from a
+ // high-resolution OS timer and let the viz thread sleep until then. Without
+@@ -188,6 +206,9 @@ DisplayScheduler::~DisplayScheduler() {
+     begin_frame_source_->SetParkThrottledBeginFrames(false);
+   }
+ #endif
++  // KCC KccFrameCapLateLatch: the source must not be left with a pointer to
++  // |begin_frame_observer_|.
++  SetFrameCapLateLatchEngaged(false);
+   // It is possible for DisplayScheduler to be destroyed while there's an
+   // in-flight swap. So always mark the gpu as not busy during destruction.
+   begin_frame_source_->SetIsGpuBusy(false);
+@@ -244,6 +265,10 @@ void DisplayScheduler::OnDisplayDamaged(SurfaceId surface_id,
+   // happening with |inside_surface_damaged_|.
+   base::AutoReset<bool> auto_reset(&inside_surface_damaged_, true);
+ 
++  if (!needs_draw_ && !cap_interval_.is_zero() &&
++      IsFrameCapLateLatchEnabled()) {
++    undrawn_damage_since_ = base::TimeTicks::Now();
++  }
+   needs_draw_ = true;
+   MaybeStartObservingBeginFrames();
+   UpdateHasPendingSurfaces();
+@@ -952,12 +977,16 @@ void DisplayScheduler::DidReceiveSwapBuffersAck() {
+     next_ack_release_ += cap_interval_;
+     if (now < next_ack_release_) {
+       ++pending_release_count_;
++      held_ack_arrival_ = now;
+       if (!IsAckReleaseTimerRunning()) {
+         armed_deadline_ = next_ack_release_;
+         StartAckReleaseTimer();
+       }
+       return;
+     }
++    // KCC KccFrameCapLateLatch: this swap finished too late for the cap to
++    // hold it back, so the client needs the stock pipelining to keep up.
++    SetFrameCapLateLatchEngaged(false);
+   }
+   DidReceiveSwapBuffersAckImpl();
+ }
+@@ -967,6 +996,7 @@ void DisplayScheduler::RunDelayedSwapBuffersAck() {
+     return;  // flushed meanwhile
+   }
+   --pending_release_count_;
++  MaybeEngageFrameCapLateLatch();
+   DidReceiveSwapBuffersAckImpl();
+   if (pending_release_count_ > 0) {
+     // FIFO: the next queued release fires one grid step later.
+@@ -1013,6 +1043,41 @@ void DisplayScheduler::UpdateParkThrottledBeginFrames() {
+ }
+ #endif
+ 
++void DisplayScheduler::SetFrameCapLateLatchEngaged(bool engaged) {
++  if (engaged == frame_cap_late_latch_engaged_) {
++    return;
++  }
++  frame_cap_late_latch_engaged_ = engaged;
++  begin_frame_source_->SetFrameCapLateLatch(engaged ? &begin_frame_observer_
++                                                    : nullptr);
++}
++
++void DisplayScheduler::MaybeEngageFrameCapLateLatch() {
++  // Once engaged it stays engaged for as long as swap acks are being held
++  // back; DidReceiveSwapBuffersAck() disengages it.
++  if (!IsFrameCapLateLatchEnabled() || frame_cap_late_latch_engaged_) {
++    return;
++  }
++  // In the stock order a frame is waiting to be drawn at this release.
++  if (!needs_draw_ || undrawn_damage_since_.is_null() ||
++      held_ack_arrival_.is_null()) {
++    return;
++  }
++  // That frame was started at the previous release and has waited since
++  // |undrawn_damage_since_|; the ack of the previous swap has waited since
++  // |held_ack_arrival_|. Had the frame been drawn as soon as it arrived, the
++  // ack of its swap would have been held for the sum of the two waits less one
++  // cap period: the slack the client leaves without pipelining.
++  static const int slack_pct =
++      std::clamp(kKccFrameCapLateLatchSlackPct.Get(), 0, 90);
++  const base::TimeTicks now = base::TimeTicks::Now();
++  const base::TimeDelta slack = (now - held_ack_arrival_) +
++                                (now - undrawn_damage_since_) - cap_interval_;
++  if (slack >= cap_interval_ * slack_pct / 100) {
++    SetFrameCapLateLatchEngaged(true);
++  }
++}
++
+ void DisplayScheduler::FlushPendingSwapAckDelay() {
+   StopAckReleaseTimer();
+   next_ack_release_ = base::TimeTicks();
+@@ -1029,6 +1094,10 @@ void DisplayScheduler::SetFrameCapInterval(base::TimeDelta interval) {
+ #if BUILDFLAG(IS_WIN)
+   UpdateParkThrottledBeginFrames();
+ #endif
++  // KCC KccFrameCapLateLatch: off until the new cap has proved to be the
++  // limit.
++  SetFrameCapLateLatchEngaged(false);
++  undrawn_damage_since_ = base::TimeTicks();
+   // New cadence starts fresh; queued releases pay out immediately (a cap
+   // change is a user action -- no re-gridding of in-flight acks).
+   FlushPendingSwapAckDelay();
+diff --git a/components/viz/service/display/display_scheduler.h b/components/viz/service/display/display_scheduler.h
+index 76a718200..f04cf3f6d 100644
+--- a/components/viz/service/display/display_scheduler.h
++++ b/components/viz/service/display/display_scheduler.h
+@@ -133,6 +133,14 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
+   // |precise_ack_timer_| is there to wake the thread up on time.
+   void UpdateParkThrottledBeginFrames();
+ #endif
++  // KCC KccFrameCapLateLatch. Turns the late latch of |begin_frame_source_| on
++  // or off.
++  void SetFrameCapLateLatchEngaged(bool engaged);
++  // KCC KccFrameCapLateLatch. Called when a held swap ack is about to be
++  // released. Engages the late latch if the feature is enabled and the client
++  // would keep up with the cap without the stock pipelining, where its next
++  // frame is started while the previous swap is still in flight.
++  void MaybeEngageFrameCapLateLatch();
+ 
+   base::TimeTicks current_frame_display_time(
+       const BeginFrameArgs& begin_frame_args) const {
+@@ -236,6 +244,14 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
+   // null or fails to start.
+   std::unique_ptr<FrameCapPreciseTimerWin> precise_ack_timer_;
+ #endif
++  // KCC KccFrameCapLateLatch. Whether the late latch of |begin_frame_source_|
++  // is on, and what MaybeEngageFrameCapLateLatch() measures the client with:
++  // when the swap ack now at the back of the ledger arrived, and since when
++  // the display has had damage it has not drawn (only valid while
++  // |needs_draw_|).
++  bool frame_cap_late_latch_engaged_ = false;
++  base::TimeTicks held_ack_arrival_;
++  base::TimeTicks undrawn_damage_since_;
+ 
+   bool observing_begin_frame_source_;
+ 
+diff --git a/components/viz/service/frame_sinks/compositor_frame_sink_support.cc b/components/viz/service/frame_sinks/compositor_frame_sink_support.cc
+index 798d04318..b814489c8 100644
+--- a/components/viz/service/frame_sinks/compositor_frame_sink_support.cc
++++ b/components/viz/service/frame_sinks/compositor_frame_sink_support.cc
+@@ -1080,6 +1080,18 @@ void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
+   CHECK_GT(pending_frames_, 0);
+   pending_frames_--;
+ 
++  // KCC KccFrameCapLateLatch: OnBeginFrame() skipped a BeginFrame because of
++  // the frame that has just been acked. Tell the source we are ready for the
++  // next one; it arrives once the gpu is no longer busy with the draw that
++  // caused this ack. Harmless if we stopped observing the source meanwhile.
++  if (begin_frame_held_for_ack_ && pending_frames_ == 0) {
++    begin_frame_held_for_ack_ = false;
++    if (begin_frame_source_) {
++      begin_frame_source_->DidFinishFrame(
++          this, DisplaySchedulerDrawResult::kDidNotDraw);
++    }
++  }
++
+   if (!client_) {
+     return;
+   }
+@@ -1200,6 +1212,21 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
+ 
+   CheckPendingSurfaces();
+ 
++  // KCC KccFrameCapLateLatch: the frame this client submitted earlier is still
++  // waiting to be drawn, so a frame started now would only queue up behind it.
++  // Skip this BeginFrame without finishing it, which keeps the source from
++  // sending another; DidReceiveCompositorFrameAck() finishes it when the
++  // waiting frame has been drawn. Not for sinks that are needed to unblock
++  // something else, nor for ones that rely on being called here every frame.
++  if (pending_frames_ > 0 && pending_surfaces_.empty() && !is_root_ &&
++      !bundle_id_.has_value() && !layer_context_ && begin_frame_source_ &&
++      begin_frame_source_->ShouldHoldBeginFrameUntilFrameAck() &&
++      !surface_manager_->HasBlockedEmbedder(frame_sink_id_)) {
++    RecordShouldSendBeginFrame("HoldUntilFrameAck", false);
++    begin_frame_held_for_ack_ = true;
++    return;
++  }
++
+   BeginFrameArgs adjusted_args = args;
+   adjusted_args.dispatch_time = base::TimeTicks::Now();
+   if (begin_frame_interval().is_positive()) {
+diff --git a/components/viz/service/frame_sinks/compositor_frame_sink_support.h b/components/viz/service/frame_sinks/compositor_frame_sink_support.h
+index 78659653c..4c717222e 100644
+--- a/components/viz/service/frame_sinks/compositor_frame_sink_support.h
++++ b/components/viz/service/frame_sinks/compositor_frame_sink_support.h
+@@ -394,6 +394,11 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
+   // yet received an ACK from their Surface.
+   int pending_frames_ = 0;
+ 
++  // KCC KccFrameCapLateLatch. Set when OnBeginFrame() skipped a BeginFrame
++  // without finishing it because |pending_frames_| was not zero; the
++  // DidFinishFrame() it owes |begin_frame_source_| is sent when it is.
++  bool begin_frame_held_for_ack_ = false;
++
+   std::vector<ReturnedResource> surface_returned_resources_;
+ 
+   // The begin frame source being observered. Null if none.

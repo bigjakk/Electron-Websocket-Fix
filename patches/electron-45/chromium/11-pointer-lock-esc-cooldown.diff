@@ -1,0 +1,112 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: bigjakk <6015188+bigjakk@users.noreply.github.com>
+Date: Fri, 20 Nov 2026 12:00:00 -0500
+Subject: kcc: gate the 1.25 s Esc pointer-lock re-lock cooldown
+
+Stock behaviour
+(chrome/browser/ui/exclusive_access/pointer_lock_controller.cc):
+PointerLockController::HandleUserPressedEscape() stamps
+last_user_escape_time_ when the user presses Esc while the pointer is
+locked, and PointerLockController::RequestToLockPointer() then refuses
+any lock request that arrives within
+kEffectiveUserEscapeDuration = base::Milliseconds(1250) of that stamp:
+
+    if (base::TimeTicks::Now() <
+        last_user_escape_time_ + kEffectiveUserEscapeDuration) {
+      web_contents->GotResponseToPointerLockRequest(
+          blink::mojom::PointerLockResult::kUserEscapeCooldown);
+
+unless the previous unlock came from the page itself
+(last_unlocked_by_target, i.e. document.exitPointerLock()).
+
+Electron compiles and uses this controller: chromium_src/BUILD.gn lists
+//chrome/browser/ui/exclusive_access/pointer_lock_controller.cc, and
+shell/browser/api/electron_api_web_contents.cc owns an
+ExclusiveAccessManager (exclusive_access_manager_{this}). Esc reaches
+HandleUserPressedEscape() through WebContents::PreHandleKeyboardEvent()
+-> ExclusiveAccessManager::HandleUserKeyEvent(), and a page lock request
+reaches RequestToLockPointer() through WebContents::RequestPointerLock()
+-> permission helper -> WebContents::OnRequestPointerLock(). After a
+user Esc RenderWidgetHostImpl::is_last_unlocked_by_target_ is false, so
+the cooldown branch is the one taken.
+
+For the game this means that after Esc (menu), clicking back into the
+game within 1.25 s is rejected: requestPointerLock() fails and mouse
+look stays dead until the player clicks again after the window expires.
+
+What the patch changes: with the feature enabled the cooldown refusal is
+skipped, nothing else. The user-gesture requirement in the same
+function (kRequiresUserGesture), the permission request in Electron, the
+"already locked"/focus/sandbox checks in content, the fullscreen
+coupling and Blink's own request rate limiter
+(RateLimitPointerLockRequests in
+third_party/blink/renderer/core/page/pointer_lock_controller.cc) are all
+untouched. last_user_escape_time_ is still recorded.
+
+SECURITY NOTE: the cooldown is an anti-trap protection for general
+browsing. It guarantees that after the user escapes a pointer lock, a
+hostile page cannot grab the pointer back on the user's very next click
+or key press, which gives the user time to move the (now visible)
+cursor out of the page. Removing it is NOT acceptable for a browser that
+shows arbitrary sites. It is acceptable here only because the product
+is a single-site game client: the only content that can request pointer
+lock is the game the user launched the client to play, there is no
+other tab or browser UI to be kept away from, Esc still always releases
+the lock, a re-lock still needs a fresh user gesture, and the user can
+still leave with the OS (Alt+Tab, close the window). The feature is
+process-wide, so do not enable it in a build that also loads untrusted
+third-party pages in windows that can take pointer lock.
+
+Gating: base::Feature KccNoPointerLockEscCooldown, disabled by default,
+defined in the anonymous namespace of pointer_lock_controller.cc. With
+the feature off the condition evaluates exactly the stock expression.
+Not a hot path (once per lock request), so the feature is read at the
+call.
+
+A/B: --enable-features=KccNoPointerLockEscCooldown. Lock the pointer in
+the game, press Esc, click back into the game within about one second.
+Off: the first click does not re-lock (the promise rejects; Blink
+reports the kUserEscapeCooldown result as a DOMException) and a second
+click after ~1.25 s does. On: the first click re-locks. Also confirm
+that a requestPointerLock() without a user gesture still fails.
+
+Platforms: all (browser process, UI thread, platform-independent).
+Not compiled. base/feature_list.h is newly included in this file.
+
+diff --git a/chrome/browser/ui/exclusive_access/pointer_lock_controller.cc b/chrome/browser/ui/exclusive_access/pointer_lock_controller.cc
+index eebf15545..963113c3f 100644
+--- a/chrome/browser/ui/exclusive_access/pointer_lock_controller.cc
++++ b/chrome/browser/ui/exclusive_access/pointer_lock_controller.cc
+@@ -4,6 +4,7 @@
+ 
+ #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
+ 
++#include "base/feature_list.h"
+ #include "base/functional/bind.h"
+ #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+ #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+@@ -26,6 +27,12 @@ namespace {
+ constexpr base::TimeDelta kEffectiveUserEscapeDuration =
+     base::Milliseconds(1250);
+ 
++// KCC: when enabled, a pointer lock request that arrives within
++// |kEffectiveUserEscapeDuration| of the user pressing Esc is no longer refused
++// with kUserEscapeCooldown. Every other check is unchanged. The cooldown is an
++// anti-trap protection, so this is only meant for a single-site game client.
++BASE_FEATURE(kKccNoPointerLockEscCooldown, base::FEATURE_DISABLED_BY_DEFAULT);
++
+ }  // namespace
+ 
+ PointerLockController::PointerLockController(ExclusiveAccessManager* manager)
+@@ -63,8 +70,9 @@ void PointerLockController::RequestToLockPointer(WebContents* web_contents,
+       }
+       return;
+     }
+-    if (base::TimeTicks::Now() <
+-        last_user_escape_time_ + kEffectiveUserEscapeDuration) {
++    if (!base::FeatureList::IsEnabled(kKccNoPointerLockEscCooldown) &&
++        base::TimeTicks::Now() <
++            last_user_escape_time_ + kEffectiveUserEscapeDuration) {
+       web_contents->GotResponseToPointerLockRequest(
+           blink::mojom::PointerLockResult::kUserEscapeCooldown);
+       if (lock_state_callback_for_test_) {
