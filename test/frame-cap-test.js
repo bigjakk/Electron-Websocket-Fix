@@ -281,30 +281,48 @@ async function suiteLatency(win) {
   const ts = (name, pid, end) => ev.filter((e) => e.name === name && e.pid === pid && e.ph === 'X')
     .map((e) => (end ? e.ts + (e.dur || 0) : e.ts) / 1000).sort((a, b) => a - b);
   const bif = ts('Scheduler::BeginImplFrame', rpid, false);
-  const sub = ts('ProxyImpl::ScheduledActionDraw', rpid, true);
+  // BeginMainFrame is where input is dispatched and rAF runs. An impl draw
+  // contains the content of the last main frame that had finished before the
+  // draw started (cc draws the previous tree while a slow main frame is still
+  // running), so pair on [start, end] of both.
+  const bmf = ev.filter((e) => e.name === 'ProxyMain::BeginMainFrame' && e.pid === rpid && e.ph === 'X')
+    .map((e) => ({ s: e.ts / 1000, e: (e.ts + (e.dur || 0)) / 1000 })).sort((a, b) => a.e - b.e);
+  const draws = ev.filter((e) => e.name === 'ProxyImpl::ScheduledActionDraw' && e.pid === rpid && e.ph === 'X')
+    .map((e) => ({ s: e.ts / 1000, e: (e.ts + (e.dur || 0)) / 1000 })).sort((a, b) => a.s - b.s);
+  const sub = draws.map((d) => d.e);
   const disp = ts('Display::DrawAndSwap', gpid, false);
-  const waits = [], renders = [], totals = [];
-  let di = 0, bi = 0;
-  for (const s of sub) {
+  const waits = [], renders = [], totals = [], mainToDraw = [];
+  let di = 0, bi = 0, mi = -1;
+  for (const d of draws) {
+    const s = d.e;
     while (di < disp.length && disp[di] < s) di++;
     if (di >= disp.length) break;
     while (bi + 1 < bif.length && bif[bi + 1] <= s) bi++;
+    while (mi + 1 < bmf.length && bmf[mi + 1].e <= d.s) mi++;
     waits.push(disp[di] - s);
     if (bif.length && bif[bi] <= s) { renders.push(s - bif[bi]); totals.push(disp[di] - bif[bi]); }
+    if (mi >= 0) mainToDraw.push(disp[di] - bmf[mi].s);
   }
   const P = 1000 / cap;
   const lat = {
     cap, periodMs: P, renderer: rpid, gpu: gpid,
-    counts: { beginImplFrame: bif.length, rendererDraws: sub.length, displayDraws: disp.length, paired: waits.length },
-    waitMs: { p10: pct(waits, 0.1), p50: pct(waits, 0.5), p90: pct(waits, 0.9) },
-    renderMs: { p50: pct(renders, 0.5), p90: pct(renders, 0.9) },
-    beginToDrawMs: { p10: pct(totals, 0.1), p50: pct(totals, 0.5), p90: pct(totals, 0.9) },
+    counts: { beginImplFrame: bif.length, beginMainFrame: bmf.length, rendererDraws: sub.length, displayDraws: disp.length, paired: waits.length },
+    submitToDisplayDrawMs: { p10: pct(waits, 0.1), p50: pct(waits, 0.5), p90: pct(waits, 0.9) },
+    beginImplFrameToSubmitMs: { p50: pct(renders, 0.5), p90: pct(renders, 0.9) },
+    beginImplFrameToDisplayDrawMs: { p10: pct(totals, 0.1), p50: pct(totals, 0.5), p90: pct(totals, 0.9) },
+    // input age at the display draw: start of the main frame whose content it shows
+    beginMainFrameToDisplayDrawMs: { p10: pct(mainToDraw, 0.1), p50: pct(mainToDraw, 0.5), p90: pct(mainToDraw, 0.9) },
+    mainFrameMs: { p50: pct(bmf.map((b) => b.e - b.s), 0.5) },
   };
   results.latency = lat;
   log(`latency: ${JSON.stringify(lat)}`);
-  try { fs.unlinkSync(file); } catch (e) { /* keep going */ }
+  if (!app.commandLine.hasSwitch('kcc-keep-trace')) {
+    try { fs.unlinkSync(file); } catch (e) { /* keep going */ }
+  } else {
+    results.traceFile = file;
+  }
   within(`latency suite: cap ${cap} holds`, m, cap, TOL);
-  check('latency suite: trace has renderer and display draws', waits.length > 100,
+  check('latency suite: trace has renderer and display draws', waits.length > 100 && mainToDraw.length > 100,
     `paired ${waits.length} renderer draws with display draws`);
   win.setFrameCap(0);
 }
