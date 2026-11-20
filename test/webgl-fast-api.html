@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>webgl-fast-api</title></head>
+<body style="margin:0;background:#000">
+<canvas id="c" width="64" height="64" style="width:256px;height:256px;image-rendering:pixelated"></canvas>
+<script>
+// c21 check page. Calls the eight methods that c21 annotates with
+// [NoAllocDirectCall] (bindVertexArray, useProgram, activeTexture, enable,
+// disable, drawArraysInstanced, drawElementsInstanced, vertexAttribDivisor) in
+// a hot loop that TurboFan optimises, mixing in null arguments, invalid enums
+// and invalid values. Every gl.getError() value is recorded in order, and the
+// final canvas is read back, so that a run with V8 fast API calls and one with
+// --js-flags=--no-turbo-fast-api-calls can be compared exactly.
+'use strict';
+const ITER = parseInt(new URLSearchParams(location.search).get('iter') || '20000', 10);
+
+function fnv1a(h, x) {  // 32-bit FNV-1a over one 32-bit value
+  for (let k = 0; k < 4; k++) { h ^= (x >>> (8 * k)) & 255; h = Math.imul(h, 16777619) >>> 0; }
+  return h;
+}
+
+function run() {
+  const canvas = document.getElementById('c');
+  const gl = canvas.getContext('webgl2', { antialias: false, preserveDrawingBuffer: true, premultipliedAlpha: false });
+  if (!gl) return { error: 'webgl2 unavailable' };
+  const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+  const rendererName = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+
+  const compile = (type, src) => {
+    const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  };
+  const program = (fsBody) => {
+    const p = gl.createProgram();
+    gl.attachShader(p, compile(gl.VERTEX_SHADER, `#version 300 es
+      layout(location=0) in vec2 pos; layout(location=1) in vec2 offset; out vec2 v;
+      void main() { v = offset; gl_Position = vec4(pos * 0.15 + offset, 0.0, 1.0); }`));
+    gl.attachShader(p, compile(gl.FRAGMENT_SHADER, `#version 300 es
+      precision highp float; in vec2 v; uniform sampler2D tex; out vec4 o;
+      void main() { ${fsBody} }`));
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+    return p;
+  };
+  const progA = program('o = vec4(fract(v * 3.7 + 0.5), texture(tex, vec2(0.5)).r, 0.25);');
+  const progB = program('o = vec4(texture(tex, vec2(0.25)).g, fract(v.yx * 2.3 + 0.5), 0.5);');
+
+  const tex = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+    new Uint8Array([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255, 255, 0, 255]));
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+  const makeVao = (offsets) => {
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const pb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, pb);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, 0, 1]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    const ob = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, ob);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(offsets), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribDivisor(1, 1);
+    const eb = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, eb);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0, 1, 2]), gl.STATIC_DRAW);
+    gl.bindVertexArray(null);
+    return vao;
+  };
+  const vaoA = makeVao([-0.6, -0.6, 0.0, 0.0, 0.6, 0.6]);
+  const vaoB = makeVao([0.6, -0.6, -0.6, 0.6, 0.0, -0.3]);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.clearColor(0, 0, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  while (gl.getError() !== gl.NO_ERROR) { /* drain setup errors */ }
+
+  // The hot function: only the eight annotated methods.
+  function step(i) {
+    gl.bindVertexArray(i % 7 === 0 ? null : ((i & 1) ? vaoA : vaoB));
+    gl.useProgram(i % 11 === 0 ? null : ((i & 2) ? progA : progB));
+    gl.activeTexture(i % 13 === 0 ? 0x1234 : gl.TEXTURE0 + (i % 4));
+    gl.enable(i % 17 === 0 ? 0xBEEF : gl.BLEND);
+    gl.disable(i % 19 === 0 ? 0xDEAD : (i % 5 === 0 ? gl.BLEND : gl.DEPTH_TEST));
+    gl.vertexAttribDivisor(i % 23 === 0 ? 9999 : 1, (i % 29 === 0) ? 0 : 1);
+    gl.drawArraysInstanced(i % 31 === 0 ? 0x7777 : gl.TRIANGLES, 0, 3, 1 + (i % 3));
+    gl.drawElementsInstanced(gl.TRIANGLES, 3, i % 37 === 0 ? gl.FLOAT : gl.UNSIGNED_SHORT, (i % 41 === 0) ? 1 : 0, 1 + (i % 2));
+  }
+
+  let errHash = 2166136261 >>> 0;
+  const errCounts = {};
+  let errTotal = 0;
+  const iterate = (from, to) => {
+    for (let i = from; i < to; i++) {
+      step(i);
+      for (let e = gl.getError(), n = 0; e !== gl.NO_ERROR && n < 16; e = gl.getError(), n++) {
+        errHash = fnv1a(errHash, (i << 16) ^ e);
+        errCounts[e] = (errCounts[e] || 0) + 1;
+        errTotal++;
+      }
+      errHash = fnv1a(errHash, 0xffffffff);
+    }
+  };
+
+  // V8 15.6 OptimizationStatus bits (src/runtime/runtime.h): kOptimized 1<<3,
+  // kMaglevved 1<<4, kTurboFanned 1<<5, kBaseline 1<<14.
+  const WARMUP = 2000;
+  let optStatus = null, optStatusAfter = null;
+  let getStatus = null;
+  try {
+    // Only parses with --js-flags=--allow-natives-syntax.
+    getStatus = new Function('f', 'return %GetOptimizationStatus(f);');
+    const prep = new Function('f', '%PrepareFunctionForOptimization(f);');
+    const opt = new Function('f', '%OptimizeFunctionOnNextCall(f);');
+    prep(step);
+    // Feedback for every branch (null arguments, invalid enums) first, so that
+    // the optimised code does not deoptimise on the first null.
+    iterate(0, WARMUP);
+    opt(step);
+    iterate(WARMUP, WARMUP + 1);
+    optStatus = getStatus(step);
+  } catch (e) {
+    optStatus = `natives syntax unavailable: ${e.message}`;
+    iterate(0, WARMUP + 1);
+  }
+
+  const t0 = performance.now();
+  iterate(WARMUP + 1, WARMUP + 1 + ITER);
+  const loopMs = performance.now() - t0;
+  if (getStatus) optStatusAfter = getStatus(step);
+
+  const px = new Uint8Array(64 * 64 * 4);
+  gl.readPixels(0, 0, 64, 64, gl.RGBA, gl.UNSIGNED_BYTE, px);
+  let pixHash = 2166136261 >>> 0, nonBlack = 0;
+  for (let k = 0; k < px.length; k += 4) {
+    pixHash = fnv1a(pixHash, px[k] | (px[k + 1] << 8) | (px[k + 2] << 16) | (px[k + 3] << 24));
+    if (px[k] | px[k + 1] | px[k + 2]) nonBlack++;
+  }
+  return {
+    renderer: rendererName, iterations: ITER, loopMs,
+    errHash: errHash.toString(16), errTotal, errCounts,
+    pixHash: pixHash.toString(16), nonBlackPixels: nonBlack,
+    optStatusBeforeLoop: optStatus, optStatusAfterLoop: optStatusAfter,
+    turbofannedBeforeLoop: typeof optStatus === 'number' ? !!(optStatus & 32) : null,
+    turbofannedAfterLoop: typeof optStatusAfter === 'number' ? !!(optStatusAfter & 32) : null,
+  };
+}
+window.kccResult = new Promise((resolve) => setTimeout(() => {
+  try { resolve(run()); } catch (e) { resolve({ error: String(e && e.stack || e) }); }
+}, 300));
+</script>
+</body>
+</html>

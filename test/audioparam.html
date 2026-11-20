@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>audioparam</title></head>
+<body style="margin:0;background:#222;color:#ccc;font:12px monospace">
+<pre id="out">audioparam</pre>
+<script>
+// c40 check page: the deterministic check from the patch description. On a
+// suspended AudioContext, time batches of 1000
+// listener.positionX.setTargetAtTime(Math.random(), ctx.currentTime, 0.1).
+// Stock keeps every event (a same-time run is never pruned while suspended,
+// except at ~8 % of suspend points) so the time per batch grows with the
+// number of batches; with KccAudioParamCoalesce it stays flat.
+//   scenario "never-started": suspended before the context first runs
+//                             (currentTime 0: stock never self-prunes)
+//   scenario "after-run":     run for ~0.5 s, then suspend (stock self-prunes at
+//                             ~8 % of suspend points; repeated 3 times)
+'use strict';
+const BATCHES = 40, PER_BATCH = 1000;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function timeBatches(ctx) {
+  const p = ctx.listener.positionX;
+  const times = [];
+  for (let b = 0; b < BATCHES; b++) {
+    const t0 = performance.now();
+    for (let i = 0; i < PER_BATCH; i++) p.setTargetAtTime(Math.random(), ctx.currentTime, 0.1);
+    times.push(performance.now() - t0);
+  }
+  const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+  const first = mean(times.slice(0, 5)), last = mean(times.slice(-5));
+  return { currentTime: ctx.currentTime, sampleRate: ctx.sampleRate, state: ctx.state,
+           firstMs: first, lastMs: last, growth: last / first, timesMs: times.map((t) => +t.toFixed(3)) };
+}
+
+async function run() {
+  const out = { scenarios: [] };
+  // never-started: suspend before the first render quantum
+  {
+    const ctx = new AudioContext();
+    await ctx.suspend();
+    out.scenarios.push({ name: 'never-started', ...(await timeBatches(ctx)) });
+    await ctx.close();
+  }
+  // after-run: let it run, suspend, measure; three suspend points
+  for (let k = 0; k < 3; k++) {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain(); g.gain.value = 0;  // silent
+    osc.connect(g).connect(ctx.destination);
+    osc.start();
+    await ctx.resume();
+    await sleep(500 + 37 * k);
+    await ctx.suspend();
+    out.scenarios.push({ name: `after-run-${k + 1}`, ...(await timeBatches(ctx)) });
+    await ctx.close();
+  }
+  document.getElementById('out').textContent = JSON.stringify(out, null, 1);
+  return out;
+}
+window.kccResult = run().catch((e) => ({ error: String(e && e.stack || e) }));
+</script>
+</body>
+</html>

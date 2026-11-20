@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>gc-churn</title></head>
+<body style="margin:0;background:#222;color:#ccc;font:12px monospace">
+<div id="out">churning</div>
+<script>
+// Allocates and drops DOM nodes (Oilpan objects) for a while so that V8 runs
+// natural major GCs, each followed by incremental Oilpan sweeping in tasks on
+// the main thread. Used by v8-sweep-flag-test.js (v01).
+'use strict';
+const ms = parseInt(new URLSearchParams(location.search).get('ms') || '8000', 10);
+let keep = [];
+let rounds = 0;
+const end = performance.now() + ms;
+window.kccDone = new Promise((resolve) => {
+  function churn() {
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < 20000; i++) {
+      const d = document.createElement('div');
+      d.className = 'c' + (i & 7);
+      d.appendChild(document.createTextNode('x' + i));
+      frag.appendChild(d);
+    }
+    keep.push(frag);
+    if (keep.length > 8) keep = keep.slice(-2);  // drop most of it: garbage for the next GC
+    rounds++;
+    document.getElementById('out').textContent = `rounds ${rounds}`;
+    if (performance.now() < end) setTimeout(churn, 5);
+    else { keep = []; setTimeout(() => resolve({ rounds }), 1500); }
+  }
+  churn();
+});
+</script>
+</body>
+</html>

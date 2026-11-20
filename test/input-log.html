@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>input-log</title>
+<style>html,body{margin:0;height:100%;background:#123;color:#9cf;font:13px monospace}</style>
+</head>
+<body tabindex="0">
+<div id="out">input log</div>
+<script>
+// Records the keyboard and mouse events the page receives, for keyup-test.js
+// (c10) and input-emit-test.js (e10).
+window.kccLog = [];
+window.kccMouse = { mousemove: 0, mousedown: 0, mouseup: 0, pointermove: 0 };
+for (const type of ['keydown', 'keyup']) {
+  window.addEventListener(type, (e) => {
+    kccLog.push(`${type} ${e.code}${e.repeat ? ' repeat' : ''}`);
+    document.getElementById('out').textContent = kccLog.slice(-20).join('\n');
+  }, true);
+}
+for (const type of Object.keys(kccMouse)) {
+  window.addEventListener(type, () => { kccMouse[type]++; }, true);
+}
+window.kccReset = () => { kccLog.length = 0; for (const k of Object.keys(kccMouse)) kccMouse[k] = 0; };
+document.body.focus();
+</script>
+</body>
+</html>

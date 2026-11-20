@@ -158,5 +158,12 @@ app.whenReady().then(async () => {
     console.log(`[${LABEL}]   >500ms: ${d.over500} / ${d.total} (${(d.over500/d.total*100).toFixed(1)}%)`);
     console.log(`[${LABEL}] ==================================`);
 
+    // A locked or disconnected desktop session stops rAF entirely; the WS numbers
+    // of such a run say nothing about starvation, so do not let it pass.
+    if (d.frames === 0) {
+        console.log(`[${LABEL}] INCONCLUSIVE: no rAF frames rendered (desktop session locked or disconnected?)`);
+        process.exit(3);
+    }
+
     process.exit(0);
 });

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>canvas-texture</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:inline-block;vertical-align:top}</style>
+</head>
+<body>
+<canvas id="gl" width="384" height="384"></canvas><canvas id="c2d" width="240" height="240"></canvas>
+<script>
+// c20 / c30 / c31 check page. Every rAF frame:
+//  - WebGL2: 240 textured quad draws, each with its own bindTexture over 48
+//    textures (texture rebinds per draw, as three.js does per material change)
+//    -> GLES2DecoderPassthroughImpl::DoBindTexture (c30);
+//  - 2D canvas: fills and a drawImage of the WebGL canvas, so the render task
+//    draws to two canvases -> CanvasPerformanceMonitor (c20).
+// With --disable-gpu-vsync every present goes through the presenter (c31 only
+// acts when DCompPresenter is used, i.e. with GPU compositing).
+//   ?s=<seconds>  how long to run (default 8)
+'use strict';
+const SECONDS = parseFloat(new URLSearchParams(location.search).get('s') || '8');
+const glc = document.getElementById('gl');
+const gl = glc.getContext('webgl2', { antialias: false, preserveDrawingBuffer: false });
+const c2 = document.getElementById('c2d').getContext('2d');
+
+function setup() {
+  const vs = `#version 300 es
+    layout(location=0) in vec2 pos; uniform vec2 off; out vec2 uv;
+    void main() { uv = pos * 0.5 + 0.5; gl_Position = vec4(pos * 0.08 + off, 0.0, 1.0); }`;
+  const fs = `#version 300 es
+    precision mediump float; in vec2 uv; uniform sampler2D tex; out vec4 o;
+    void main() { o = texture(tex, uv); }`;
+  const sh = (t, s) => { const x = gl.createShader(t); gl.shaderSource(x, s); gl.compileShader(x); return x; };
+  const p = gl.createProgram();
+  gl.attachShader(p, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p); gl.useProgram(p);
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  const textures = [];
+  for (let t = 0; t < 48; t++) {
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    const px = new Uint8Array(32 * 32 * 4);
+    for (let i = 0; i < px.length; i += 4) { px[i] = (t * 37) & 255; px[i + 1] = (i * 7 + t) & 255; px[i + 2] = (t * 91) & 255; px[i + 3] = 255; }
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 32, 32, 0, gl.RGBA, gl.UNSIGNED_BYTE, px);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    textures.push(tex);
+  }
+  return { off: gl.getUniformLocation(p, 'off'), textures };
+}
+
+const res = gl ? setup() : null;
+let frames = 0;
+window.kccResult = new Promise((resolve) => {
+  if (!gl) { resolve({ error: 'webgl2 unavailable' }); return; }
+  const t0 = performance.now();
+  function frame(now) {
+    frames++;
+    gl.viewport(0, 0, glc.width, glc.height);
+    gl.clearColor(0.1, 0.1, 0.1, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+    for (let d = 0; d < 240; d++) {
+      gl.bindTexture(gl.TEXTURE_2D, res.textures[(d * 7 + frames) % res.textures.length]);
+      gl.uniform2f(res.off, ((d % 16) / 8 - 0.94), (Math.floor(d / 16) / 8 - 0.94));
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+    c2.fillStyle = `hsl(${frames % 360},70%,40%)`; c2.fillRect(0, 0, 240, 240);
+    c2.drawImage(glc, 20, 20, 200, 200);
+    c2.fillStyle = '#fff'; c2.fillText(String(frames), 8, 14);
+    if (now - t0 < SECONDS * 1000) requestAnimationFrame(frame);
+    else resolve({ frames, seconds: (now - t0) / 1000, fps: frames * 1000 / (now - t0), glError: gl.getError(),
+                   renderer: (() => { const e = gl.getExtension('WEBGL_debug_renderer_info'); return e ? gl.getParameter(e.UNMASKED_RENDERER_WEBGL) : ''; })() });
+  }
+  requestAnimationFrame(frame);
+});
+</script>
+</body>
+</html>
