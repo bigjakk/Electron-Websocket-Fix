@@ -3,3 +3,6 @@ node_modules/
 Thumbs.db
 *.log
 *.zip
+
+# Raw build and test logs of the patch series are part of the record.
+!patches/electron-45/results/**/*.log

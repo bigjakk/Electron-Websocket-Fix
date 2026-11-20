@@ -1,0 +1,24 @@
+refreshed  chromium/01-ws-priority.diff
+refreshed  chromium/02-frame-pacing.diff
+refreshed  chromium/03-frame-cap.diff
+refreshed  electron/01-frame-cap-set-frame-cap.diff
+refreshed  chromium/10-keyup-after-handled-keydown.diff
+refreshed  chromium/11-pointer-lock-esc-cooldown.diff
+refreshed  chromium/12-pin-raw-pointer-lock.diff
+refreshed  chromium/13-raw-input-keep-wheel-motion.diff
+refreshed  chromium/14-raw-input-fast-path.diff
+refreshed  chromium/15-lean-locked-mouse-move.diff
+refreshed  electron/10-skip-unobserved-input-emits.diff
+refreshed  chromium/20-skip-canvas-perf-sampling.diff
+refreshed  chromium/21-webgl-fast-api-calls.diff
+refreshed  v8/01-cppgc-sweep-slice.diff
+refreshed  chromium/30-label-textures-once.diff
+refreshed  chromium/31-cache-vsync-interval.diff
+refreshed  chromium/32-mac-gpu-backpressure-poll.diff
+refreshed  chromium/40-audioparam-coalesce.diff
+refreshed  chromium/41-hrtf-panner-krate-angles.diff
+refreshed  chromium/50-x11-allow-unredirect.diff
+refreshed  chromium/51-x11-raw-mouse.diff
+refreshed  chromium/60-frame-cap-precise-release.diff
+refreshed  chromium/61-frame-cap-late-latch.diff
+refresh: 23 changed, 0 unchanged, 0 failed

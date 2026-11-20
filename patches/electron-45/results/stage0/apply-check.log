@@ -1,0 +1,24 @@
+ok       chromium/01-ws-priority.diff
+ok       chromium/02-frame-pacing.diff
+ok       chromium/03-frame-cap.diff
+ok       electron/01-frame-cap-set-frame-cap.diff
+ok       chromium/10-keyup-after-handled-keydown.diff
+ok       chromium/11-pointer-lock-esc-cooldown.diff
+ok       chromium/12-pin-raw-pointer-lock.diff
+ok       chromium/13-raw-input-keep-wheel-motion.diff
+ok       chromium/14-raw-input-fast-path.diff
+ok       chromium/15-lean-locked-mouse-move.diff
+ok       electron/10-skip-unobserved-input-emits.diff
+ok       chromium/20-skip-canvas-perf-sampling.diff
+ok       chromium/21-webgl-fast-api-calls.diff
+ok       v8/01-cppgc-sweep-slice.diff
+ok       chromium/30-label-textures-once.diff
+ok       chromium/31-cache-vsync-interval.diff
+ok       chromium/32-mac-gpu-backpressure-poll.diff
+ok       chromium/40-audioparam-coalesce.diff
+ok       chromium/41-hrtf-panner-krate-angles.diff
+ok       chromium/50-x11-allow-unredirect.diff
+ok       chromium/51-x11-raw-mouse.diff
+ok       chromium/60-frame-cap-precise-release.diff
+ok       chromium/61-frame-cap-late-latch.diff
+check: 23 ok, 0 failed

@@ -30,7 +30,39 @@ Consequences of the missing GPU, which apply to every result below:
 
 ## Source tree (Stage 0)
 
-_pending_
+Existing checkout `C:\electron` (gclient root, `src/electron` unmanaged), moved from
+v45.0.0-alpha.14 (Chromium 156.0.8077.0) to the **v45.4.1** tag and synced with
+`gclient sync --with_branch_heads --with_tags --reset`
+([log](results/stage0/sync_4541.log); 1 h). The sync could not fetch into the
+existing Chromium git cache (two failed `git fetch`, no reason printed), so gclient
+re-bootstrapped the cache from Google Storage (14.4 GiB); the "STALL DETECTED" lines in
+the log are gsutil progress that does not end in newlines, not a stall.
+
+| Check | Result |
+|---|---|
+| `src/electron/DEPS` `chromium_version` | `156.0.8078.100` |
+| `src/chrome/VERSION` | 156.0.8078.100 |
+| V8 (`v8/include/v8-version.h`) | 15.6.75.57 |
+| Electron's own patches | 301 Chromium commits on `46876a0c2d` (156.0.8078.100), 37 V8 commits on the pinned `5e51e9c607` |
+| Windows SDK required (`build/toolchain/win/setup_toolchain.py`) | 10.0.28000.0, installed |
+| Electron 45 build docs | Node.js >= 22.18.0, VS 2022; nothing stricter than BUILD-GUIDE.md otherwise |
+
+Base commits the series was applied on ([`results/stage0/base-commits.txt`](results/stage0/base-commits.txt)):
+
+| Checkout | Base commit |
+|---|---|
+| `src` | `8add51604cf1b2b144d0d431649229d8a3066a3b` |
+| `src/electron` | `deaded07eebdfe9a3737884933b1acbe65971f64` (v45.4.1) |
+| `src/v8` | `94a69781b2f5c673c6579713f09af4b86311ad64` |
+
+`apply.sh --check`: 23 ok, 0 failed; `apply.sh --commit`: 23 commits
+([logs](results/stage0/)).
+
+**refresh.sh did not round-trip byte for byte** (the README claimed it did): in this full
+checkout git abbreviates blob ids to 13 hex digits, in the sparse checkout the drafts were
+written in to 9, so every `index` line differed although no diff content did.
+`refresh.sh` now passes `--full-index`, the 23 diffs were rewritten once with full ids
+(content unchanged), and a second refresh reports 0 changed.
 
 ## Build configurations
 

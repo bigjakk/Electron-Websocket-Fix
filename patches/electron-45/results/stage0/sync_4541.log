@@ -1,0 +1,1006 @@
+=== sync started 2026-11-20T13:35:12, pid 5548
+Updating depot_tools...
+________ running 'python3 src/electron/script/patches-mtime-cache.py generate --cache-file src/electron/patches/mtime-cache.json --patches-config src/electron/patches/config.json' in 'C:\electron'
+Skipping non-existent file: src/third_party/blink/web_tests/http/tests/shadowrealm/full-gc-crash.html
+Skipping non-existent file: src/content/browser/tracing/tracing_controller_impl_data_endpoint_unittest.cc
+Skipping non-existent file: src/ev/null
+Skipping non-existent file: src/ev/null
+Skipping non-existent file: src/gpu/command_buffer/service/gles2_cmd_decoder_unittest_offscreen.cc
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/clear-site-data/no-cors-fetch-iframe.https.sub.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/clear-site-data/no-cors-fetch-window.https.sub.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/clear-site-data/support/no-cors-fetch-clear-site-data.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/clear-site-data/support/no-cors-fetch-clear-site-data.html.headers
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/clear-site-data/support/no-cors-fetch-util.html
+Skipping non-existent file: src/third_party/blink/web_tests/editing/spelling/spellcheck-under-canvas.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/canvas/offscreen/canvas-context/chrome-567611695-crash.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/cross-origin-embedder-policy/credentialless/cache-storage.https.window_dedicated_worker-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/cross-origin-embedder-policy/credentialless/cache-storage.https.window_document-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/cross-origin-embedder-policy/credentialless/cache-storage.https.window_service_worker-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/cross-origin-embedder-policy/credentialless/cache-storage.https.window_shared_worker-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-credentialless.https.tentative.window_dedicated_worker-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-credentialless.https.tentative.window_document-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-credentialless.https.tentative.window_service_worker-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-credentialless.https.tentative.window_shared_worker-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-none.https.tentative.window_dedicated_worker-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-none.https.tentative.window_document-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-none.https.tentative.window_service_worker-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-none.https.tentative.window_shared_worker-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/canvas/element/manual/draw-element-image/privacy/visited-link/image-map-area-visited-color-ignored.tentative.html
+Skipping non-existent file: src/third_party/blink/web_tests/http/tests/media/media-source/mediasource-worker-terminate-during-attach.html
+Skipping non-existent file: src/third_party/blink/web_tests/http/tests/media/media-source/mediasource-worker-terminate-during-attach.js
+Skipping non-existent file: src/third_party/blink/web_tests/inspector-protocol/debugger/domdebugger-attribute-modified-mutation-during-pause-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/inspector-protocol/debugger/domdebugger-attribute-modified-mutation-during-pause.js
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/dom/ranges/Range-expand-shadow.tentative.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/web-bundle/resources/sri-message-signatures-bundle.py
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/web-bundle/subresource-loading/sri-message-signatures.https.tentative.html
+Skipping non-existent file: src/components/permissions/permission_util_unittest.cc
+Skipping non-existent file: src/third_party/blink/web_tests/wpt_internal/html/canvas/drawElementImage/onpaint-detach-canvas-gc-crash.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/dom/documents/dom-tree-accessors/nameditem-setattribute-attr-mutation.html
+Skipping non-existent file: src/third_party/blink/web_tests/http/tests/media/media-source/mediasource-iframe-detach-during-attach.html
+Skipping non-existent file: src/third_party/blink/renderer/core/preload_realm/build.gni
+Skipping non-existent file: src/third_party/blink/renderer/core/preload_realm/preload_realm_global_scope.cc
+Skipping non-existent file: src/third_party/blink/renderer/core/preload_realm/preload_realm_global_scope.h
+Skipping non-existent file: src/third_party/blink/renderer/core/preload_realm/preload_realm_global_scope.idl
+Skipping non-existent file: src/content/test/data/gpu/webgl2-transfer-cache-prune.html
+Skipping non-existent file: src/third_party/blink/web_tests/fast/canvas/canvas-draw-filter-style-recalc-crash.html
+Skipping non-existent file: src/third_party/blink/web_tests/accessibility/aria-owns-deferred-parent-restoration.html
+Skipping non-existent file: src/third_party/blink/web_tests/accessibility/aria-owns-deferred-restore-cycle-check.html
+Skipping non-existent file: src/third_party/blink/web_tests/accessibility/aria-owns-finalizing-tree-dirty-relation-cache.html
+Skipping non-existent file: src/third_party/blink/web_tests/accessibility/aria-owns-focus-inside-aria-hidden.html
+Skipping non-existent file: src/third_party/blink/web_tests/accessibility/aria-owns-modal-dialog-image-map.html
+Skipping non-existent file: src/third_party/blink/web_tests/accessibility/aria-owns-modal-dialog-pruning.html
+Skipping non-existent file: src/third_party/blink/web_tests/accessibility/aria-owns-parentless-ancestor-cycle.html
+Skipping non-existent file: src/third_party/blink/web_tests/accessibility/aria-owns-radio-button-group-removal.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/accessibility/crashtests/aria-owns-deferred-parent-cycle.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/accessibility/crashtests/aria-owns-deferred-parent-restoration.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/css/css-typed-om/crashtests/chrome-575201060.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/css/css-typed-om/crashtests/chrome-575201060.js
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/css/css-typed-om/crashtests/chrome-575201475.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/css/css-typed-om/crashtests/chrome-575201475.js
+Skipping non-existent file: src/ev/null
+Skipping non-existent file: src/ev/null
+Skipping non-existent file: src/ev/null
+Skipping non-existent file: src/ui/views/view_guard.cc
+Skipping non-existent file: src/ui/views/view_guard.h
+Skipping non-existent file: src/ui/views/view_guard_unittest.cc
+Skipping non-existent file: src/third_party/blink/web_tests/inspector-protocol/debugger/domdebugger-adopt-node-attr-modified-crash-expected.txt
+Skipping non-existent file: src/third_party/blink/web_tests/inspector-protocol/debugger/domdebugger-adopt-node-attr-modified-crash.js
+Skipping non-existent file: src/media/capture/video/win/video_capture_device_win_unittest.cc
+Skipping non-existent file: src/third_party/blink/renderer/core/preload_realm/preload_realm_global_scope.cc
+Skipping non-existent file: src/third_party/blink/renderer/core/preload_realm/preload_realm_global_scope.h
+Skipping non-existent file: src/third_party/blink/web_tests/http/tests/workers/dedicated-worker-import-cross-origin-muted-error.html
+Skipping non-existent file: src/third_party/blink/web_tests/http/tests/workers/resources/worker-cross-origin-throw.js
+Skipping non-existent file: src/third_party/blink/web_tests/http/tests/workers/resources/worker-import-muted.js
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/css/css-view-transitions/iframe-cross-origin-svg-filter-ref.tentative.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/css/css-view-transitions/iframe-cross-origin-svg-filter.tentative.sub.https.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/css/css-view-transitions/support/iframe-cross-origin-svg-filter-child.html
+Skipping non-existent file: src/third_party/blink/web_tests/http/tests/inspector-protocol/issues/deprecation-view-transition-prevent-svg-filter-paint.js
+Skipping non-existent file: src/third_party/blink/web_tests/virtual/threaded/http/tests/inspector-protocol/issues/deprecation-view-transition-prevent-svg-filter-paint-expected.txt
+Skipping non-existent file: src/components/eye_dropper/eye_dropper_view_unittest.cc
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/css/css-masking/clip-path/clip-path-union-trailing-moveto-ref.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/css/css-masking/clip-path/clip-path-union-trailing-moveto.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/canvas/element/manual/draw-element-image/privacy/filtered-outside-subtree-ignored.tentative.html
+Skipping non-existent file: src/third_party/blink/web_tests/external/wpt/html/canvas/element/manual/draw-element-image/privacy/box-reflect-images-in-iframe-multicol-moved-ignored.tentative.https.sub.html
+Skipping non-existent file: src/v8/test/mjsunit/turbolev/regress-568010379.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-567222737-3.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-567222737-4.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-567222737-2.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-yield-expression-scope.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-arrow-reparse-strict-param.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-preparser-validate-formals-on-body-error.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-subpattern-validate-expression.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-object-rest-property-validation.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-strict-eval-destructuring-subpattern.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-member-template-expression-scope.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-567222737.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-arrow-head-pattern-error-order.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-for-of-async-property.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-invalid-lhs-validate-expression.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-arrow-cover-grammar-scope.js
+Skipping non-existent file: src/v8/test/mjsunit/es6/regress-comma-expression-arrow-initializers.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-568794851.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-568794851.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-568893995-1.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-568893995-2.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-568893995-3.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-567827593.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-576439987.js
+Skipping non-existent file: src/v8/test/mjsunit/define-named-and-keyed-const.js
+Skipping non-existent file: src/v8/test/mjsunit/maglev/regress-579313083-ic.js
+Skipping non-existent file: src/v8/test/mjsunit/maglev/regress-580867734.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-573263262.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/wasm/regress-571348848.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/regress-576225189.js
+Skipping non-existent file: src/v8/test/mjsunit/regress/wasm/regress-577305505.js
+Skipping non-existent file: src/third_party/electron_node/test/parallel/test-fs-rmSync-special-char-additional-error.js
+Skipping non-existent file: src/third_party/angle/src/tests/gl_tests/DeleteBuffersTest.cpp
+Skipping non-existent file: src/third_party/angle/src/compiler/translator/ir/src/transform/ensure_loop_forward_progress.rs
+Skipping non-existent file: src/third_party/angle/src/compiler/translator/tree_ops/EnsureLoopForwardProgress.cpp
+Skipping non-existent file: src/third_party/angle/src/compiler/translator/tree_ops/EnsureLoopForwardProgress.h
+Skipping non-existent file: src/third_party/angle/ev/null
+Skipping non-existent file: src/third_party/angle/src/compiler/translator/ir/src/transform/ensure_loop_forward_progress.rs
+Skipping non-existent file: src/third_party/angle/src/compiler/translator/tree_ops/EnsureLoopForwardProgress.cpp
+Skipping non-existent file: src/third_party/dawn/src/dawn/native/BufferTextureCopyOversizedRow.cpp
+Skipping non-existent file: src/third_party/dawn/src/dawn/native/BufferTextureCopyOversizedRow.h
+Skipping non-existent file: src/third_party/dawn/src/dawn/native/BufferTextureCopyOversizedRow.cpp
+Skipping non-existent file: src/third_party/dawn/src/dawn/native/BufferTextureCopyOversizedRow.h
+Skipping non-existent file: src/third_party/dawn/src/dawn/native/BufferTextureCopyOversizedRow.cpp
+Skipping non-existent file: src/third_party/dawn/src/dawn/tests/white_box/GLUncheckedErrorTests.cpp
+Skipping non-existent file: src/third_party/dawn/src/dawn/tests/white_box/GLGraphicsResetTests.cpp
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferArrayView/workgroup_runtime_array.wgsl
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferArrayView/workgroup_runtime_array.wgsl.expected.dxc.hlsl
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferArrayView/workgroup_runtime_array.wgsl.expected.fxc.hlsl
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferArrayView/workgroup_runtime_array.wgsl.expected.glsl
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferArrayView/workgroup_runtime_array.wgsl.expected.msl
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferArrayView/workgroup_runtime_array.wgsl.expected.spvasm
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferArrayView/workgroup_runtime_array.wgsl.expected.wgsl
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferView/workgroup_runtime_array.wgsl
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferView/workgroup_runtime_array.wgsl.expected.dxc.hlsl
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferView/workgroup_runtime_array.wgsl.expected.fxc.hlsl
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferView/workgroup_runtime_array.wgsl.expected.glsl
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferView/workgroup_runtime_array.wgsl.expected.msl
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferView/workgroup_runtime_array.wgsl.expected.spvasm
+Skipping non-existent file: src/third_party/dawn/test/tint/builtins/bufferView/workgroup_runtime_array.wgsl.expected.wgsl
+Skipping non-existent file: src/third_party/minigbm/src/drv_helpers.c
+Skipping non-existent file: src/third_party/minigbm/src/drv_helpers.h
+Skipping non-existent file: src/third_party/minigbm/src/i915.c
+[0:01:07] Still working on:
+[0:01:07]   src
+[0:01:17] Still working on:
+[0:01:17]   src
+[0:01:27] Still working on:
+[0:01:27]   src
+[0:01:37] Still working on:
+[0:01:37]   src
+[0:01:47] Still working on:
+[0:01:47]   src
+[0:01:57] Still working on:
+[0:01:57]   src
+[0:02:07] Still working on:
+[0:02:07]   src
+[0:02:17] Still working on:
+[0:02:17]   src
+[0:02:27] Still working on:
+[0:02:27]   src
+[0:02:37] Still working on:
+[0:02:37]   src
+[0:02:47] Still working on:
+[0:02:47]   src
+[0:02:57] Still working on:
+[0:02:57]   src
+[0:03:07] Still working on:
+[0:03:07]   src
+[0:03:17] Still working on:
+[0:03:17]   src
+[0:03:27] Still working on:
+[0:03:27]   src
+[0:03:37] Still working on:
+[0:03:37]   src
+[0:03:47] Still working on:
+[0:03:47]   src
+[0:03:57] Still working on:
+[0:03:57]   src
+[0:04:07] Still working on:
+[0:04:07]   src
+[0:04:17] Still working on:
+[0:04:17]   src
+[0:04:27] Still working on:
+[0:04:27]   src
+[0:04:37] Still working on:
+[0:04:37]   src
+[0:04:47] Still working on:
+[0:04:47]   src
+[0:04:57] Still working on:
+[0:04:57]   src
+[0:05:07] Still working on:
+[0:05:07]   src
+[0:05:17] Still working on:
+[0:05:17]   src
+[0:05:27] Still working on:
+[0:05:27]   src
+[0:05:37] Still working on:
+[0:05:37]   src
+[0:05:47] Still working on:
+[0:05:47]   src
+[0:05:57] Still working on:
+[0:05:57]   src
+[0:06:07] Still working on:
+[0:06:07]   src
+[0:06:17] Still working on:
+[0:06:17]   src
+[0:06:27] Still working on:
+[0:06:27]   src
+[0:06:37] Still working on:
+[0:06:37]   src
+[0:06:47] Still working on:
+[0:06:47]   src
+[0:06:57] Still working on:
+[0:06:57]   src
+2>WARNING: subprocess '"C:\Program Files\Git\cmd\git.exe" "--git-dir" "C:\Users\bigjakk\.git_cache\chromium.googlesource.com-chromium-src" "fetch" "--prune" "origin" "+refs/heads/*:refs/heads/*"' in C:\Users\bigjakk\.git_cache\chromium.googlesource.com-chromium-src failed; will retry after a short nap...
+[0:07:07] Still working on:
+[0:07:07]   src
+[0:07:17] Still working on:
+[0:07:17]   src
+[0:07:27] Still working on:
+[0:07:27]   src
+[0:07:37] Still working on:
+[0:07:37]   src
+[0:07:47] Still working on:
+[0:07:47]   src
+[0:07:57] Still working on:
+[0:07:57]   src
+[0:08:07] Still working on:
+[0:08:07]   src
+[0:08:17] Still working on:
+[0:08:17]   src
+[0:08:27] Still working on:
+[0:08:27]   src
+[0:08:37] Still working on:
+[0:08:37]   src
+[0:08:47] Still working on:
+[0:08:47]   src
+[0:08:57] Still working on:
+[0:08:57]   src
+[0:09:07] Still working on:
+[0:09:07]   src
+[0:09:17] Still working on:
+[0:09:17]   src
+[0:09:27] Still working on:
+[0:09:27]   src
+[0:09:37] Still working on:
+[0:09:37]   src
+[0:09:47] Still working on:
+[0:09:47]   src
+[0:09:57] Still working on:
+[0:09:57]   src
+[0:10:07] Still working on:
+[0:10:07]   src
+2>WARNING: subprocess '"C:\Program Files\Git\cmd\git.exe" "--git-dir" "C:\Users\bigjakk\.git_cache\chromium.googlesource.com-chromium-src" "fetch" "--prune" "origin" "+refs/heads/*:refs/heads/*"' in C:\Users\bigjakk\.git_cache\chromium.googlesource.com-chromium-src failed; will retry after a short nap...
+[0:10:17] Still working on:
+[0:10:17]   src
+[0:10:27] Still working on:
+[0:10:27]   src
+Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/FETCH_HEAD...
+Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/config...
+/ [0 files][    0.0 B/  5.3 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/description...
+/ [0 files][    0.0 B/  5.3 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/HEAD...
+/ [0 files][    0.0 B/  5.3 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/number.idx...
+/ [0 files][    0.0 B/  5.3 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/gc.pid...
+/ [0 files][    0.0 B/  5.3 MiB]                                                / [0 files][    0.0 B/  5.3 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/applypatch-msg.sample...
+/ [0 files][    0.0 B/  5.3 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/commit-msg.sample...
+Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/packed-refs...
+/ [0 files][    0.0 B/  5.3 MiB]                                                / [0 files][    0.0 B/  8.2 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/pre-applypatch.sample...
+Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/push-to-checkout.sample...
+/ [0 files][    0.0 B/  8.2 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/pre-merge-commit.sample...
+/ [0 files][    0.0 B/  8.2 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/post-update.sample...
+/ [0 files][    0.0 B/  8.2 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/prepare-commit-msg.sample...
+/ [0 files][    0.0 B/  8.2 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/pre-receive.sample...
+/ [0 files][    0.0 B/  8.2 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/pre-commit.sample...
+/ [0 files][    0.0 B/  8.2 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/pre-push.sample...
+/ [0 files][    0.0 B/  8.2 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/sendemail-validate.sample...
+/ [0 files][    0.0 B/  8.2 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/pre-rebase.sample...
+/ [0 files][    0.0 B/  8.2 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/fsmonitor-watchman.sample...
+/ [0 files][    0.0 B/  8.3 MiB]                                                / [0 files][    0.0 B/  8.3 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/hooks/update.sample...
+Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/info/exclude...
+/ [0 files][    0.0 B/  8.3 MiB]                                                / [0 files][    0.0 B/  8.3 MiB]                                                Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/info/refs...
+/ [0/46 files][    0.0 B/ 14.4 GiB]   0% Done                                   Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/info/commit-graph...
+/ [0/46 files][    0.0 B/ 14.4 GiB]   0% Done                                   / [0/46 files][   16.0 B/ 14.4 GiB]   0% Done                                   -- [1/46 files][   16.0 B/ 14.4 GiB]   0% Done                                   Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/info/packs...
+- [1/46 files][   16.0 B/ 14.4 GiB]   0% Done                                   - [2/46 files][   37.0 B/ 14.4 GiB]   0% Done                                   Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-04f0a41cf733a7ee47baa291851f34bbab258fa3.idx...
+- [2/46 files][   37.0 B/ 14.4 GiB]   0% Done                                   - [3/46 files][  110.0 B/ 14.4 GiB]   0% Done                                   Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-04f0a41cf733a7ee47baa291851f34bbab258fa3.pack...
+- [3/46 files][  110.0 B/ 14.4 GiB]   0% Done                                   - [4/46 files][  463.0 B/ 14.4 GiB]   0% Done                                   Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-04f0a41cf733a7ee47baa291851f34bbab258fa3.rev...
+- [4/46 files][  463.0 B/ 14.4 GiB]   0% Done                                   - [5/46 files][ 18.5 KiB/ 14.4 GiB]   0% Done                                   Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-2831d8f52ade2242bec03ff9dc8c0cb2aac4e227.idx...
+- [5/46 files][ 18.5 KiB/ 14.4 GiB]   0% Done                                   - [6/46 files][ 21.8 KiB/ 14.4 GiB]   0% Done                                   Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-2831d8f52ade2242bec03ff9dc8c0cb2aac4e227.pack...
+- [6/46 files][ 21.8 KiB/ 14.4 GiB]   0% Done                                   - [7/46 files][ 22.2 KiB/ 14.4 GiB]   0% Done                                   Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-2831d8f52ade2242bec03ff9dc8c0cb2aac4e227.rev...
+- [7/46 files][ 22.2 KiB/ 14.4 GiB]   0% Done                                   - [8/46 files][ 23.1 KiB/ 14.4 GiB]   0% Done                                   Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-2f614b4074cbbb93b61339054392121de970a7c0.idx...
+- [8/46 files][ 23.1 KiB/ 14.4 GiB]   0% Done                                   - [9/46 files][ 23.2 KiB/ 14.4 GiB]   0% Done                                   Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-2f614b4074cbbb93b61339054392121de970a7c0.pack...
+- [9/46 files][ 23.2 KiB/ 14.4 GiB]   0% Done                                   - [10/46 files][ 23.6 KiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-2f614b4074cbbb93b61339054392121de970a7c0.rev...
+- [10/46 files][ 23.6 KiB/ 14.4 GiB]   0% Done                                  - [11/46 files][ 25.2 KiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-6b87fb6f31cb214cddf59f26bac1fe6934d9de1c.idx...
+- [11/46 files][ 25.2 KiB/ 14.4 GiB]   0% Done                                  - [12/46 files][ 28.0 KiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-6b87fb6f31cb214cddf59f26bac1fe6934d9de1c.pack...
+- [13/46 files][ 28.0 KiB/ 14.4 GiB]   0% Done                                  - [13/46 files][ 28.0 KiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-6b87fb6f31cb214cddf59f26bac1fe6934d9de1c.rev...
+- [13/46 files][ 28.0 KiB/ 14.4 GiB]   0% Done                                  - [14/46 files][ 30.8 KiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-8343bd73d3e307fa3ae2d67cf13973c0cafa0a92.idx...
+- [14/46 files][ 30.8 KiB/ 14.4 GiB]   0% Done                                  - [15/46 files][ 30.8 KiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-8343bd73d3e307fa3ae2d67cf13973c0cafa0a92.pack...
+- [15/46 files][ 30.8 KiB/ 14.4 GiB]   0% Done                                  - [16/46 files][351.5 KiB/ 14.4 GiB]   0% Done                                  - [17/46 files][351.5 KiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-9c53698f61f3788d12b1196cd87d3cb907403ff7.idx...
+- [17/46 files][351.5 KiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-8343bd73d3e307fa3ae2d67cf13973c0cafa0a92.rev...
+- [17/46 files][351.5 KiB/ 14.4 GiB]   0% Done                                  - [18/46 files][359.0 KiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-9c53698f61f3788d12b1196cd87d3cb907403ff7.pack...
+- [18/46 files][359.0 KiB/ 14.4 GiB]   0% Done                                  - [19/46 files][359.0 KiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-9c53698f61f3788d12b1196cd87d3cb907403ff7.rev...
+- [19/46 files][359.0 KiB/ 14.4 GiB]   0% Done                                  - [20/46 files][ 1002 KiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-bf4ab738df63d2ba87dcab43e4ee3010b090b9ee.idx...
+- [20/46 files][ 1002 KiB/ 14.4 GiB]   0% Done                                  \|| [21/46 files][  6.9 MiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-bf4ab738df63d2ba87dcab43e4ee3010b090b9ee.pack...
+| [21/46 files][  6.9 MiB/ 14.4 GiB]   0% Done                                  | [22/46 files][  9.5 MiB/ 14.4 GiB]   0% Done                                  Copying gs://chromium-git-cache/v2/chromium.googlesource.com-chromium-src/1688483/objects/pack/pack-bf4ab738df63d2ba87dcab43e4ee3010b090b9ee.rev...
+| [22/46 files][  9.5 MiB/ 14.4 GiB]   0% Done                                  // [23/46 files][ 11.8 MiB/ 14.4 GiB]   0% Done                                  -- [23/46 files][ 19.0 MiB/ 14.4 GiB]   0% Done                                  \|| [23/46 files][ 33.1 MiB/ 14.4 GiB]   0% Done                                  /-- [23/46 files][ 47.2 MiB/ 14.4 GiB]   0% Done                                  [0:10:37] Still working on:
+[0:10:37]   src
+\\ [23/46 files][ 61.8 MiB/ 14.4 GiB]   0% Done                                  || [24/46 files][ 67.5 MiB/ 14.4 GiB]   0% Done                                  /-- [24/46 files][ 75.9 MiB/ 14.4 GiB]   0% Done                                  \\ [24/46 files][ 76.2 MiB/ 14.4 GiB]   0% Done   4.6 MiB/s ETA 00:52:57         |// [24/46 files][ 94.3 MiB/ 14.4 GiB]   0% Done   5.8 MiB/s ETA 00:41:49         / [25/46 files][ 98.7 MiB/ 14.4 GiB]   0% Done   6.3 MiB/s ETA 00:39:06         -\\ [25/46 files][110.6 MiB/ 14.4 GiB]   0% Done   8.2 MiB/s ETA 00:29:44         |// [25/46 files][125.6 MiB/ 14.4 GiB]   0% Done  15.2 MiB/s ETA 00:16:02         -- [25/46 files][141.8 MiB/ 14.4 GiB]   0% Done  15.4 MiB/s ETA 00:15:50         \|| [26/46 files][152.3 MiB/ 14.4 GiB]   1% Done  15.3 MiB/s ETA 00:15:56         | [27/46 files][152.6 MiB/ 14.4 GiB]   1% Done  15.3 MiB/s ETA 00:15:56         [0:10:47] Still working on:
+[0:10:47]   src
+// [27/46 files][165.4 MiB/ 14.4 GiB]   1% Done  14.2 MiB/s ETA 00:17:08         -\\ [27/46 files][179.2 MiB/ 14.4 GiB]   1% Done  14.0 MiB/s ETA 00:17:20         || [27/46 files][190.7 MiB/ 14.4 GiB]   1% Done  13.7 MiB/s ETA 00:17:47         /-- [28/46 files][199.6 MiB/ 14.4 GiB]   1% Done  13.0 MiB/s ETA 00:18:42         - [29/46 files][200.5 MiB/ 14.4 GiB]   1% Done  13.1 MiB/s ETA 00:18:31         \\ [29/46 files][215.2 MiB/ 14.4 GiB]   1% Done  13.1 MiB/s ETA 00:18:32         |// [29/46 files][227.4 MiB/ 14.4 GiB]   1% Done  12.8 MiB/s ETA 00:18:58         -\\ [29/46 files][239.2 MiB/ 14.4 GiB]   1% Done  12.3 MiB/s ETA 00:19:46         \ [30/46 files][243.1 MiB/ 14.4 GiB]   1% Done  12.2 MiB/s ETA 00:19:53         |// [30/46 files][255.6 MiB/ 14.4 GiB]   1% Done  12.1 MiB/s ETA 00:20:01         -\\ [30/46 files][268.4 MiB/ 14.4 GiB]   1% Done  11.6 MiB/s ETA 00:20:53         |[0:10:57] Still working on:
+[0:10:57]   src
+| [30/46 files][279.4 MiB/ 14.4 GiB]   1% Done  11.4 MiB/s ETA 00:21:17         /-- [30/46 files][294.0 MiB/ 14.4 GiB]   1% Done  11.9 MiB/s ETA 00:20:20         \|| [30/46 files][310.9 MiB/ 14.4 GiB]   2% Done  13.1 MiB/s ETA 00:18:24         // [30/46 files][327.2 MiB/ 14.4 GiB]   2% Done  14.0 MiB/s ETA 00:17:11         -\\ [30/46 files][339.4 MiB/ 14.4 GiB]   2% Done  13.9 MiB/s ETA 00:17:20         |// [30/46 files][350.3 MiB/ 14.4 GiB]   2% Done  13.3 MiB/s ETA 00:18:03         -- [30/46 files][364.0 MiB/ 14.4 GiB]   2% Done  13.3 MiB/s ETA 00:18:02         \|| [30/46 files][376.2 MiB/ 14.4 GiB]   2% Done  12.4 MiB/s ETA 00:19:18         // [30/46 files][391.2 MiB/ 14.4 GiB]   2% Done  12.3 MiB/s ETA 00:19:27         -\\ [30/46 files][405.3 MiB/ 14.4 GiB]   2% Done  13.1 MiB/s ETA 00:18:19         [0:11:07] Still working on:
+[0:11:07]   src
+|// [30/46 files][420.3 MiB/ 14.4 GiB]   2% Done  13.8 MiB/s ETA 00:17:23         -- [30/46 files][433.7 MiB/ 14.4 GiB]   2% Done  14.2 MiB/s ETA 00:16:49         \|| [30/46 files][449.0 MiB/ 14.4 GiB]   3% Done  14.4 MiB/s ETA 00:16:36         // [30/46 files][463.1 MiB/ 14.4 GiB]   3% Done  14.3 MiB/s ETA 00:16:44         -\\ [30/46 files][477.2 MiB/ 14.4 GiB]   3% Done  14.2 MiB/s ETA 00:16:48         |// [30/46 files][487.8 MiB/ 14.4 GiB]   3% Done  13.4 MiB/s ETA 00:17:48         -- [31/46 files][498.6 MiB/ 14.4 GiB]   3% Done  13.2 MiB/s ETA 00:18:04         \\ [32/46 files][509.6 MiB/ 14.4 GiB]   3% Done  13.0 MiB/s ETA 00:18:18         |// [32/46 files][524.3 MiB/ 14.4 GiB]   3% Done  13.2 MiB/s ETA 00:18:01         -- [32/46 files][539.3 MiB/ 14.4 GiB]   3% Done  13.3 MiB/s ETA 00:17:49         \[0:11:17] Still working on:
+[0:11:17]   src
+|| [32/46 files][554.6 MiB/ 14.4 GiB]   3% Done  14.0 MiB/s ETA 00:16:55         /-- [32/46 files][568.4 MiB/ 14.4 GiB]   3% Done  14.5 MiB/s ETA 00:16:18         \\ [32/46 files][581.5 MiB/ 14.4 GiB]   3% Done  14.2 MiB/s ETA 00:16:39         |// [32/46 files][596.5 MiB/ 14.4 GiB]   4% Done  14.1 MiB/s ETA 00:16:46         -\\ [32/46 files][610.6 MiB/ 14.4 GiB]   4% Done  13.8 MiB/s ETA 00:17:05         || [32/46 files][623.4 MiB/ 14.4 GiB]   4% Done  13.6 MiB/s ETA 00:17:24         /-- [32/46 files][633.4 MiB/ 14.4 GiB]   4% Done  12.6 MiB/s ETA 00:18:44         \|| [32/46 files][647.5 MiB/ 14.4 GiB]   4% Done  12.6 MiB/s ETA 00:18:45         // [32/46 files][662.2 MiB/ 14.4 GiB]   4% Done  12.7 MiB/s ETA 00:18:33         -\\ [32/46 files][674.3 MiB/ 14.4 GiB]   4% Done  12.4 MiB/s ETA 00:18:59         [0:11:27] Still working on:
+[0:11:27]   src
+|// [32/46 files][687.2 MiB/ 14.4 GiB]   4% Done  12.2 MiB/s ETA 00:19:20         -- [32/46 files][702.2 MiB/ 14.4 GiB]   4% Done  13.2 MiB/s ETA 00:17:51         \|| [32/46 files][716.5 MiB/ 14.4 GiB]   4% Done  13.2 MiB/s ETA 00:17:44         // [32/46 files][730.9 MiB/ 14.4 GiB]   4% Done  13.4 MiB/s ETA 00:17:25         -\\ [32/46 files][746.2 MiB/ 14.4 GiB]   5% Done  14.0 MiB/s ETA 00:16:43         |// [32/46 files][759.3 MiB/ 14.4 GiB]   5% Done  14.1 MiB/s ETA 00:16:37         / [33/46 files][762.2 MiB/ 14.4 GiB]   5% Done  13.6 MiB/s ETA 00:17:07         -\\ [33/46 files][770.0 MiB/ 14.4 GiB]   5% Done  12.7 MiB/s ETA 00:18:23         || [33/46 files][785.7 MiB/ 14.4 GiB]   5% Done  12.8 MiB/s ETA 00:18:15         /-- [33/46 files][803.5 MiB/ 14.4 GiB]   5% Done  13.1 MiB/s ETA 00:17:48         \[0:11:37] Still working on:
+[0:11:37]   src
+|| [33/46 files][819.1 MiB/ 14.4 GiB]   5% Done  13.7 MiB/s ETA 00:16:57         // [33/46 files][831.0 MiB/ 14.4 GiB]   5% Done  13.1 MiB/s ETA 00:17:48         -\\ [33/46 files][843.5 MiB/ 14.4 GiB]   5% Done  14.1 MiB/s ETA 00:16:31         |// [33/46 files][858.2 MiB/ 14.4 GiB]   5% Done  13.9 MiB/s ETA 00:16:40         -- [33/46 files][872.6 MiB/ 14.4 GiB]   5% Done  13.3 MiB/s ETA 00:17:23         \|| [33/46 files][886.0 MiB/ 14.4 GiB]   5% Done  13.3 MiB/s ETA 00:17:26         // [33/46 files][902.6 MiB/ 14.4 GiB]   6% Done  14.3 MiB/s ETA 00:16:11         -\\ [33/46 files][917.6 MiB/ 14.4 GiB]   6% Done  14.4 MiB/s ETA 00:16:03         |// [33/46 files][929.4 MiB/ 14.4 GiB]   6% Done  14.3 MiB/s ETA 00:16:10         -- [33/46 files][946.0 MiB/ 14.4 GiB]   6% Done  15.1 MiB/s ETA 00:15:19         \[0:11:47] Still working on:
+[0:11:47]   src
+|| [33/46 files][954.1 MiB/ 14.4 GiB]   6% Done  13.6 MiB/s ETA 00:16:59         /-- [33/46 files][968.2 MiB/ 14.4 GiB]   6% Done  12.9 MiB/s ETA 00:17:53         \\ [34/46 files][978.2 MiB/ 14.4 GiB]   6% Done  13.1 MiB/s ETA 00:17:30         || [34/46 files][993.9 MiB/ 14.4 GiB]   6% Done  14.0 MiB/s ETA 00:16:26         /-- [34/46 files][ 1009 MiB/ 14.4 GiB]   6% Done  13.8 MiB/s ETA 00:16:39         \\ [34/46 files][  1.0 GiB/ 14.4 GiB]   6% Done  14.8 MiB/s ETA 00:15:32         |// [34/46 files][  1.0 GiB/ 14.4 GiB]   7% Done  15.1 MiB/s ETA 00:15:08         -\\ [34/46 files][  1.0 GiB/ 14.4 GiB]   7% Done  14.9 MiB/s ETA 00:15:22         || [34/46 files][  1.0 GiB/ 14.4 GiB]   7% Done  14.5 MiB/s ETA 00:15:47         /-- [34/46 files][  1.1 GiB/ 14.4 GiB]   7% Done  14.0 MiB/s ETA 00:16:22         \[0:11:57] Still working on:
+[0:11:57]   src
+\ [34/46 files][  1.1 GiB/ 14.4 GiB]   7% Done  14.3 MiB/s ETA 00:15:57         |// [34/46 files][  1.1 GiB/ 14.4 GiB]   7% Done  14.5 MiB/s ETA 00:15:41         -- [35/46 files][  1.1 GiB/ 14.4 GiB]   7% Done  15.1 MiB/s ETA 00:15:06         \\ [35/46 files][  1.1 GiB/ 14.4 GiB]   7% Done  15.4 MiB/s ETA 00:14:45         |// [35/46 files][  1.1 GiB/ 14.4 GiB]   7% Done  17.1 MiB/s ETA 00:13:15         -\\ [35/46 files][  1.2 GiB/ 14.4 GiB]   7% Done  16.7 MiB/s ETA 00:13:35         || [35/46 files][  1.2 GiB/ 14.4 GiB]   8% Done  16.7 MiB/s ETA 00:13:34         /-- [35/46 files][  1.2 GiB/ 14.4 GiB]   8% Done  16.1 MiB/s ETA 00:14:05         \|| [35/46 files][  1.2 GiB/ 14.4 GiB]   8% Done  15.7 MiB/s ETA 00:14:23         // [35/46 files][  1.2 GiB/ 14.4 GiB]   8% Done  15.4 MiB/s ETA 00:14:37         -\[0:12:07] Still working on:
+[0:12:07]   src
+\ [35/46 files][  1.2 GiB/ 14.4 GiB]   8% Done  14.5 MiB/s ETA 00:15:32         |// [35/46 files][  1.2 GiB/ 14.4 GiB]   8% Done  14.4 MiB/s ETA 00:15:39         -- [35/46 files][  1.2 GiB/ 14.4 GiB]   8% Done  14.5 MiB/s ETA 00:15:29         \|| [35/46 files][  1.3 GiB/ 14.4 GiB]   8% Done  13.4 MiB/s ETA 00:16:48         /-- [35/46 files][  1.3 GiB/ 14.4 GiB]   8% Done  13.6 MiB/s ETA 00:16:30         \\ [35/46 files][  1.3 GiB/ 14.4 GiB]   8% Done  14.7 MiB/s ETA 00:15:15         |// [35/46 files][  1.3 GiB/ 14.4 GiB]   9% Done  14.5 MiB/s ETA 00:15:29         -\\ [35/46 files][  1.3 GiB/ 14.4 GiB]   9% Done  14.4 MiB/s ETA 00:15:29         || [35/46 files][  1.3 GiB/ 14.4 GiB]   9% Done  15.3 MiB/s ETA 00:14:38         /-- [35/46 files][  1.4 GiB/ 14.4 GiB]   9% Done  15.4 MiB/s ETA 00:14:31         \[0:12:17] Still working on:
+[0:12:17]   src
+\ [35/46 files][  1.4 GiB/ 14.4 GiB]   9% Done  15.2 MiB/s ETA 00:14:38         |// [35/46 files][  1.4 GiB/ 14.4 GiB]   9% Done  14.7 MiB/s ETA 00:15:08         -\\ [35/46 files][  1.4 GiB/ 14.4 GiB]   9% Done  15.1 MiB/s ETA 00:14:45         || [35/46 files][  1.4 GiB/ 14.4 GiB]   9% Done  14.5 MiB/s ETA 00:15:18         /-- [35/46 files][  1.4 GiB/ 14.4 GiB]   9% Done  14.0 MiB/s ETA 00:15:55         \\ [35/46 files][  1.4 GiB/ 14.4 GiB]   9% Done  14.0 MiB/s ETA 00:15:51         |// [35/46 files][  1.4 GiB/ 14.4 GiB]  10% Done  14.7 MiB/s ETA 00:15:04         -\\ [35/46 files][  1.5 GiB/ 14.4 GiB]  10% Done  14.7 MiB/s ETA 00:15:04         || [35/46 files][  1.5 GiB/ 14.4 GiB]  10% Done  14.5 MiB/s ETA 00:15:14         /-- [35/46 files][  1.5 GiB/ 14.4 GiB]  10% Done  14.7 MiB/s ETA 00:15:02         \[0:12:27] Still working on:
+[0:12:27]   src
+|| [35/46 files][  1.5 GiB/ 14.4 GiB]  10% Done  13.8 MiB/s ETA 00:16:02         // [35/46 files][  1.5 GiB/ 14.4 GiB]  10% Done  13.8 MiB/s ETA 00:16:00         -\\ [35/46 files][  1.5 GiB/ 14.4 GiB]  10% Done  13.8 MiB/s ETA 00:15:54         |// [35/46 files][  1.6 GiB/ 14.4 GiB]  10% Done  14.7 MiB/s ETA 00:14:55         -- [35/46 files][  1.6 GiB/ 14.4 GiB]  10% Done  15.2 MiB/s ETA 00:14:26         \\ [36/46 files][  1.6 GiB/ 14.4 GiB]  10% Done  15.4 MiB/s ETA 00:14:15         |// [36/46 files][  1.6 GiB/ 14.4 GiB]  11% Done  15.3 MiB/s ETA 00:14:19         -- [36/46 files][  1.6 GiB/ 14.4 GiB]  11% Done  14.7 MiB/s ETA 00:14:56         \|| [36/46 files][  1.6 GiB/ 14.4 GiB]  11% Done  14.8 MiB/s ETA 00:14:46         /-- [36/46 files][  1.6 GiB/ 14.4 GiB]  11% Done  14.6 MiB/s ETA 00:14:59         \\ [36/46 files][  1.6 GiB/ 14.4 GiB]  11% Done  15.0 MiB/s ETA 00:14:35         [0:12:37] Still working on:
+[0:12:37]   src
+|// [36/46 files][  1.7 GiB/ 14.4 GiB]  11% Done  14.5 MiB/s ETA 00:15:00         -- [36/46 files][  1.7 GiB/ 14.4 GiB]  11% Done  14.8 MiB/s ETA 00:14:41         \|| [36/46 files][  1.7 GiB/ 14.4 GiB]  11% Done  14.7 MiB/s ETA 00:14:48         /-- [36/46 files][  1.7 GiB/ 14.4 GiB]  11% Done  13.9 MiB/s ETA 00:15:40         \\ [36/46 files][  1.7 GiB/ 14.4 GiB]  11% Done  13.5 MiB/s ETA 00:16:03         |// [36/46 files][  1.7 GiB/ 14.4 GiB]  11% Done  14.1 MiB/s ETA 00:15:24         -- [36/46 files][  1.8 GiB/ 14.4 GiB]  12% Done  14.0 MiB/s ETA 00:15:26         \|| [36/46 files][  1.8 GiB/ 14.4 GiB]  12% Done  14.6 MiB/s ETA 00:14:46         /-- [36/46 files][  1.8 GiB/ 14.4 GiB]  12% Done  14.6 MiB/s ETA 00:14:45         \[0:12:47] Still working on:
+[0:12:47]   src
+\ [36/46 files][  1.8 GiB/ 14.4 GiB]  12% Done  15.6 MiB/s ETA 00:13:50         |// [36/46 files][  1.8 GiB/ 14.4 GiB]  12% Done  15.7 MiB/s ETA 00:13:43         -- [36/46 files][  1.8 GiB/ 14.4 GiB]  12% Done  15.3 MiB/s ETA 00:14:02         \|| [36/46 files][  1.8 GiB/ 14.4 GiB]  12% Done  15.2 MiB/s ETA 00:14:06         /-- [36/46 files][  1.9 GiB/ 14.4 GiB]  12% Done  14.8 MiB/s ETA 00:14:33         \\ [36/46 files][  1.9 GiB/ 14.4 GiB]  12% Done  13.6 MiB/s ETA 00:15:49         |// [36/46 files][  1.9 GiB/ 14.4 GiB]  13% Done  13.0 MiB/s ETA 00:16:32         -- [36/46 files][  1.9 GiB/ 14.4 GiB]  13% Done  13.1 MiB/s ETA 00:16:23         \|| [36/46 files][  1.9 GiB/ 14.4 GiB]  13% Done  12.5 MiB/s ETA 00:17:09         /-- [36/46 files][  1.9 GiB/ 14.4 GiB]  13% Done  13.0 MiB/s ETA 00:16:25         \[0:12:57] Still working on:
+[0:12:57]   src
+\ [36/46 files][  1.9 GiB/ 14.4 GiB]  13% Done  14.7 MiB/s ETA 00:14:33         |// [36/46 files][  2.0 GiB/ 14.4 GiB]  13% Done  14.5 MiB/s ETA 00:14:42         -\\ [36/46 files][  2.0 GiB/ 14.4 GiB]  13% Done  15.0 MiB/s ETA 00:14:13         || [36/46 files][  2.0 GiB/ 14.4 GiB]  13% Done  15.3 MiB/s ETA 00:13:56         /-- [36/46 files][  2.0 GiB/ 14.4 GiB]  13% Done  15.5 MiB/s ETA 00:13:43         \\ [36/46 files][  2.0 GiB/ 14.4 GiB]  13% Done  15.0 MiB/s ETA 00:14:07         |// [36/46 files][  2.0 GiB/ 14.4 GiB]  14% Done  15.0 MiB/s ETA 00:14:05         -\\ [36/46 files][  2.0 GiB/ 14.4 GiB]  14% Done  14.4 MiB/s ETA 00:14:43         |// [36/46 files][  2.0 GiB/ 14.4 GiB]  14% Done  14.3 MiB/s ETA 00:14:48         -- [36/46 files][  2.1 GiB/ 14.4 GiB]  14% Done  14.0 MiB/s ETA 00:15:07         \[0:13:07] Still working on:
+[0:13:07]   src
+\ [37/46 files][  2.1 GiB/ 14.4 GiB]  14% Done  14.2 MiB/s ETA 00:14:53         || [37/46 files][  2.1 GiB/ 14.4 GiB]  14% Done  14.0 MiB/s ETA 00:15:06         /-- [37/46 files][  2.1 GiB/ 14.4 GiB]  14% Done  13.4 MiB/s ETA 00:15:41         \\ [37/46 files][  2.1 GiB/ 14.4 GiB]  14% Done  13.2 MiB/s ETA 00:15:56         |// [37/46 files][  2.1 GiB/ 14.4 GiB]  14% Done  12.5 MiB/s ETA 00:16:47         -\\ [37/46 files][  2.1 GiB/ 14.4 GiB]  14% Done  12.4 MiB/s ETA 00:16:55         |// [37/46 files][  2.2 GiB/ 14.4 GiB]  14% Done  13.1 MiB/s ETA 00:16:03         -- [37/46 files][  2.2 GiB/ 14.4 GiB]  15% Done  13.6 MiB/s ETA 00:15:24         \|| [37/46 files][  2.2 GiB/ 14.4 GiB]  15% Done  13.6 MiB/s ETA 00:15:25         // [37/46 files][  2.2 GiB/ 14.4 GiB]  15% Done  14.0 MiB/s ETA 00:14:53         -\[0:13:17] Still working on:
+[0:13:17]   src
+\ [37/46 files][  2.2 GiB/ 14.4 GiB]  15% Done  13.7 MiB/s ETA 00:15:14         |// [37/46 files][  2.2 GiB/ 14.4 GiB]  15% Done  14.1 MiB/s ETA 00:14:47         -- [37/46 files][  2.2 GiB/ 14.4 GiB]  15% Done  13.9 MiB/s ETA 00:14:57         \|| [37/46 files][  2.2 GiB/ 14.4 GiB]  15% Done  13.9 MiB/s ETA 00:14:59         /-- [37/46 files][  2.3 GiB/ 14.4 GiB]  15% Done  13.6 MiB/s ETA 00:15:15         \\ [37/46 files][  2.3 GiB/ 14.4 GiB]  15% Done  13.7 MiB/s ETA 00:15:06         |// [37/46 files][  2.3 GiB/ 14.4 GiB]  15% Done  14.2 MiB/s ETA 00:14:39         -- [37/46 files][  2.3 GiB/ 14.4 GiB]  15% Done  13.3 MiB/s ETA 00:15:37         \|| [37/46 files][  2.3 GiB/ 14.4 GiB]  16% Done  13.2 MiB/s ETA 00:15:39         // [37/46 files][  2.3 GiB/ 14.4 GiB]  16% Done  13.2 MiB/s ETA 00:15:41         -[0:13:27] Still working on:
+[0:13:27]   src
+\\ [37/46 files][  2.3 GiB/ 14.4 GiB]  16% Done  13.7 MiB/s ETA 00:15:04         |// [37/46 files][  2.4 GiB/ 14.4 GiB]  16% Done  13.7 MiB/s ETA 00:15:03         -\\ [37/46 files][  2.4 GiB/ 14.4 GiB]  16% Done  15.0 MiB/s ETA 00:13:46         || [37/46 files][  2.4 GiB/ 14.4 GiB]  16% Done  15.2 MiB/s ETA 00:13:34         /-- [37/46 files][  2.4 GiB/ 14.4 GiB]  16% Done  15.5 MiB/s ETA 00:13:17         \\ [37/46 files][  2.4 GiB/ 14.4 GiB]  16% Done  14.7 MiB/s ETA 00:13:57         |// [37/46 files][  2.4 GiB/ 14.4 GiB]  16% Done  14.4 MiB/s ETA 00:14:12         -- [37/46 files][  2.4 GiB/ 14.4 GiB]  16% Done  13.6 MiB/s ETA 00:15:02         \|| [37/46 files][  2.5 GiB/ 14.4 GiB]  17% Done  13.3 MiB/s ETA 00:15:21         /-- [37/46 files][  2.5 GiB/ 14.4 GiB]  17% Done  12.8 MiB/s ETA 00:16:00         [0:13:37] Still working on:
+[0:13:37]   src
+\\ [37/46 files][  2.5 GiB/ 14.4 GiB]  17% Done  12.9 MiB/s ETA 00:15:51         |// [37/46 files][  2.5 GiB/ 14.4 GiB]  17% Done  13.0 MiB/s ETA 00:15:43         -\\ [37/46 files][  2.5 GiB/ 14.4 GiB]  17% Done  13.3 MiB/s ETA 00:15:20         || [37/46 files][  2.5 GiB/ 14.4 GiB]  17% Done  13.0 MiB/s ETA 00:15:41         /-- [37/46 files][  2.5 GiB/ 14.4 GiB]  17% Done  12.4 MiB/s ETA 00:16:22         \\ [37/46 files][  2.5 GiB/ 14.4 GiB]  17% Done  12.4 MiB/s ETA 00:16:23         |// [37/46 files][  2.6 GiB/ 14.4 GiB]  17% Done  12.5 MiB/s ETA 00:16:14         -\\ [37/46 files][  2.6 GiB/ 14.4 GiB]  17% Done  13.2 MiB/s ETA 00:15:19         || [37/46 files][  2.6 GiB/ 14.4 GiB]  17% Done  13.6 MiB/s ETA 00:14:50         /-- [37/46 files][  2.6 GiB/ 14.4 GiB]  18% Done  14.7 MiB/s ETA 00:13:47         [0:13:47] Still working on:
+[0:13:47]   src
+\\ [37/46 files][  2.6 GiB/ 14.4 GiB]  18% Done  14.6 MiB/s ETA 00:13:47         |// [37/46 files][  2.6 GiB/ 14.4 GiB]  18% Done  15.2 MiB/s ETA 00:13:15         -- [37/46 files][  2.6 GiB/ 14.4 GiB]  18% Done  14.9 MiB/s ETA 00:13:29         \|| [37/46 files][  2.7 GiB/ 14.4 GiB]  18% Done  15.0 MiB/s ETA 00:13:24         // [37/46 files][  2.7 GiB/ 14.4 GiB]  18% Done  14.6 MiB/s ETA 00:13:42         -\\ [37/46 files][  2.7 GiB/ 14.4 GiB]  18% Done  14.9 MiB/s ETA 00:13:29         |// [37/46 files][  2.7 GiB/ 14.4 GiB]  18% Done  14.8 MiB/s ETA 00:13:30         -- [37/46 files][  2.7 GiB/ 14.4 GiB]  18% Done  14.4 MiB/s ETA 00:13:54         \|| [37/46 files][  2.7 GiB/ 14.4 GiB]  18% Done  14.4 MiB/s ETA 00:13:55         /-- [37/46 files][  2.7 GiB/ 14.4 GiB]  19% Done  13.5 MiB/s ETA 00:14:48         [0:13:57] Still working on:
+[0:13:57]   src
+\\ [37/46 files][  2.8 GiB/ 14.4 GiB]  19% Done  13.2 MiB/s ETA 00:15:03         |// [37/46 files][  2.8 GiB/ 14.4 GiB]  19% Done  13.4 MiB/s ETA 00:14:52         -\\ [37/46 files][  2.8 GiB/ 14.4 GiB]  19% Done  13.3 MiB/s ETA 00:14:56         || [37/46 files][  2.8 GiB/ 14.4 GiB]  19% Done  13.6 MiB/s ETA 00:14:34         /-- [37/46 files][  2.8 GiB/ 14.4 GiB]  19% Done  14.2 MiB/s ETA 00:13:58         \\ [37/46 files][  2.8 GiB/ 14.4 GiB]  19% Done  13.6 MiB/s ETA 00:14:31         |// [37/46 files][  2.8 GiB/ 14.4 GiB]  19% Done  13.2 MiB/s ETA 00:15:00         -\\ [37/46 files][  2.8 GiB/ 14.4 GiB]  19% Done  12.7 MiB/s ETA 00:15:35         || [37/46 files][  2.9 GiB/ 14.4 GiB]  19% Done  12.6 MiB/s ETA 00:15:41         /-[0:14:07] Still working on:
+[0:14:07]   src
+- [37/46 files][  2.9 GiB/ 14.4 GiB]  19% Done  12.4 MiB/s ETA 00:15:58         \|| [37/46 files][  2.9 GiB/ 14.4 GiB]  19% Done  12.2 MiB/s ETA 00:16:10         // [37/46 files][  2.9 GiB/ 14.4 GiB]  20% Done  12.5 MiB/s ETA 00:15:47         -\\ [37/46 files][  2.9 GiB/ 14.4 GiB]  20% Done  12.3 MiB/s ETA 00:16:02         |// [37/46 files][  2.9 GiB/ 14.4 GiB]  20% Done  12.3 MiB/s ETA 00:16:00         -- [37/46 files][  2.9 GiB/ 14.4 GiB]  20% Done  12.2 MiB/s ETA 00:16:05         \|| [37/46 files][  3.0 GiB/ 14.4 GiB]  20% Done  12.9 MiB/s ETA 00:15:11         // [37/46 files][  3.0 GiB/ 14.4 GiB]  20% Done  12.9 MiB/s ETA 00:15:08         -\\ [37/46 files][  3.0 GiB/ 14.4 GiB]  20% Done  13.0 MiB/s ETA 00:15:03         |// [37/46 files][  3.0 GiB/ 14.4 GiB]  20% Done  12.9 MiB/s ETA 00:15:10         -[0:14:17] Still working on:
+[0:14:17]   src
+- [37/46 files][  3.0 GiB/ 14.4 GiB]  20% Done  12.3 MiB/s ETA 00:15:49         \|| [37/46 files][  3.0 GiB/ 14.4 GiB]  20% Done  11.7 MiB/s ETA 00:16:42         /-- [37/46 files][  3.0 GiB/ 14.4 GiB]  20% Done  11.9 MiB/s ETA 00:16:19         \\ [37/46 files][  3.0 GiB/ 14.4 GiB]  21% Done  12.4 MiB/s ETA 00:15:40         |// [37/46 files][  3.0 GiB/ 14.4 GiB]  21% Done  13.5 MiB/s ETA 00:14:22         -\\ [37/46 files][  3.1 GiB/ 14.4 GiB]  21% Done  14.9 MiB/s ETA 00:13:01         || [37/46 files][  3.1 GiB/ 14.4 GiB]  21% Done  15.3 MiB/s ETA 00:12:39         /-- [37/46 files][  3.1 GiB/ 14.4 GiB]  21% Done  14.8 MiB/s ETA 00:13:06         - [38/46 files][  3.1 GiB/ 14.4 GiB]  21% Done  14.8 MiB/s ETA 00:13:06         \|| [38/46 files][  3.1 GiB/ 14.4 GiB]  21% Done  14.3 MiB/s ETA 00:13:30         // [38/46 files][  3.1 GiB/ 14.4 GiB]  21% Done  13.4 MiB/s ETA 00:14:27         -[0:14:27] Still working on:
+[0:14:27]   src
+\\ [38/46 files][  3.1 GiB/ 14.4 GiB]  21% Done  12.6 MiB/s ETA 00:15:18         |// [38/46 files][  3.2 GiB/ 14.4 GiB]  21% Done  12.8 MiB/s ETA 00:15:01         -- [38/46 files][  3.2 GiB/ 14.4 GiB]  21% Done  13.1 MiB/s ETA 00:14:39         \|| [38/46 files][  3.2 GiB/ 14.4 GiB]  21% Done  13.0 MiB/s ETA 00:14:43         // [38/46 files][  3.2 GiB/ 14.4 GiB]  22% Done  13.5 MiB/s ETA 00:14:15         -\\ [38/46 files][  3.2 GiB/ 14.4 GiB]  22% Done  13.4 MiB/s ETA 00:14:20         |// [38/46 files][  3.2 GiB/ 14.4 GiB]  22% Done  13.1 MiB/s ETA 00:14:39         -- [38/46 files][  3.2 GiB/ 14.4 GiB]  22% Done  13.1 MiB/s ETA 00:14:35         \|| [38/46 files][  3.2 GiB/ 14.4 GiB]  22% Done  12.8 MiB/s ETA 00:14:55         /-- [38/46 files][  3.2 GiB/ 14.4 GiB]  22% Done  12.6 MiB/s ETA 00:15:08         [0:14:37] Still working on:
+[0:14:37]   src
+\\ [38/46 files][  3.3 GiB/ 14.4 GiB]  22% Done  12.5 MiB/s ETA 00:15:15         |// [38/46 files][  3.3 GiB/ 14.4 GiB]  22% Done  13.0 MiB/s ETA 00:14:36         -\\ [38/46 files][  3.3 GiB/ 14.4 GiB]  22% Done  12.9 MiB/s ETA 00:14:45         || [38/46 files][  3.3 GiB/ 14.4 GiB]  22% Done  13.1 MiB/s ETA 00:14:32         /-- [38/46 files][  3.3 GiB/ 14.4 GiB]  22% Done  12.8 MiB/s ETA 00:14:48         \|| [38/46 files][  3.3 GiB/ 14.4 GiB]  23% Done  13.3 MiB/s ETA 00:14:12         // [38/46 files][  3.4 GiB/ 14.4 GiB]  23% Done  13.3 MiB/s ETA 00:14:13         -\\ [38/46 files][  3.4 GiB/ 14.4 GiB]  23% Done  13.4 MiB/s ETA 00:14:04         || [38/46 files][  3.4 GiB/ 14.4 GiB]  23% Done  13.1 MiB/s ETA 00:14:24         /-[0:14:47] Still working on:
+[0:14:47]   src
+- [38/46 files][  3.4 GiB/ 14.4 GiB]  23% Done  13.9 MiB/s ETA 00:13:32         \|| [38/46 files][  3.4 GiB/ 14.4 GiB]  23% Done  13.0 MiB/s ETA 00:14:29         // [38/46 files][  3.4 GiB/ 14.4 GiB]  23% Done  12.7 MiB/s ETA 00:14:46         -\\ [38/46 files][  3.4 GiB/ 14.4 GiB]  23% Done  13.4 MiB/s ETA 00:14:01         |// [38/46 files][  3.4 GiB/ 14.4 GiB]  23% Done  13.0 MiB/s ETA 00:14:26         -- [38/46 files][  3.4 GiB/ 14.4 GiB]  23% Done  13.2 MiB/s ETA 00:14:13         \|| [38/46 files][  3.5 GiB/ 14.4 GiB]  24% Done  13.4 MiB/s ETA 00:14:00         /-- [38/46 files][  3.5 GiB/ 14.4 GiB]  24% Done  13.6 MiB/s ETA 00:13:48         \\ [38/46 files][  3.5 GiB/ 14.4 GiB]  24% Done  13.6 MiB/s ETA 00:13:45         |// [38/46 files][  3.5 GiB/ 14.4 GiB]  24% Done  13.4 MiB/s ETA 00:13:52         -[0:14:57] Still working on:
+[0:14:57]   src
+\\ [38/46 files][  3.5 GiB/ 14.4 GiB]  24% Done  12.6 MiB/s ETA 00:14:50         || [38/46 files][  3.5 GiB/ 14.4 GiB]  24% Done  13.0 MiB/s ETA 00:14:16         /-- [38/46 files][  3.5 GiB/ 14.4 GiB]  24% Done  12.8 MiB/s ETA 00:14:34         \\ [38/46 files][  3.6 GiB/ 14.4 GiB]  24% Done  12.9 MiB/s ETA 00:14:22         |// [38/46 files][  3.6 GiB/ 14.4 GiB]  24% Done  12.8 MiB/s ETA 00:14:32         -- [38/46 files][  3.6 GiB/ 14.4 GiB]  24% Done  14.0 MiB/s ETA 00:13:15         \|| [38/46 files][  3.6 GiB/ 14.4 GiB]  24% Done  14.1 MiB/s ETA 00:13:06         /-- [38/46 files][  3.6 GiB/ 14.4 GiB]  25% Done  14.3 MiB/s ETA 00:12:57         \\ [38/46 files][  3.6 GiB/ 14.4 GiB]  25% Done  14.0 MiB/s ETA 00:13:10         |// [38/46 files][  3.6 GiB/ 14.4 GiB]  25% Done  14.8 MiB/s ETA 00:12:26         -[0:15:07] Still working on:
+[0:15:07]   src
+\\ [38/46 files][  3.7 GiB/ 14.4 GiB]  25% Done  14.3 MiB/s ETA 00:12:50         || [38/46 files][  3.7 GiB/ 14.4 GiB]  25% Done  14.0 MiB/s ETA 00:13:10         /-- [38/46 files][  3.7 GiB/ 14.4 GiB]  25% Done  14.2 MiB/s ETA 00:12:58         \|| [38/46 files][  3.7 GiB/ 14.4 GiB]  25% Done  13.3 MiB/s ETA 00:13:49         // [38/46 files][  3.7 GiB/ 14.4 GiB]  25% Done  13.1 MiB/s ETA 00:13:59         -\\ [38/46 files][  3.7 GiB/ 14.4 GiB]  25% Done  12.6 MiB/s ETA 00:14:28         |// [38/46 files][  3.7 GiB/ 14.4 GiB]  25% Done  12.4 MiB/s ETA 00:14:42         -- [38/46 files][  3.8 GiB/ 14.4 GiB]  25% Done  12.2 MiB/s ETA 00:14:53         \|| [38/46 files][  3.8 GiB/ 14.4 GiB]  26% Done  12.3 MiB/s ETA 00:14:47         | [39/46 files][  3.8 GiB/ 14.4 GiB]  26% Done  12.6 MiB/s ETA 00:14:31         /-[0:15:17] Still working on:
+[0:15:17]   src
+- [39/46 files][  3.8 GiB/ 14.4 GiB]  26% Done  11.9 MiB/s ETA 00:15:18         \\ [39/46 files][  3.8 GiB/ 14.4 GiB]  26% Done  12.3 MiB/s ETA 00:14:49         |// [39/46 files][  3.8 GiB/ 14.4 GiB]  26% Done  12.3 MiB/s ETA 00:14:48         -- [39/46 files][  3.8 GiB/ 14.4 GiB]  26% Done  12.1 MiB/s ETA 00:14:57         \|| [39/46 files][  3.8 GiB/ 14.4 GiB]  26% Done  12.5 MiB/s ETA 00:14:31         /-- [39/46 files][  3.8 GiB/ 14.4 GiB]  26% Done  12.9 MiB/s ETA 00:14:03         \\ [39/46 files][  3.8 GiB/ 14.4 GiB]  26% Done  13.6 MiB/s ETA 00:13:20         |// [39/46 files][  3.9 GiB/ 14.4 GiB]  26% Done  13.4 MiB/s ETA 00:13:28         -\\ [39/46 files][  3.9 GiB/ 14.4 GiB]  26% Done  13.5 MiB/s ETA 00:13:23         || [39/46 files][  3.9 GiB/ 14.4 GiB]  26% Done  13.0 MiB/s ETA 00:13:49         /-[0:15:27] Still working on:
+[0:15:27]   src
+[0:15:27] STALL DETECTED: gclient has been silent for 5 minutes.
+[0:15:27] Currently active tasks:
+[0:15:27]    src (Running for 0:15:20)
+[0:15:27] Suggestions:
+[0:15:27] 1. Authentication: Check for background prompts.
+[0:15:27] 2. Network: Check your internet connection and proxies.
+[0:15:27] 3. Locks: Check for other git processes holding a lock.
+[0:15:27] 4. Verbose: Run gclient with --verbose to see more output.
+- [39/46 files][  3.9 GiB/ 14.4 GiB]  27% Done  13.1 MiB/s ETA 00:13:41         \|| [39/46 files][  3.9 GiB/ 14.4 GiB]  27% Done  13.0 MiB/s ETA 00:13:48         // [39/46 files][  3.9 GiB/ 14.4 GiB]  27% Done  12.9 MiB/s ETA 00:13:54         -\\ [39/46 files][  3.9 GiB/ 14.4 GiB]  27% Done  13.0 MiB/s ETA 00:13:45         |// [39/46 files][  4.0 GiB/ 14.4 GiB]  27% Done  13.4 MiB/s ETA 00:13:20         -- [39/46 files][  4.0 GiB/ 14.4 GiB]  27% Done  13.4 MiB/s ETA 00:13:20         \|| [39/46 files][  4.0 GiB/ 14.4 GiB]  27% Done  14.0 MiB/s ETA 00:12:46         // [39/46 files][  4.0 GiB/ 14.4 GiB]  27% Done  13.4 MiB/s ETA 00:13:17         -\\ [39/46 files][  4.0 GiB/ 14.4 GiB]  27% Done  12.9 MiB/s ETA 00:13:49         |// [39/46 files][  4.0 GiB/ 14.4 GiB]  27% Done  12.7 MiB/s ETA 00:14:00         -\\ [39/46 files][  4.0 GiB/ 14.4 GiB]  27% Done  12.6 MiB/s ETA 00:14:06         || [39/46 files][  4.0 GiB/ 14.4 GiB]  28% Done  12.8 MiB/s ETA 00:13:54         /-- [39/46 files][  4.1 GiB/ 14.4 GiB]  28% Done  12.6 MiB/s ETA 00:14:02         \|| [39/46 files][  4.1 GiB/ 14.4 GiB]  28% Done  12.4 MiB/s ETA 00:14:13         // [39/46 files][  4.1 GiB/ 14.4 GiB]  28% Done  12.6 MiB/s ETA 00:14:05         -\\ [39/46 files][  4.1 GiB/ 14.4 GiB]  28% Done  12.3 MiB/s ETA 00:14:21         |// [39/46 files][  4.1 GiB/ 14.4 GiB]  28% Done  11.9 MiB/s ETA 00:14:47         -- [39/46 files][  4.1 GiB/ 14.4 GiB]  28% Done  12.4 MiB/s ETA 00:14:08         \|| [39/46 files][  4.1 GiB/ 14.4 GiB]  28% Done  12.3 MiB/s ETA 00:14:16         /-- [39/46 files][  4.2 GiB/ 14.4 GiB]  28% Done  13.3 MiB/s ETA 00:13:12         \|| [39/46 files][  4.2 GiB/ 14.4 GiB]  28% Done  13.1 MiB/s ETA 00:13:25         // [39/46 files][  4.2 GiB/ 14.4 GiB]  28% Done  12.8 MiB/s ETA 00:13:38         -\\ [39/46 files][  4.2 GiB/ 14.4 GiB]  29% Done  13.0 MiB/s ETA 00:13:30         |// [39/46 files][  4.2 GiB/ 14.4 GiB]  29% Done  13.4 MiB/s ETA 00:13:01         -- [39/46 files][  4.2 GiB/ 14.4 GiB]  29% Done  13.7 MiB/s ETA 00:12:43         \|| [39/46 files][  4.2 GiB/ 14.4 GiB]  29% Done  13.7 MiB/s ETA 00:12:45         /-- [39/46 files][  4.2 GiB/ 14.4 GiB]  29% Done  13.6 MiB/s ETA 00:12:48         \\ [39/46 files][  4.3 GiB/ 14.4 GiB]  29% Done  13.4 MiB/s ETA 00:12:57         |// [39/46 files][  4.3 GiB/ 14.4 GiB]  29% Done  13.3 MiB/s ETA 00:13:04         -\\ [39/46 files][  4.3 GiB/ 14.4 GiB]  29% Done  12.5 MiB/s ETA 00:13:49         || [39/46 files][  4.3 GiB/ 14.4 GiB]  29% Done  11.9 MiB/s ETA 00:14:32         /-- [39/46 files][  4.3 GiB/ 14.4 GiB]  29% Done  11.7 MiB/s ETA 00:14:46         \\ [39/46 files][  4.3 GiB/ 14.4 GiB]  29% Done  12.2 MiB/s ETA 00:14:13         |// [39/46 files][  4.3 GiB/ 14.4 GiB]  30% Done  12.1 MiB/s ETA 00:14:13         -\\ [39/46 files][  4.4 GiB/ 14.4 GiB]  30% Done  12.7 MiB/s ETA 00:13:31         || [39/46 files][  4.4 GiB/ 14.4 GiB]  30% Done  13.4 MiB/s ETA 00:12:49         /-- [39/46 files][  4.4 GiB/ 14.4 GiB]  30% Done  13.5 MiB/s ETA 00:12:42         \|| [39/46 files][  4.4 GiB/ 14.4 GiB]  30% Done  13.8 MiB/s ETA 00:12:28         // [39/46 files][  4.4 GiB/ 14.4 GiB]  30% Done  13.0 MiB/s ETA 00:13:11         -\\ [39/46 files][  4.4 GiB/ 14.4 GiB]  30% Done  12.5 MiB/s ETA 00:13:39         || [39/46 files][  4.4 GiB/ 14.4 GiB]  30% Done  12.8 MiB/s ETA 00:13:18         /-- [39/46 files][  4.4 GiB/ 14.4 GiB]  30% Done  12.8 MiB/s ETA 00:13:23         \\ [39/46 files][  4.4 GiB/ 14.4 GiB]  30% Done  13.1 MiB/s ETA 00:12:58         |// [39/46 files][  4.5 GiB/ 14.4 GiB]  30% Done  13.1 MiB/s ETA 00:13:01         -- [39/46 files][  4.5 GiB/ 14.4 GiB]  30% Done  12.6 MiB/s ETA 00:13:27         \|| [39/46 files][  4.5 GiB/ 14.4 GiB]  31% Done  12.2 MiB/s ETA 00:13:54         /-- [39/46 files][  4.5 GiB/ 14.4 GiB]  31% Done  12.5 MiB/s ETA 00:13:37         \|| [39/46 files][  4.5 GiB/ 14.4 GiB]  31% Done  13.0 MiB/s ETA 00:13:04         // [39/46 files][  4.5 GiB/ 14.4 GiB]  31% Done  13.2 MiB/s ETA 00:12:49         -\\ [39/46 files][  4.5 GiB/ 14.4 GiB]  31% Done  13.6 MiB/s ETA 00:12:27         || [39/46 files][  4.6 GiB/ 14.4 GiB]  31% Done  13.7 MiB/s ETA 00:12:18         /-- [39/46 files][  4.6 GiB/ 14.4 GiB]  31% Done  13.8 MiB/s ETA 00:12:10         \|| [39/46 files][  4.6 GiB/ 14.4 GiB]  31% Done  13.3 MiB/s ETA 00:12:39         // [39/46 files][  4.6 GiB/ 14.4 GiB]  31% Done  12.8 MiB/s ETA 00:13:07         -\\ [39/46 files][  4.6 GiB/ 14.4 GiB]  31% Done  13.8 MiB/s ETA 00:12:09         |// [39/46 files][  4.6 GiB/ 14.4 GiB]  32% Done  13.4 MiB/s ETA 00:12:33         -- [39/46 files][  4.6 GiB/ 14.4 GiB]  32% Done  13.6 MiB/s ETA 00:12:15         \|| [39/46 files][  4.6 GiB/ 14.4 GiB]  32% Done  13.4 MiB/s ETA 00:12:31         // [39/46 files][  4.7 GiB/ 14.4 GiB]  32% Done  13.5 MiB/s ETA 00:12:23         -\\ [39/46 files][  4.7 GiB/ 14.4 GiB]  32% Done  12.9 MiB/s ETA 00:12:54         |// [39/46 files][  4.7 GiB/ 14.4 GiB]  32% Done  11.8 MiB/s ETA 00:14:07         -- [39/46 files][  4.7 GiB/ 14.4 GiB]  32% Done  11.3 MiB/s ETA 00:14:41         \|| [39/46 files][  4.7 GiB/ 14.4 GiB]  32% Done  11.6 MiB/s ETA 00:14:18         /-- [39/46 files][  4.7 GiB/ 14.4 GiB]  32% Done  11.4 MiB/s ETA 00:14:31         \\ [39/46 files][  4.7 GiB/ 14.4 GiB]  32% Done  12.9 MiB/s ETA 00:12:47         |// [39/46 files][  4.8 GiB/ 14.4 GiB]  32% Done  14.3 MiB/s ETA 00:11:35         -\\ [39/46 files][  4.8 GiB/ 14.4 GiB]  33% Done  14.4 MiB/s ETA 00:11:25         || [39/46 files][  4.8 GiB/ 14.4 GiB]  33% Done  14.8 MiB/s ETA 00:11:08         /-- [39/46 files][  4.8 GiB/ 14.4 GiB]  33% Done  14.4 MiB/s ETA 00:11:26         \|| [39/46 files][  4.8 GiB/ 14.4 GiB]  33% Done  13.2 MiB/s ETA 00:12:27         // [39/46 files][  4.8 GiB/ 14.4 GiB]  33% Done  11.9 MiB/s ETA 00:13:46         -- [39/46 files][  4.8 GiB/ 14.4 GiB]  33% Done  10.3 MiB/s ETA 00:15:59         \|| [39/46 files][  4.8 GiB/ 14.4 GiB]  33% Done   9.3 MiB/s ETA 00:17:34         // [39/46 files][  4.8 GiB/ 14.4 GiB]  33% Done   9.5 MiB/s ETA 00:17:16         -\\ [39/46 files][  4.8 GiB/ 14.4 GiB]  33% Done  10.5 MiB/s ETA 00:15:32         |// [39/46 files][  4.9 GiB/ 14.4 GiB]  33% Done  11.3 MiB/s ETA 00:14:30         -\\ [39/46 files][  4.9 GiB/ 14.4 GiB]  33% Done  12.9 MiB/s ETA 00:12:39         || [39/46 files][  4.9 GiB/ 14.4 GiB]  33% Done  13.0 MiB/s ETA 00:12:32         /-- [39/46 files][  4.9 GiB/ 14.4 GiB]  34% Done  13.4 MiB/s ETA 00:12:09         \\ [39/46 files][  4.9 GiB/ 14.4 GiB]  34% Done  12.7 MiB/s ETA 00:12:46         |// [39/46 files][  4.9 GiB/ 14.4 GiB]  34% Done  12.9 MiB/s ETA 00:12:33         -\\ [39/46 files][  5.0 GiB/ 14.4 GiB]  34% Done  12.7 MiB/s ETA 00:12:45         || [39/46 files][  5.0 GiB/ 14.4 GiB]  34% Done  12.8 MiB/s ETA 00:12:37         /-- [39/46 files][  5.0 GiB/ 14.4 GiB]  34% Done  13.4 MiB/s ETA 00:12:02         \|| [39/46 files][  5.0 GiB/ 14.4 GiB]  34% Done  14.1 MiB/s ETA 00:11:27         // [39/46 files][  5.0 GiB/ 14.4 GiB]  34% Done  13.5 MiB/s ETA 00:11:55         -\\ [39/46 files][  5.0 GiB/ 14.4 GiB]  34% Done  12.9 MiB/s ETA 00:12:27         || [39/46 files][  5.0 GiB/ 14.4 GiB]  34% Done  11.9 MiB/s ETA 00:13:31         /-- [39/46 files][  5.0 GiB/ 14.4 GiB]  34% Done  11.5 MiB/s ETA 00:13:58         \|| [39/46 files][  5.0 GiB/ 14.4 GiB]  34% Done  11.2 MiB/s ETA 00:14:18         // [39/46 files][  5.1 GiB/ 14.4 GiB]  35% Done  12.3 MiB/s ETA 00:13:03         -\\ [39/46 files][  5.1 GiB/ 14.4 GiB]  35% Done  13.4 MiB/s ETA 00:11:57         |// [39/46 files][  5.1 GiB/ 14.4 GiB]  35% Done  14.6 MiB/s ETA 00:10:53         -- [39/46 files][  5.1 GiB/ 14.4 GiB]  35% Done  14.4 MiB/s ETA 00:11:04         \|| [39/46 files][  5.1 GiB/ 14.4 GiB]  35% Done  13.4 MiB/s ETA 00:11:49         // [39/46 files][  5.1 GiB/ 14.4 GiB]  35% Done  12.8 MiB/s ETA 00:12:24         -\\ [39/46 files][  5.1 GiB/ 14.4 GiB]  35% Done  11.2 MiB/s ETA 00:14:07         |// [39/46 files][  5.2 GiB/ 14.4 GiB]  35% Done  10.6 MiB/s ETA 00:14:57         -- [39/46 files][  5.2 GiB/ 14.4 GiB]  35% Done  10.7 MiB/s ETA 00:14:45         \|| [39/46 files][  5.2 GiB/ 14.4 GiB]  35% Done  10.0 MiB/s ETA 00:15:49         // [39/46 files][  5.2 GiB/ 14.4 GiB]  35% Done  10.8 MiB/s ETA 00:14:34         -\\ [39/46 files][  5.2 GiB/ 14.4 GiB]  35% Done  10.3 MiB/s ETA 00:15:17         |// [39/46 files][  5.2 GiB/ 14.4 GiB]  36% Done   9.6 MiB/s ETA 00:16:22         -- [39/46 files][  5.2 GiB/ 14.4 GiB]  36% Done  10.3 MiB/s ETA 00:15:17         \|| [39/46 files][  5.2 GiB/ 14.4 GiB]  36% Done  10.6 MiB/s ETA 00:14:46         // [39/46 files][  5.2 GiB/ 14.4 GiB]  36% Done  10.4 MiB/s ETA 00:15:02         -\\ [39/46 files][  5.2 GiB/ 14.4 GiB]  36% Done  10.8 MiB/s ETA 00:14:30         || [39/46 files][  5.2 GiB/ 14.4 GiB]  36% Done  10.8 MiB/s ETA 00:14:27         /-- [39/46 files][  5.3 GiB/ 14.4 GiB]  36% Done  10.3 MiB/s ETA 00:15:09         \|| [39/46 files][  5.3 GiB/ 14.4 GiB]  36% Done  11.0 MiB/s ETA 00:14:10         // [39/46 files][  5.3 GiB/ 14.4 GiB]  36% Done  11.4 MiB/s ETA 00:13:38         -\\ [39/46 files][  5.3 GiB/ 14.4 GiB]  36% Done  12.6 MiB/s ETA 00:12:24         |// [39/46 files][  5.3 GiB/ 14.4 GiB]  36% Done  13.5 MiB/s ETA 00:11:33         -\\ [39/46 files][  5.3 GiB/ 14.4 GiB]  36% Done  14.0 MiB/s ETA 00:11:03         || [39/46 files][  5.4 GiB/ 14.4 GiB]  37% Done  13.1 MiB/s ETA 00:11:52         /-- [39/46 files][  5.4 GiB/ 14.4 GiB]  37% Done  12.9 MiB/s ETA 00:12:00         \|| [39/46 files][  5.4 GiB/ 14.4 GiB]  37% Done  11.8 MiB/s ETA 00:13:07         // [39/46 files][  5.4 GiB/ 14.4 GiB]  37% Done  11.5 MiB/s ETA 00:13:26         -\\ [39/46 files][  5.4 GiB/ 14.4 GiB]  37% Done  10.9 MiB/s ETA 00:14:13         |// [39/46 files][  5.4 GiB/ 14.4 GiB]  37% Done  10.2 MiB/s ETA 00:15:08         -\\ [39/46 files][  5.4 GiB/ 14.4 GiB]  37% Done  10.4 MiB/s ETA 00:14:49         || [39/46 files][  5.4 GiB/ 14.4 GiB]  37% Done  10.2 MiB/s ETA 00:15:08         /-- [39/46 files][  5.4 GiB/ 14.4 GiB]  37% Done  10.1 MiB/s ETA 00:15:12         \|| [39/46 files][  5.4 GiB/ 14.4 GiB]  37% Done  10.6 MiB/s ETA 00:14:29         // [39/46 files][  5.5 GiB/ 14.4 GiB]  37% Done  11.5 MiB/s ETA 00:13:22         -\\ [39/46 files][  5.5 GiB/ 14.4 GiB]  37% Done  11.2 MiB/s ETA 00:13:42         |// [39/46 files][  5.5 GiB/ 14.4 GiB]  37% Done  11.0 MiB/s ETA 00:13:51         -- [39/46 files][  5.5 GiB/ 14.4 GiB]  38% Done  10.6 MiB/s ETA 00:14:22         \|| [39/46 files][  5.5 GiB/ 14.4 GiB]  38% Done  10.5 MiB/s ETA 00:14:31         /-- [39/46 files][  5.5 GiB/ 14.4 GiB]  38% Done   9.4 MiB/s ETA 00:16:10         \\ [39/46 files][  5.5 GiB/ 14.4 GiB]  38% Done   9.6 MiB/s ETA 00:15:53         |// [39/46 files][  5.5 GiB/ 14.4 GiB]  38% Done  10.0 MiB/s ETA 00:15:16         -\\ [39/46 files][  5.6 GiB/ 14.4 GiB]  38% Done  10.8 MiB/s ETA 00:14:01         || [39/46 files][  5.6 GiB/ 14.4 GiB]  38% Done  12.3 MiB/s ETA 00:12:21         /-- [39/46 files][  5.6 GiB/ 14.4 GiB]  38% Done  12.6 MiB/s ETA 00:11:58         \\ [39/46 files][  5.6 GiB/ 14.4 GiB]  38% Done  13.1 MiB/s ETA 00:11:33         |// [39/46 files][  5.6 GiB/ 14.4 GiB]  38% Done  12.4 MiB/s ETA 00:12:09         -- [39/46 files][  5.6 GiB/ 14.4 GiB]  38% Done  11.2 MiB/s ETA 00:13:31         \\ [39/46 files][  5.6 GiB/ 14.4 GiB]  38% Done  10.3 MiB/s ETA 00:14:37         |// [39/46 files][  5.6 GiB/ 14.4 GiB]  38% Done  10.8 MiB/s ETA 00:13:53         -\\ [39/46 files][  5.6 GiB/ 14.4 GiB]  39% Done  11.0 MiB/s ETA 00:13:37         || [39/46 files][  5.6 GiB/ 14.4 GiB]  39% Done  11.4 MiB/s ETA 00:13:09         /-- [39/46 files][  5.7 GiB/ 14.4 GiB]  39% Done  12.4 MiB/s ETA 00:12:06         \|| [39/46 files][  5.7 GiB/ 14.4 GiB]  39% Done  13.2 MiB/s ETA 00:11:18         // [39/46 files][  5.7 GiB/ 14.4 GiB]  39% Done  13.2 MiB/s ETA 00:11:21         -\\ [39/46 files][  5.7 GiB/ 14.4 GiB]  39% Done  12.1 MiB/s ETA 00:12:21         |// [39/46 files][  5.7 GiB/ 14.4 GiB]  39% Done  12.1 MiB/s ETA 00:12:16         -- [39/46 files][  5.7 GiB/ 14.4 GiB]  39% Done  11.7 MiB/s ETA 00:12:43         \|| [39/46 files][  5.7 GiB/ 14.4 GiB]  39% Done  11.6 MiB/s ETA 00:12:49         /-- [39/46 files][  5.8 GiB/ 14.4 GiB]  39% Done  11.9 MiB/s ETA 00:12:28         \\ [39/46 files][  5.8 GiB/ 14.4 GiB]  39% Done  13.0 MiB/s ETA 00:11:24         |// [39/46 files][  5.8 GiB/ 14.4 GiB]  39% Done  12.4 MiB/s ETA 00:11:54         -- [39/46 files][  5.8 GiB/ 14.4 GiB]  40% Done  12.6 MiB/s ETA 00:11:44         \|| [39/46 files][  5.8 GiB/ 14.4 GiB]  40% Done  11.2 MiB/s ETA 00:13:10         /-- [39/46 files][  5.8 GiB/ 14.4 GiB]  40% Done  10.6 MiB/s ETA 00:13:51         \\ [39/46 files][  5.8 GiB/ 14.4 GiB]  40% Done  10.0 MiB/s ETA 00:14:47         |// [39/46 files][  5.8 GiB/ 14.4 GiB]  40% Done   9.9 MiB/s ETA 00:14:53         -- [39/46 files][  5.8 GiB/ 14.4 GiB]  40% Done  10.2 MiB/s ETA 00:14:21         \|| [39/46 files][  5.8 GiB/ 14.4 GiB]  40% Done  11.2 MiB/s ETA 00:13:07         /-- [39/46 files][  5.9 GiB/ 14.4 GiB]  40% Done  11.2 MiB/s ETA 00:13:02         \\ [39/46 files][  5.9 GiB/ 14.4 GiB]  40% Done  11.4 MiB/s ETA 00:12:50         |// [39/46 files][  5.9 GiB/ 14.4 GiB]  40% Done  11.4 MiB/s ETA 00:12:45         -\\ [39/46 files][  5.9 GiB/ 14.4 GiB]  40% Done  11.1 MiB/s ETA 00:13:05         |// [39/46 files][  5.9 GiB/ 14.4 GiB]  40% Done  11.1 MiB/s ETA 00:13:09         -- [39/46 files][  5.9 GiB/ 14.4 GiB]  41% Done  11.8 MiB/s ETA 00:12:22         \|| [39/46 files][  5.9 GiB/ 14.4 GiB]  41% Done  12.0 MiB/s ETA 00:12:06         // [39/46 files][  5.9 GiB/ 14.4 GiB]  41% Done  12.0 MiB/s ETA 00:12:06         -\\ [39/46 files][  6.0 GiB/ 14.4 GiB]  41% Done  13.0 MiB/s ETA 00:11:10         |// [39/46 files][  6.0 GiB/ 14.4 GiB]  41% Done  13.2 MiB/s ETA 00:10:58         -- [39/46 files][  6.0 GiB/ 14.4 GiB]  41% Done  11.7 MiB/s ETA 00:12:18         \|| [39/46 files][  6.0 GiB/ 14.4 GiB]  41% Done  12.1 MiB/s ETA 00:11:52         /-- [39/46 files][  6.0 GiB/ 14.4 GiB]  41% Done  12.8 MiB/s ETA 00:11:16         \\ [39/46 files][  6.0 GiB/ 14.4 GiB]  41% Done  12.5 MiB/s ETA 00:11:28         |// [39/46 files][  6.0 GiB/ 14.4 GiB]  41% Done  11.5 MiB/s ETA 00:12:31         -\\ [39/46 files][  6.0 GiB/ 14.4 GiB]  41% Done  12.5 MiB/s ETA 00:11:26         || [39/46 files][  6.1 GiB/ 14.4 GiB]  41% Done  12.2 MiB/s ETA 00:11:43         /-- [39/46 files][  6.1 GiB/ 14.4 GiB]  42% Done  11.8 MiB/s ETA 00:12:10         \|| [39/46 files][  6.1 GiB/ 14.4 GiB]  42% Done  11.5 MiB/s ETA 00:12:23         // [39/46 files][  6.1 GiB/ 14.4 GiB]  42% Done  12.9 MiB/s ETA 00:11:04         -\\ [39/46 files][  6.1 GiB/ 14.4 GiB]  42% Done  13.5 MiB/s ETA 00:10:31         || [39/46 files][  6.1 GiB/ 14.4 GiB]  42% Done  13.4 MiB/s ETA 00:10:35         /-- [39/46 files][  6.1 GiB/ 14.4 GiB]  42% Done  14.2 MiB/s ETA 00:09:58         \|| [39/46 files][  6.2 GiB/ 14.4 GiB]  42% Done  13.8 MiB/s ETA 00:10:14         // [39/46 files][  6.2 GiB/ 14.4 GiB]  42% Done  13.6 MiB/s ETA 00:10:20         -\\ [39/46 files][  6.2 GiB/ 14.4 GiB]  42% Done  13.8 MiB/s ETA 00:10:15         || [39/46 files][  6.2 GiB/ 14.4 GiB]  42% Done  13.2 MiB/s ETA 00:10:40         /-- [39/46 files][  6.2 GiB/ 14.4 GiB]  42% Done  12.5 MiB/s ETA 00:11:13         \|| [39/46 files][  6.2 GiB/ 14.4 GiB]  43% Done  11.9 MiB/s ETA 00:11:47         // [39/46 files][  6.2 GiB/ 14.4 GiB]  43% Done  11.1 MiB/s ETA 00:12:40         -\\ [39/46 files][  6.2 GiB/ 14.4 GiB]  43% Done  10.8 MiB/s ETA 00:12:54         || [39/46 files][  6.2 GiB/ 14.4 GiB]  43% Done  10.8 MiB/s ETA 00:12:55         /-- [39/46 files][  6.3 GiB/ 14.4 GiB]  43% Done  12.0 MiB/s ETA 00:11:39         \|| [39/46 files][  6.3 GiB/ 14.4 GiB]  43% Done  12.7 MiB/s ETA 00:10:58         // [39/46 files][  6.3 GiB/ 14.4 GiB]  43% Done  12.5 MiB/s ETA 00:11:09         -\\ [39/46 files][  6.3 GiB/ 14.4 GiB]  43% Done  12.4 MiB/s ETA 00:11:11         |// [39/46 files][  6.3 GiB/ 14.4 GiB]  43% Done  12.7 MiB/s ETA 00:10:55         -- [39/46 files][  6.3 GiB/ 14.4 GiB]  43% Done  12.6 MiB/s ETA 00:10:57         \|| [39/46 files][  6.3 GiB/ 14.4 GiB]  43% Done  12.8 MiB/s ETA 00:10:50         // [39/46 files][  6.4 GiB/ 14.4 GiB]  43% Done  12.5 MiB/s ETA 00:11:01         -\\ [39/46 files][  6.4 GiB/ 14.4 GiB]  44% Done  12.6 MiB/s ETA 00:10:56         |// [39/46 files][  6.4 GiB/ 14.4 GiB]  44% Done  13.1 MiB/s ETA 00:10:29         -- [39/46 files][  6.4 GiB/ 14.4 GiB]  44% Done  13.6 MiB/s ETA 00:10:05         \|| [39/46 files][  6.4 GiB/ 14.4 GiB]  44% Done  13.4 MiB/s ETA 00:10:15         /-- [39/46 files][  6.4 GiB/ 14.4 GiB]  44% Done  13.5 MiB/s ETA 00:10:09         \|| [39/46 files][  6.4 GiB/ 14.4 GiB]  44% Done  13.2 MiB/s ETA 00:10:22         // [39/46 files][  6.4 GiB/ 14.4 GiB]  44% Done  11.5 MiB/s ETA 00:11:53         -\\ [39/46 files][  6.4 GiB/ 14.4 GiB]  44% Done  11.2 MiB/s ETA 00:12:12         || [39/46 files][  6.5 GiB/ 14.4 GiB]  44% Done  11.7 MiB/s ETA 00:11:40         /-- [39/46 files][  6.5 GiB/ 14.4 GiB]  44% Done  12.1 MiB/s ETA 00:11:16         \|| [39/46 files][  6.5 GiB/ 14.4 GiB]  44% Done  12.8 MiB/s ETA 00:10:36         // [39/46 files][  6.5 GiB/ 14.4 GiB]  45% Done  12.8 MiB/s ETA 00:10:33         -\\ [39/46 files][  6.5 GiB/ 14.4 GiB]  45% Done  12.3 MiB/s ETA 00:11:00         |// [39/46 files][  6.5 GiB/ 14.4 GiB]  45% Done  12.2 MiB/s ETA 00:11:05         -- [39/46 files][  6.5 GiB/ 14.4 GiB]  45% Done  11.4 MiB/s ETA 00:11:50         \|| [39/46 files][  6.6 GiB/ 14.4 GiB]  45% Done  11.4 MiB/s ETA 00:11:48         /-- [39/46 files][  6.6 GiB/ 14.4 GiB]  45% Done  11.8 MiB/s ETA 00:11:22         \\ [39/46 files][  6.6 GiB/ 14.4 GiB]  45% Done  11.9 MiB/s ETA 00:11:16         |// [39/46 files][  6.6 GiB/ 14.4 GiB]  45% Done  12.4 MiB/s ETA 00:10:50         -\\ [39/46 files][  6.6 GiB/ 14.4 GiB]  45% Done  12.7 MiB/s ETA 00:10:32         || [39/46 files][  6.6 GiB/ 14.4 GiB]  45% Done  12.9 MiB/s ETA 00:10:22         /-- [39/46 files][  6.6 GiB/ 14.4 GiB]  45% Done  11.9 MiB/s ETA 00:11:10         \|| [39/46 files][  6.6 GiB/ 14.4 GiB]  45% Done  12.0 MiB/s ETA 00:11:05         // [39/46 files][  6.6 GiB/ 14.4 GiB]  46% Done  12.3 MiB/s ETA 00:10:49         -\\ [39/46 files][  6.7 GiB/ 14.4 GiB]  46% Done  11.7 MiB/s ETA 00:11:19         |// [39/46 files][  6.7 GiB/ 14.4 GiB]  46% Done  11.8 MiB/s ETA 00:11:13         -- [39/46 files][  6.7 GiB/ 14.4 GiB]  46% Done  11.2 MiB/s ETA 00:11:46         \\ [39/46 files][  6.7 GiB/ 14.4 GiB]  46% Done  11.6 MiB/s ETA 00:11:21         |// [39/46 files][  6.7 GiB/ 14.4 GiB]  46% Done  12.7 MiB/s ETA 00:10:22         -\\ [39/46 files][  6.7 GiB/ 14.4 GiB]  46% Done  12.7 MiB/s ETA 00:10:22         |// [39/46 files][  6.7 GiB/ 14.4 GiB]  46% Done  13.5 MiB/s ETA 00:09:43         -- [39/46 files][  6.8 GiB/ 14.4 GiB]  46% Done  13.4 MiB/s ETA 00:09:48         \|| [39/46 files][  6.8 GiB/ 14.4 GiB]  46% Done  13.0 MiB/s ETA 00:10:06         // [39/46 files][  6.8 GiB/ 14.4 GiB]  46% Done  12.7 MiB/s ETA 00:10:19         -\\ [39/46 files][  6.8 GiB/ 14.4 GiB]  47% Done  12.2 MiB/s ETA 00:10:40         |// [39/46 files][  6.8 GiB/ 14.4 GiB]  47% Done  11.9 MiB/s ETA 00:10:59         -- [39/46 files][  6.8 GiB/ 14.4 GiB]  47% Done  11.9 MiB/s ETA 00:10:54         \|| [39/46 files][  6.8 GiB/ 14.4 GiB]  47% Done  11.6 MiB/s ETA 00:11:12         /-- [39/46 files][  6.8 GiB/ 14.4 GiB]  47% Done  12.2 MiB/s ETA 00:10:39         \\ [39/46 files][  6.8 GiB/ 14.4 GiB]  47% Done  12.5 MiB/s ETA 00:10:20         |// [39/46 files][  6.9 GiB/ 14.4 GiB]  47% Done  12.5 MiB/s ETA 00:10:20         -- [39/46 files][  6.9 GiB/ 14.4 GiB]  47% Done  13.7 MiB/s ETA 00:09:24         \|| [39/46 files][  6.9 GiB/ 14.4 GiB]  47% Done  13.0 MiB/s ETA 00:09:56         // [39/46 files][  6.9 GiB/ 14.4 GiB]  47% Done  12.2 MiB/s ETA 00:10:31         -\\ [39/46 files][  6.9 GiB/ 14.4 GiB]  47% Done  12.0 MiB/s ETA 00:10:42         |// [39/46 files][  6.9 GiB/ 14.4 GiB]  47% Done  11.2 MiB/s ETA 00:11:24         -- [39/46 files][  6.9 GiB/ 14.4 GiB]  48% Done  11.5 MiB/s ETA 00:11:09         \|| [39/46 files][  7.0 GiB/ 14.4 GiB]  48% Done  11.3 MiB/s ETA 00:11:19         /-- [39/46 files][  7.0 GiB/ 14.4 GiB]  48% Done  11.5 MiB/s ETA 00:11:05         \|| [39/46 files][  7.0 GiB/ 14.4 GiB]  48% Done  11.6 MiB/s ETA 00:10:57         // [39/46 files][  7.0 GiB/ 14.4 GiB]  48% Done  12.5 MiB/s ETA 00:10:11         -\\ [39/46 files][  7.0 GiB/ 14.4 GiB]  48% Done  12.2 MiB/s ETA 00:10:23         || [39/46 files][  7.0 GiB/ 14.4 GiB]  48% Done  12.6 MiB/s ETA 00:10:01         /-- [39/46 files][  7.0 GiB/ 14.4 GiB]  48% Done  12.5 MiB/s ETA 00:10:08         \\ [39/46 files][  7.0 GiB/ 14.4 GiB]  48% Done  12.8 MiB/s ETA 00:09:53         |// [39/46 files][  7.0 GiB/ 14.4 GiB]  48% Done  12.9 MiB/s ETA 00:09:47         -- [39/46 files][  7.1 GiB/ 14.4 GiB]  48% Done  12.9 MiB/s ETA 00:09:47         \|| [39/46 files][  7.1 GiB/ 14.4 GiB]  48% Done  12.3 MiB/s ETA 00:10:13         // [39/46 files][  7.1 GiB/ 14.4 GiB]  49% Done  11.9 MiB/s ETA 00:10:33         -\\ [39/46 files][  7.1 GiB/ 14.4 GiB]  49% Done  11.6 MiB/s ETA 00:10:49         |// [39/46 files][  7.1 GiB/ 14.4 GiB]  49% Done  11.6 MiB/s ETA 00:10:48         -\\ [39/46 files][  7.1 GiB/ 14.4 GiB]  49% Done  12.1 MiB/s ETA 00:10:20         || [39/46 files][  7.1 GiB/ 14.4 GiB]  49% Done  12.1 MiB/s ETA 00:10:16         /-- [39/46 files][  7.2 GiB/ 14.4 GiB]  49% Done  12.6 MiB/s ETA 00:09:54         \|| [39/46 files][  7.2 GiB/ 14.4 GiB]  49% Done  12.7 MiB/s ETA 00:09:48         // [39/46 files][  7.2 GiB/ 14.4 GiB]  49% Done  12.8 MiB/s ETA 00:09:43         -\\ [39/46 files][  7.2 GiB/ 14.4 GiB]  49% Done  13.5 MiB/s ETA 00:09:09         |// [39/46 files][  7.2 GiB/ 14.4 GiB]  49% Done  13.1 MiB/s ETA 00:09:27         -- [39/46 files][  7.2 GiB/ 14.4 GiB]  49% Done  14.0 MiB/s ETA 00:08:50         \|| [39/46 files][  7.2 GiB/ 14.4 GiB]  50% Done  13.6 MiB/s ETA 00:09:04         /-- [39/46 files][  7.2 GiB/ 14.4 GiB]  50% Done  13.3 MiB/s ETA 00:09:13         \\ [39/46 files][  7.3 GiB/ 14.4 GiB]  50% Done  13.8 MiB/s ETA 00:08:52         |// [39/46 files][  7.3 GiB/ 14.4 GiB]  50% Done  13.5 MiB/s ETA 00:09:05         -- [39/46 files][  7.3 GiB/ 14.4 GiB]  50% Done  12.4 MiB/s ETA 00:09:51         \|| [39/46 files][  7.3 GiB/ 14.4 GiB]  50% Done  11.4 MiB/s ETA 00:10:41         /-- [39/46 files][  7.3 GiB/ 14.4 GiB]  50% Done  10.8 MiB/s ETA 00:11:15         \\ [39/46 files][  7.3 GiB/ 14.4 GiB]  50% Done   9.9 MiB/s ETA 00:12:14         |// [39/46 files][  7.3 GiB/ 14.4 GiB]  50% Done   9.7 MiB/s ETA 00:12:33         -\\ [39/46 files][  7.3 GiB/ 14.4 GiB]  50% Done  10.1 MiB/s ETA 00:12:03         || [39/46 files][  7.3 GiB/ 14.4 GiB]  50% Done  11.2 MiB/s ETA 00:10:52         // [39/46 files][  7.4 GiB/ 14.4 GiB]  50% Done  10.8 MiB/s ETA 00:11:11         -\\ [39/46 files][  7.4 GiB/ 14.4 GiB]  51% Done  11.9 MiB/s ETA 00:10:09         || [39/46 files][  7.4 GiB/ 14.4 GiB]  51% Done  11.8 MiB/s ETA 00:10:11         /-- [39/46 files][  7.4 GiB/ 14.4 GiB]  51% Done  12.1 MiB/s ETA 00:09:56         \|| [39/46 files][  7.4 GiB/ 14.4 GiB]  51% Done  12.6 MiB/s ETA 00:09:31         // [39/46 files][  7.4 GiB/ 14.4 GiB]  51% Done  13.2 MiB/s ETA 00:09:03         -\\ [39/46 files][  7.4 GiB/ 14.4 GiB]  51% Done  12.6 MiB/s ETA 00:09:27         || [39/46 files][  7.4 GiB/ 14.4 GiB]  51% Done  12.9 MiB/s ETA 00:09:14         // [39/46 files][  7.4 GiB/ 14.4 GiB]  51% Done  12.3 MiB/s ETA 00:09:39         -\\ [39/46 files][  7.5 GiB/ 14.4 GiB]  51% Done  11.5 MiB/s ETA 00:10:23         |// [39/46 files][  7.5 GiB/ 14.4 GiB]  51% Done  11.3 MiB/s ETA 00:10:29         -[0:20:27] STALL DETECTED: gclient has been silent for 5 minutes.
+[0:20:27] Currently active tasks:
+[0:20:27]    src (Running for 0:20:20)
+[0:20:27] Suggestions:
+[0:20:27] 1. Authentication: Check for background prompts.
+[0:20:27] 2. Network: Check your internet connection and proxies.
+[0:20:27] 3. Locks: Check for other git processes holding a lock.
+[0:20:27] 4. Verbose: Run gclient with --verbose to see more output.
+\\ [39/46 files][  7.5 GiB/ 14.4 GiB]  51% Done  11.4 MiB/s ETA 00:10:22         || [39/46 files][  7.5 GiB/ 14.4 GiB]  51% Done  12.4 MiB/s ETA 00:09:34         /-- [39/46 files][  7.5 GiB/ 14.4 GiB]  52% Done  12.4 MiB/s ETA 00:09:32         \\ [39/46 files][  7.5 GiB/ 14.4 GiB]  52% Done  12.3 MiB/s ETA 00:09:34         |// [39/46 files][  7.5 GiB/ 14.4 GiB]  52% Done  11.5 MiB/s ETA 00:10:13         -\\ [39/46 files][  7.6 GiB/ 14.4 GiB]  52% Done  11.2 MiB/s ETA 00:10:31         || [39/46 files][  7.6 GiB/ 14.4 GiB]  52% Done  11.7 MiB/s ETA 00:10:03         /-- [39/46 files][  7.6 GiB/ 14.4 GiB]  52% Done  13.0 MiB/s ETA 00:09:01         \|| [39/46 files][  7.6 GiB/ 14.4 GiB]  52% Done  12.5 MiB/s ETA 00:09:20         // [39/46 files][  7.6 GiB/ 14.4 GiB]  52% Done  13.2 MiB/s ETA 00:08:49         -\\ [39/46 files][  7.6 GiB/ 14.4 GiB]  52% Done  13.2 MiB/s ETA 00:08:50         || [39/46 files][  7.6 GiB/ 14.4 GiB]  52% Done  12.4 MiB/s ETA 00:09:21         /-- [39/46 files][  7.6 GiB/ 14.4 GiB]  52% Done  12.3 MiB/s ETA 00:09:25         \\ [39/46 files][  7.6 GiB/ 14.4 GiB]  52% Done  11.3 MiB/s ETA 00:10:13         |// [39/46 files][  7.6 GiB/ 14.4 GiB]  53% Done  10.3 MiB/s ETA 00:11:17         -- [39/46 files][  7.7 GiB/ 14.4 GiB]  53% Done  10.1 MiB/s ETA 00:11:27         \|| [39/46 files][  7.7 GiB/ 14.4 GiB]  53% Done  10.0 MiB/s ETA 00:11:35         /-- [39/46 files][  7.7 GiB/ 14.4 GiB]  53% Done  10.5 MiB/s ETA 00:10:59         \\ [39/46 files][  7.7 GiB/ 14.4 GiB]  53% Done  11.0 MiB/s ETA 00:10:28         |// [39/46 files][  7.7 GiB/ 14.4 GiB]  53% Done  11.7 MiB/s ETA 00:09:49         -\\ [39/46 files][  7.7 GiB/ 14.4 GiB]  53% Done  11.4 MiB/s ETA 00:10:01         |// [39/46 files][  7.7 GiB/ 14.4 GiB]  53% Done  11.7 MiB/s ETA 00:09:48         -- [39/46 files][  7.8 GiB/ 14.4 GiB]  53% Done  11.1 MiB/s ETA 00:10:18         \|| [39/46 files][  7.8 GiB/ 14.4 GiB]  53% Done  10.5 MiB/s ETA 00:10:50         /-- [39/46 files][  7.8 GiB/ 14.4 GiB]  53% Done  10.5 MiB/s ETA 00:10:49         \\ [39/46 files][  7.8 GiB/ 14.4 GiB]  53% Done  11.7 MiB/s ETA 00:09:44         |// [39/46 files][  7.8 GiB/ 14.4 GiB]  53% Done  12.0 MiB/s ETA 00:09:24         -\\ [39/46 files][  7.8 GiB/ 14.4 GiB]  54% Done  11.9 MiB/s ETA 00:09:31         || [39/46 files][  7.8 GiB/ 14.4 GiB]  54% Done  12.4 MiB/s ETA 00:09:05         /-- [39/46 files][  7.8 GiB/ 14.4 GiB]  54% Done  12.2 MiB/s ETA 00:09:14         \\ [39/46 files][  7.8 GiB/ 14.4 GiB]  54% Done  12.4 MiB/s ETA 00:09:06         |// [39/46 files][  7.9 GiB/ 14.4 GiB]  54% Done  12.0 MiB/s ETA 00:09:19         -\\ [39/46 files][  7.9 GiB/ 14.4 GiB]  54% Done  12.3 MiB/s ETA 00:09:06         || [39/46 files][  7.9 GiB/ 14.4 GiB]  54% Done  12.1 MiB/s ETA 00:09:13         /-- [39/46 files][  7.9 GiB/ 14.4 GiB]  54% Done  11.9 MiB/s ETA 00:09:24         \|| [39/46 files][  7.9 GiB/ 14.4 GiB]  54% Done  11.6 MiB/s ETA 00:09:39         // [39/46 files][  7.9 GiB/ 14.4 GiB]  54% Done  11.7 MiB/s ETA 00:09:30         -\\ [39/46 files][  7.9 GiB/ 14.4 GiB]  54% Done  10.5 MiB/s ETA 00:10:34         |// [39/46 files][  7.9 GiB/ 14.4 GiB]  54% Done  11.8 MiB/s ETA 00:09:26         -- [39/46 files][  8.0 GiB/ 14.4 GiB]  55% Done  12.6 MiB/s ETA 00:08:45         \|| [39/46 files][  8.0 GiB/ 14.4 GiB]  55% Done  13.6 MiB/s ETA 00:08:09         /-- [39/46 files][  8.0 GiB/ 14.4 GiB]  55% Done  12.8 MiB/s ETA 00:08:38         \\ [39/46 files][  8.0 GiB/ 14.4 GiB]  55% Done  13.1 MiB/s ETA 00:08:24         |// [39/46 files][  8.0 GiB/ 14.4 GiB]  55% Done  13.6 MiB/s ETA 00:08:04         -\\ [39/46 files][  8.0 GiB/ 14.4 GiB]  55% Done  13.1 MiB/s ETA 00:08:23         || [39/46 files][  8.0 GiB/ 14.4 GiB]  55% Done  12.6 MiB/s ETA 00:08:41         /-- [39/46 files][  8.0 GiB/ 14.4 GiB]  55% Done  12.5 MiB/s ETA 00:08:44         \\ [39/46 files][  8.0 GiB/ 14.4 GiB]  55% Done  11.0 MiB/s ETA 00:09:58         || [39/46 files][  8.1 GiB/ 14.4 GiB]  55% Done  10.6 MiB/s ETA 00:10:15         // [39/46 files][  8.1 GiB/ 14.4 GiB]  55% Done   9.3 MiB/s ETA 00:11:38         -\\ [39/46 files][  8.1 GiB/ 14.4 GiB]  55% Done   9.2 MiB/s ETA 00:11:43         |// [39/46 files][  8.1 GiB/ 14.4 GiB]  56% Done   9.2 MiB/s ETA 00:11:50         -- [39/46 files][  8.1 GiB/ 14.4 GiB]  56% Done   9.9 MiB/s ETA 00:10:56         \|| [39/46 files][  8.1 GiB/ 14.4 GiB]  56% Done  10.4 MiB/s ETA 00:10:22         /-- [39/46 files][  8.1 GiB/ 14.4 GiB]  56% Done  11.8 MiB/s ETA 00:09:05         \\ [39/46 files][  8.1 GiB/ 14.4 GiB]  56% Done  12.2 MiB/s ETA 00:08:46         |// [39/46 files][  8.2 GiB/ 14.4 GiB]  56% Done  12.8 MiB/s ETA 00:08:23         -- [39/46 files][  8.2 GiB/ 14.4 GiB]  56% Done  12.9 MiB/s ETA 00:08:18         \|| [39/46 files][  8.2 GiB/ 14.4 GiB]  56% Done  12.0 MiB/s ETA 00:08:56         /-- [39/46 files][  8.2 GiB/ 14.4 GiB]  56% Done  11.1 MiB/s ETA 00:09:37         \\ [39/46 files][  8.2 GiB/ 14.4 GiB]  56% Done  10.6 MiB/s ETA 00:10:00         |// [39/46 files][  8.2 GiB/ 14.4 GiB]  56% Done  10.4 MiB/s ETA 00:10:10         -- [39/46 files][  8.2 GiB/ 14.4 GiB]  56% Done  11.1 MiB/s ETA 00:09:31         \|| [39/46 files][  8.2 GiB/ 14.4 GiB]  57% Done  12.0 MiB/s ETA 00:08:47         /-- [39/46 files][  8.2 GiB/ 14.4 GiB]  57% Done  12.9 MiB/s ETA 00:08:11         \\ [39/46 files][  8.3 GiB/ 14.4 GiB]  57% Done  13.1 MiB/s ETA 00:08:01         |// [39/46 files][  8.3 GiB/ 14.4 GiB]  57% Done  13.1 MiB/s ETA 00:08:01         -- [39/46 files][  8.3 GiB/ 14.4 GiB]  57% Done  13.1 MiB/s ETA 00:08:02         \|| [39/46 files][  8.3 GiB/ 14.4 GiB]  57% Done  13.4 MiB/s ETA 00:07:49         // [39/46 files][  8.3 GiB/ 14.4 GiB]  57% Done  13.0 MiB/s ETA 00:08:01         -\\ [39/46 files][  8.3 GiB/ 14.4 GiB]  57% Done  12.7 MiB/s ETA 00:08:12         |// [39/46 files][  8.3 GiB/ 14.4 GiB]  57% Done  12.0 MiB/s ETA 00:08:43         -- [39/46 files][  8.4 GiB/ 14.4 GiB]  57% Done  12.1 MiB/s ETA 00:08:34         \|| [39/46 files][  8.4 GiB/ 14.4 GiB]  57% Done  12.5 MiB/s ETA 00:08:19         /-- [39/46 files][  8.4 GiB/ 14.4 GiB]  57% Done  11.4 MiB/s ETA 00:09:04         \\ [39/46 files][  8.4 GiB/ 14.4 GiB]  58% Done  11.5 MiB/s ETA 00:08:58         |// [39/46 files][  8.4 GiB/ 14.4 GiB]  58% Done  11.6 MiB/s ETA 00:08:52         -\\ [39/46 files][  8.4 GiB/ 14.4 GiB]  58% Done  12.0 MiB/s ETA 00:08:34         || [39/46 files][  8.4 GiB/ 14.4 GiB]  58% Done  11.9 MiB/s ETA 00:08:36         /-- [39/46 files][  8.4 GiB/ 14.4 GiB]  58% Done  12.4 MiB/s ETA 00:08:16         \\ [39/46 files][  8.4 GiB/ 14.4 GiB]  58% Done  12.2 MiB/s ETA 00:08:22         |// [39/46 files][  8.5 GiB/ 14.4 GiB]  58% Done  11.8 MiB/s ETA 00:08:41         -\\ [39/46 files][  8.5 GiB/ 14.4 GiB]  58% Done  11.3 MiB/s ETA 00:08:59         |// [39/46 files][  8.5 GiB/ 14.4 GiB]  58% Done  11.8 MiB/s ETA 00:08:38         -- [39/46 files][  8.5 GiB/ 14.4 GiB]  58% Done  11.9 MiB/s ETA 00:08:32         \|| [39/46 files][  8.5 GiB/ 14.4 GiB]  58% Done  12.9 MiB/s ETA 00:07:50         // [39/46 files][  8.5 GiB/ 14.4 GiB]  59% Done  12.8 MiB/s ETA 00:07:51         -\\ [39/46 files][  8.5 GiB/ 14.4 GiB]  59% Done  12.8 MiB/s ETA 00:07:51         |// [39/46 files][  8.5 GiB/ 14.4 GiB]  59% Done  12.1 MiB/s ETA 00:08:19         -- [39/46 files][  8.6 GiB/ 14.4 GiB]  59% Done  11.3 MiB/s ETA 00:08:53         \|| [39/46 files][  8.6 GiB/ 14.4 GiB]  59% Done  11.8 MiB/s ETA 00:08:28         // [39/46 files][  8.6 GiB/ 14.4 GiB]  59% Done  11.5 MiB/s ETA 00:08:42         -\\ [39/46 files][  8.6 GiB/ 14.4 GiB]  59% Done  11.0 MiB/s ETA 00:09:06         |// [39/46 files][  8.6 GiB/ 14.4 GiB]  59% Done  11.8 MiB/s ETA 00:08:27         -- [39/46 files][  8.6 GiB/ 14.4 GiB]  59% Done  12.8 MiB/s ETA 00:07:45         \|| [39/46 files][  8.6 GiB/ 14.4 GiB]  59% Done  13.2 MiB/s ETA 00:07:31         /-- [39/46 files][  8.6 GiB/ 14.4 GiB]  59% Done  14.2 MiB/s ETA 00:06:56         \\ [39/46 files][  8.7 GiB/ 14.4 GiB]  60% Done  14.5 MiB/s ETA 00:06:48         |// [39/46 files][  8.7 GiB/ 14.4 GiB]  60% Done  14.6 MiB/s ETA 00:06:44         -\\ [39/46 files][  8.7 GiB/ 14.4 GiB]  60% Done  13.5 MiB/s ETA 00:07:17         || [39/46 files][  8.7 GiB/ 14.4 GiB]  60% Done  13.2 MiB/s ETA 00:07:25         /-- [39/46 files][  8.7 GiB/ 14.4 GiB]  60% Done  12.3 MiB/s ETA 00:07:57         \|| [39/46 files][  8.7 GiB/ 14.4 GiB]  60% Done  11.4 MiB/s ETA 00:08:33         // [39/46 files][  8.7 GiB/ 14.4 GiB]  60% Done  11.6 MiB/s ETA 00:08:24         -\\ [39/46 files][  8.8 GiB/ 14.4 GiB]  60% Done  11.7 MiB/s ETA 00:08:19         || [39/46 files][  8.8 GiB/ 14.4 GiB]  60% Done  11.6 MiB/s ETA 00:08:22         /-- [39/46 files][  8.8 GiB/ 14.4 GiB]  60% Done  11.9 MiB/s ETA 00:08:09         \\ [39/46 files][  8.8 GiB/ 14.4 GiB]  60% Done  11.5 MiB/s ETA 00:08:23         |// [39/46 files][  8.8 GiB/ 14.4 GiB]  60% Done  11.4 MiB/s ETA 00:08:26         -\\ [39/46 files][  8.8 GiB/ 14.4 GiB]  61% Done  12.1 MiB/s ETA 00:07:58         |// [39/46 files][  8.8 GiB/ 14.4 GiB]  61% Done  12.0 MiB/s ETA 00:08:00         -- [39/46 files][  8.8 GiB/ 14.4 GiB]  61% Done  10.1 MiB/s ETA 00:09:28         \\ [39/46 files][  8.8 GiB/ 14.4 GiB]  61% Done  10.8 MiB/s ETA 00:08:52         |// [39/46 files][  8.8 GiB/ 14.4 GiB]  61% Done   9.4 MiB/s ETA 00:10:10         -- [39/46 files][  8.8 GiB/ 14.4 GiB]  61% Done   9.3 MiB/s ETA 00:10:16         \|| [39/46 files][  8.9 GiB/ 14.4 GiB]  61% Done   9.9 MiB/s ETA 00:09:36         // [39/46 files][  8.9 GiB/ 14.4 GiB]  61% Done  11.4 MiB/s ETA 00:08:20         -\\ [39/46 files][  8.9 GiB/ 14.4 GiB]  61% Done  12.3 MiB/s ETA 00:07:41         |// [39/46 files][  8.9 GiB/ 14.4 GiB]  61% Done  13.6 MiB/s ETA 00:06:57         -- [39/46 files][  8.9 GiB/ 14.4 GiB]  61% Done  12.7 MiB/s ETA 00:07:24         \|| [39/46 files][  8.9 GiB/ 14.4 GiB]  61% Done  12.5 MiB/s ETA 00:07:31         // [39/46 files][  8.9 GiB/ 14.4 GiB]  61% Done  11.4 MiB/s ETA 00:08:16         -\\ [39/46 files][  9.0 GiB/ 14.4 GiB]  61% Done  10.4 MiB/s ETA 00:09:01         || [39/46 files][  9.0 GiB/ 14.4 GiB]  62% Done  10.5 MiB/s ETA 00:08:53         /-- [39/46 files][  9.0 GiB/ 14.4 GiB]  62% Done  11.0 MiB/s ETA 00:08:30         \\ [39/46 files][  9.0 GiB/ 14.4 GiB]  62% Done  11.3 MiB/s ETA 00:08:13         |// [39/46 files][  9.0 GiB/ 14.4 GiB]  62% Done  11.4 MiB/s ETA 00:08:07         -\\ [39/46 files][  9.0 GiB/ 14.4 GiB]  62% Done  12.0 MiB/s ETA 00:07:42         || [39/46 files][  9.0 GiB/ 14.4 GiB]  62% Done  11.8 MiB/s ETA 00:07:52         // [39/46 files][  9.0 GiB/ 14.4 GiB]  62% Done  10.7 MiB/s ETA 00:08:37         -\\ [39/46 files][  9.0 GiB/ 14.4 GiB]  62% Done  10.2 MiB/s ETA 00:08:59         || [39/46 files][  9.0 GiB/ 14.4 GiB]  62% Done  10.3 MiB/s ETA 00:08:54         /-- [39/46 files][  9.1 GiB/ 14.4 GiB]  62% Done  10.1 MiB/s ETA 00:09:03         \|| [39/46 files][  9.1 GiB/ 14.4 GiB]  62% Done  10.2 MiB/s ETA 00:08:58         // [39/46 files][  9.1 GiB/ 14.4 GiB]  62% Done  11.7 MiB/s ETA 00:07:48         -\\ [39/46 files][  9.1 GiB/ 14.4 GiB]  63% Done  12.0 MiB/s ETA 00:07:37         |// [39/46 files][  9.1 GiB/ 14.4 GiB]  63% Done  12.1 MiB/s ETA 00:07:30         -- [39/46 files][  9.1 GiB/ 14.4 GiB]  63% Done  12.7 MiB/s ETA 00:07:09         \|| [39/46 files][  9.1 GiB/ 14.4 GiB]  63% Done  13.0 MiB/s ETA 00:06:58         /-- [39/46 files][  9.2 GiB/ 14.4 GiB]  63% Done  12.4 MiB/s ETA 00:07:16         \\ [39/46 files][  9.2 GiB/ 14.4 GiB]  63% Done  12.2 MiB/s ETA 00:07:23         |// [39/46 files][  9.2 GiB/ 14.4 GiB]  63% Done  12.0 MiB/s ETA 00:07:28         -\\ [39/46 files][  9.2 GiB/ 14.4 GiB]  63% Done  12.2 MiB/s ETA 00:07:21         || [39/46 files][  9.2 GiB/ 14.4 GiB]  63% Done  12.2 MiB/s ETA 00:07:19         /-- [39/46 files][  9.2 GiB/ 14.4 GiB]  63% Done  11.3 MiB/s ETA 00:07:55         \\ [39/46 files][  9.2 GiB/ 14.4 GiB]  63% Done  12.4 MiB/s ETA 00:07:11         |// [39/46 files][  9.2 GiB/ 14.4 GiB]  63% Done  12.9 MiB/s ETA 00:06:53         -- [39/46 files][  9.2 GiB/ 14.4 GiB]  64% Done  12.5 MiB/s ETA 00:07:06         \|| [39/46 files][  9.3 GiB/ 14.4 GiB]  64% Done  12.1 MiB/s ETA 00:07:19         /-- [39/46 files][  9.3 GiB/ 14.4 GiB]  64% Done  12.6 MiB/s ETA 00:06:59         \\ [39/46 files][  9.3 GiB/ 14.4 GiB]  64% Done  12.4 MiB/s ETA 00:07:05         |// [39/46 files][  9.3 GiB/ 14.4 GiB]  64% Done  12.5 MiB/s ETA 00:07:00         -\\ [39/46 files][  9.3 GiB/ 14.4 GiB]  64% Done  13.3 MiB/s ETA 00:06:35         || [39/46 files][  9.3 GiB/ 14.4 GiB]  64% Done  14.8 MiB/s ETA 00:05:54         /-- [39/46 files][  9.3 GiB/ 14.4 GiB]  64% Done  14.2 MiB/s ETA 00:06:08         \|| [39/46 files][  9.4 GiB/ 14.4 GiB]  64% Done  14.7 MiB/s ETA 00:05:53         // [39/46 files][  9.4 GiB/ 14.4 GiB]  64% Done  15.0 MiB/s ETA 00:05:45         -\\ [39/46 files][  9.4 GiB/ 14.4 GiB]  65% Done  15.4 MiB/s ETA 00:05:36         |// [39/46 files][  9.4 GiB/ 14.4 GiB]  65% Done  15.0 MiB/s ETA 00:05:44         -- [39/46 files][  9.4 GiB/ 14.4 GiB]  65% Done  14.8 MiB/s ETA 00:05:48         \|| [39/46 files][  9.4 GiB/ 14.4 GiB]  65% Done  13.6 MiB/s ETA 00:06:16         /-- [39/46 files][  9.4 GiB/ 14.4 GiB]  65% Done  13.2 MiB/s ETA 00:06:26         \\ [39/46 files][  9.5 GiB/ 14.4 GiB]  65% Done  12.9 MiB/s ETA 00:06:34         |// [39/46 files][  9.5 GiB/ 14.4 GiB]  65% Done  14.2 MiB/s ETA 00:05:59         -\\ [39/46 files][  9.5 GiB/ 14.4 GiB]  65% Done  13.7 MiB/s ETA 00:06:11         || [39/46 files][  9.5 GiB/ 14.4 GiB]  65% Done  13.0 MiB/s ETA 00:06:30         /-- [39/46 files][  9.5 GiB/ 14.4 GiB]  65% Done  12.8 MiB/s ETA 00:06:34         \\ [39/46 files][  9.5 GiB/ 14.4 GiB]  65% Done  11.7 MiB/s ETA 00:07:12         |// [39/46 files][  9.5 GiB/ 14.4 GiB]  65% Done  11.2 MiB/s ETA 00:07:29         -- [39/46 files][  9.5 GiB/ 14.4 GiB]  66% Done  10.5 MiB/s ETA 00:07:57         \|| [39/46 files][  9.6 GiB/ 14.4 GiB]  66% Done  11.0 MiB/s ETA 00:07:34         /-- [39/46 files][  9.6 GiB/ 14.4 GiB]  66% Done  11.3 MiB/s ETA 00:07:23         \\ [39/46 files][  9.6 GiB/ 14.4 GiB]  66% Done  12.2 MiB/s ETA 00:06:48         |// [39/46 files][  9.6 GiB/ 14.4 GiB]  66% Done  13.3 MiB/s ETA 00:06:12         -\\ [39/46 files][  9.6 GiB/ 14.4 GiB]  66% Done  13.4 MiB/s ETA 00:06:10         || [39/46 files][  9.6 GiB/ 14.4 GiB]  66% Done  13.8 MiB/s ETA 00:05:57         /-- [39/46 files][  9.6 GiB/ 14.4 GiB]  66% Done  12.8 MiB/s ETA 00:06:25         \|| [39/46 files][  9.6 GiB/ 14.4 GiB]  66% Done  12.1 MiB/s ETA 00:06:47         // [39/46 files][  9.6 GiB/ 14.4 GiB]  66% Done  12.3 MiB/s ETA 00:06:39         -\\ [39/46 files][  9.7 GiB/ 14.4 GiB]  66% Done  11.6 MiB/s ETA 00:07:00         |// [39/46 files][  9.7 GiB/ 14.4 GiB]  67% Done  12.4 MiB/s ETA 00:06:35         -- [39/46 files][  9.7 GiB/ 14.4 GiB]  67% Done  13.1 MiB/s ETA 00:06:10         \|| [39/46 files][  9.7 GiB/ 14.4 GiB]  67% Done  12.8 MiB/s ETA 00:06:17         /-- [39/46 files][  9.7 GiB/ 14.4 GiB]  67% Done  12.8 MiB/s ETA 00:06:19         \\ [39/46 files][  9.7 GiB/ 14.4 GiB]  67% Done  13.1 MiB/s ETA 00:06:08         |// [39/46 files][  9.7 GiB/ 14.4 GiB]  67% Done  12.8 MiB/s ETA 00:06:15         -\\ [39/46 files][  9.8 GiB/ 14.4 GiB]  67% Done  11.8 MiB/s ETA 00:06:45         || [39/46 files][  9.8 GiB/ 14.4 GiB]  67% Done  11.4 MiB/s ETA 00:06:59         // [39/46 files][  9.8 GiB/ 14.4 GiB]  67% Done  10.6 MiB/s ETA 00:07:30         -\\ [39/46 files][  9.8 GiB/ 14.4 GiB]  67% Done  10.2 MiB/s ETA 00:07:46         |// [39/46 files][  9.8 GiB/ 14.4 GiB]  67% Done   8.7 MiB/s ETA 00:09:06         -\\ [39/46 files][  9.8 GiB/ 14.4 GiB]  67% Done   9.6 MiB/s ETA 00:08:11         || [39/46 files][  9.8 GiB/ 14.4 GiB]  68% Done  10.4 MiB/s ETA 00:07:36         /-- [39/46 files][  9.8 GiB/ 14.4 GiB]  68% Done  11.5 MiB/s ETA 00:06:49         \|| [39/46 files][  9.8 GiB/ 14.4 GiB]  68% Done  11.8 MiB/s ETA 00:06:38         // [39/46 files][  9.8 GiB/ 14.4 GiB]  68% Done  11.9 MiB/s ETA 00:06:35         -\\ [39/46 files][  9.9 GiB/ 14.4 GiB]  68% Done  11.5 MiB/s ETA 00:06:47         || [39/46 files][  9.9 GiB/ 14.4 GiB]  68% Done  11.2 MiB/s ETA 00:06:58         /-- [39/46 files][  9.9 GiB/ 14.4 GiB]  68% Done  10.6 MiB/s ETA 00:07:18         \|| [39/46 files][  9.9 GiB/ 14.4 GiB]  68% Done  10.8 MiB/s ETA 00:07:11         // [39/46 files][  9.9 GiB/ 14.4 GiB]  68% Done  10.9 MiB/s ETA 00:07:06         -\\ [39/46 files][  9.9 GiB/ 14.4 GiB]  68% Done  10.8 MiB/s ETA 00:07:10         || [39/46 files][  9.9 GiB/ 14.4 GiB]  68% Done  12.4 MiB/s ETA 00:06:12         /-- [39/46 files][ 10.0 GiB/ 14.4 GiB]  68% Done  13.2 MiB/s ETA 00:05:47         \|| [39/46 files][ 10.0 GiB/ 14.4 GiB]  69% Done  13.8 MiB/s ETA 00:05:31         // [39/46 files][ 10.0 GiB/ 14.4 GiB]  69% Done  14.0 MiB/s ETA 00:05:25         -\\ [39/46 files][ 10.0 GiB/ 14.4 GiB]  69% Done  13.4 MiB/s ETA 00:05:40         |// [39/46 files][ 10.0 GiB/ 14.4 GiB]  69% Done  12.9 MiB/s ETA 00:05:51         -- [39/46 files][ 10.0 GiB/ 14.4 GiB]  69% Done  12.5 MiB/s ETA 00:06:02         \|| [39/46 files][ 10.0 GiB/ 14.4 GiB]  69% Done  12.8 MiB/s ETA 00:05:53         // [39/46 files][ 10.0 GiB/ 14.4 GiB]  69% Done  12.3 MiB/s ETA 00:06:07         -\\ [39/46 files][ 10.0 GiB/ 14.4 GiB]  69% Done  12.3 MiB/s ETA 00:06:04         |// [39/46 files][ 10.1 GiB/ 14.4 GiB]  69% Done  11.9 MiB/s ETA 00:06:15         -- [39/46 files][ 10.1 GiB/ 14.4 GiB]  69% Done  11.9 MiB/s ETA 00:06:16         \|| [39/46 files][ 10.1 GiB/ 14.4 GiB]  69% Done  10.9 MiB/s ETA 00:06:49         /-- [39/46 files][ 10.1 GiB/ 14.4 GiB]  69% Done  10.6 MiB/s ETA 00:06:58         \\ [39/46 files][ 10.1 GiB/ 14.4 GiB]  70% Done  10.6 MiB/s ETA 00:07:00         |// [39/46 files][ 10.1 GiB/ 14.4 GiB]  70% Done  11.4 MiB/s ETA 00:06:29         -- [39/46 files][ 10.1 GiB/ 14.4 GiB]  70% Done  11.9 MiB/s ETA 00:06:10         \|| [39/46 files][ 10.1 GiB/ 14.4 GiB]  70% Done  11.7 MiB/s ETA 00:06:16         // [39/46 files][ 10.2 GiB/ 14.4 GiB]  70% Done  10.7 MiB/s ETA 00:06:50         -\\ [39/46 files][ 10.2 GiB/ 14.4 GiB]  70% Done  11.0 MiB/s ETA 00:06:39         |// [39/46 files][ 10.2 GiB/ 14.4 GiB]  70% Done  10.8 MiB/s ETA 00:06:43         -- [39/46 files][ 10.2 GiB/ 14.4 GiB]  70% Done  11.4 MiB/s ETA 00:06:22         \|| [39/46 files][ 10.2 GiB/ 14.4 GiB]  70% Done  12.4 MiB/s ETA 00:05:51         /-- [39/46 files][ 10.2 GiB/ 14.4 GiB]  70% Done  12.8 MiB/s ETA 00:05:38         \\ [39/46 files][ 10.2 GiB/ 14.4 GiB]  70% Done  12.2 MiB/s ETA 00:05:52         |// [39/46 files][ 10.2 GiB/ 14.4 GiB]  70% Done  12.7 MiB/s ETA 00:05:38         -\\ [39/46 files][ 10.2 GiB/ 14.4 GiB]  71% Done  12.5 MiB/s ETA 00:05:42         || [39/46 files][ 10.3 GiB/ 14.4 GiB]  71% Done  12.6 MiB/s ETA 00:05:38         /-- [39/46 files][ 10.3 GiB/ 14.4 GiB]  71% Done  12.6 MiB/s ETA 00:05:37         \\ [39/46 files][ 10.3 GiB/ 14.4 GiB]  71% Done  12.9 MiB/s ETA 00:05:29         |// [39/46 files][ 10.3 GiB/ 14.4 GiB]  71% Done  12.8 MiB/s ETA 00:05:29         -\\ [39/46 files][ 10.3 GiB/ 14.4 GiB]  71% Done  12.1 MiB/s ETA 00:05:47         || [39/46 files][ 10.3 GiB/ 14.4 GiB]  71% Done  11.7 MiB/s ETA 00:05:59         /-- [39/46 files][ 10.3 GiB/ 14.4 GiB]  71% Done  11.7 MiB/s ETA 00:06:00         \|| [39/46 files][ 10.3 GiB/ 14.4 GiB]  71% Done   9.9 MiB/s ETA 00:07:04         // [39/46 files][ 10.4 GiB/ 14.4 GiB]  71% Done   9.5 MiB/s ETA 00:07:22         -\\ [39/46 files][ 10.4 GiB/ 14.4 GiB]  71% Done   9.7 MiB/s ETA 00:07:08         |// [39/46 files][ 10.4 GiB/ 14.4 GiB]  71% Done   9.2 MiB/s ETA 00:07:30         -\\ [39/46 files][ 10.4 GiB/ 14.4 GiB]  71% Done   8.7 MiB/s ETA 00:07:58         || [39/46 files][ 10.4 GiB/ 14.4 GiB]  72% Done   9.1 MiB/s ETA 00:07:36         /-- [39/46 files][ 10.4 GiB/ 14.4 GiB]  72% Done  10.1 MiB/s ETA 00:06:47         \|| [39/46 files][ 10.4 GiB/ 14.4 GiB]  72% Done  10.6 MiB/s ETA 00:06:28         // [39/46 files][ 10.4 GiB/ 14.4 GiB]  72% Done  12.4 MiB/s ETA 00:05:31         -\\ [39/46 files][ 10.4 GiB/ 14.4 GiB]  72% Done  12.0 MiB/s ETA 00:05:40         |// [39/46 files][ 10.5 GiB/ 14.4 GiB]  72% Done  12.2 MiB/s ETA 00:05:33         -- [39/46 files][ 10.5 GiB/ 14.4 GiB]  72% Done  12.3 MiB/s ETA 00:05:31         \|| [39/46 files][ 10.5 GiB/ 14.4 GiB]  72% Done  11.0 MiB/s ETA 00:06:09         // [39/46 files][ 10.5 GiB/ 14.4 GiB]  72% Done  10.8 MiB/s ETA 00:06:14         -\\ [39/46 files][ 10.5 GiB/ 14.4 GiB]  72% Done  11.3 MiB/s ETA 00:05:58         || [39/46 files][ 10.5 GiB/ 14.4 GiB]  72% Done  11.4 MiB/s ETA 00:05:51         /-- [39/46 files][ 10.5 GiB/ 14.4 GiB]  72% Done  11.6 MiB/s ETA 00:05:43         \|| [39/46 files][ 10.5 GiB/ 14.4 GiB]  73% Done  12.8 MiB/s ETA 00:05:12         // [39/46 files][ 10.6 GiB/ 14.4 GiB]  73% Done  12.3 MiB/s ETA 00:05:23         / [40/46 files][ 10.6 GiB/ 14.4 GiB]  73% Done  12.4 MiB/s ETA 00:05:20         -\\ [40/46 files][ 10.6 GiB/ 14.4 GiB]  73% Done  12.2 MiB/s ETA 00:05:23         || [40/46 files][ 10.6 GiB/ 14.4 GiB]  73% Done  12.2 MiB/s ETA 00:05:24         /-- [40/46 files][ 10.6 GiB/ 14.4 GiB]  73% Done  12.1 MiB/s ETA 00:05:26         \|| [40/46 files][ 10.6 GiB/ 14.4 GiB]  73% Done  12.2 MiB/s ETA 00:05:21         // [40/46 files][ 10.6 GiB/ 14.4 GiB]  73% Done  11.2 MiB/s ETA 00:05:50         -\\ [40/46 files][ 10.6 GiB/ 14.4 GiB]  73% Done  10.9 MiB/s ETA 00:05:58         || [40/46 files][ 10.6 GiB/ 14.4 GiB]  73% Done  10.1 MiB/s ETA 00:06:24         /-- [40/46 files][ 10.6 GiB/ 14.4 GiB]  73% Done  10.7 MiB/s ETA 00:06:03         \\ [40/46 files][ 10.7 GiB/ 14.4 GiB]  73% Done  11.4 MiB/s ETA 00:05:39         |// [40/46 files][ 10.7 GiB/ 14.4 GiB]  73% Done  12.3 MiB/s ETA 00:05:13         -\\ [40/46 files][ 10.7 GiB/ 14.4 GiB]  74% Done  12.5 MiB/s ETA 00:05:08         || [40/46 files][ 10.7 GiB/ 14.4 GiB]  74% Done  12.8 MiB/s ETA 00:04:58         /-- [40/46 files][ 10.7 GiB/ 14.4 GiB]  74% Done  12.6 MiB/s ETA 00:05:04         \\ [40/46 files][ 10.7 GiB/ 14.4 GiB]  74% Done  13.1 MiB/s ETA 00:04:50         |// [40/46 files][ 10.7 GiB/ 14.4 GiB]  74% Done  13.6 MiB/s ETA 00:04:37         -\\ [40/46 files][ 10.8 GiB/ 14.4 GiB]  74% Done  14.2 MiB/s ETA 00:04:26         || [40/46 files][ 10.8 GiB/ 14.4 GiB]  74% Done  13.9 MiB/s ETA 00:04:30         /-- [40/46 files][ 10.8 GiB/ 14.4 GiB]  74% Done  13.5 MiB/s ETA 00:04:37         \|| [40/46 files][ 10.8 GiB/ 14.4 GiB]  74% Done  12.2 MiB/s ETA 00:05:06         // [40/46 files][ 10.8 GiB/ 14.4 GiB]  74% Done  11.8 MiB/s ETA 00:05:17         -- [40/46 files][ 10.8 GiB/ 14.4 GiB]  74% Done  11.6 MiB/s ETA 00:05:19         \|| [40/46 files][ 10.8 GiB/ 14.4 GiB]  74% Done  10.7 MiB/s ETA 00:05:46         /-- [40/46 files][ 10.8 GiB/ 14.4 GiB]  75% Done  11.2 MiB/s ETA 00:05:30         \\ [40/46 files][ 10.8 GiB/ 14.4 GiB]  75% Done  11.5 MiB/s ETA 00:05:19         |// [40/46 files][ 10.9 GiB/ 14.4 GiB]  75% Done  11.4 MiB/s ETA 00:05:21         -\\ [40/46 files][ 10.9 GiB/ 14.4 GiB]  75% Done  12.3 MiB/s ETA 00:04:56         |// [40/46 files][ 10.9 GiB/ 14.4 GiB]  75% Done  12.2 MiB/s ETA 00:04:57         -- [40/46 files][ 10.9 GiB/ 14.4 GiB]  75% Done  12.3 MiB/s ETA 00:04:55         \|| [40/46 files][ 10.9 GiB/ 14.4 GiB]  75% Done  12.1 MiB/s ETA 00:04:58         /-- [40/46 files][ 10.9 GiB/ 14.4 GiB]  75% Done  12.4 MiB/s ETA 00:04:50         \\ [40/46 files][ 10.9 GiB/ 14.4 GiB]  75% Done  12.7 MiB/s ETA 00:04:42         |// [40/46 files][ 10.9 GiB/ 14.4 GiB]  75% Done  11.9 MiB/s ETA 00:05:01         -- [40/46 files][ 11.0 GiB/ 14.4 GiB]  75% Done  12.3 MiB/s ETA 00:04:49         \|| [40/46 files][ 11.0 GiB/ 14.4 GiB]  76% Done  12.6 MiB/s ETA 00:04:42         /-- [40/46 files][ 11.0 GiB/ 14.4 GiB]  76% Done  12.5 MiB/s ETA 00:04:42         [0:25:28] STALL DETECTED: gclient has been silent for 5 minutes.
+[0:25:28] Currently active tasks:
+[0:25:28]    src (Running for 0:25:21)
+[0:25:28] Suggestions:
+[0:25:28] 1. Authentication: Check for background prompts.
+[0:25:28] 2. Network: Check your internet connection and proxies.
+[0:25:28] 3. Locks: Check for other git processes holding a lock.
+[0:25:28] 4. Verbose: Run gclient with --verbose to see more output.
+\\ [40/46 files][ 11.0 GiB/ 14.4 GiB]  76% Done  12.2 MiB/s ETA 00:04:48         |// [40/46 files][ 11.0 GiB/ 14.4 GiB]  76% Done  13.5 MiB/s ETA 00:04:19         -\\ [40/46 files][ 11.0 GiB/ 14.4 GiB]  76% Done  13.1 MiB/s ETA 00:04:27         || [40/46 files][ 11.0 GiB/ 14.4 GiB]  76% Done  13.1 MiB/s ETA 00:04:26         /-- [40/46 files][ 11.0 GiB/ 14.4 GiB]  76% Done  12.8 MiB/s ETA 00:04:32         \|| [40/46 files][ 11.1 GiB/ 14.4 GiB]  76% Done  12.1 MiB/s ETA 00:04:46         // [40/46 files][ 11.1 GiB/ 14.4 GiB]  76% Done  10.8 MiB/s ETA 00:05:19         -\\ [40/46 files][ 11.1 GiB/ 14.4 GiB]  76% Done  10.8 MiB/s ETA 00:05:17         |// [40/46 files][ 11.1 GiB/ 14.4 GiB]  76% Done  12.0 MiB/s ETA 00:04:45         -- [40/46 files][ 11.1 GiB/ 14.4 GiB]  76% Done  11.9 MiB/s ETA 00:04:45         \|| [40/46 files][ 11.1 GiB/ 14.4 GiB]  77% Done  12.4 MiB/s ETA 00:04:34         /-- [40/46 files][ 11.1 GiB/ 14.4 GiB]  77% Done  11.9 MiB/s ETA 00:04:44         \\ [40/46 files][ 11.2 GiB/ 14.4 GiB]  77% Done  12.2 MiB/s ETA 00:04:37         |// [40/46 files][ 11.2 GiB/ 14.4 GiB]  77% Done  11.9 MiB/s ETA 00:04:43         -\\ [40/46 files][ 11.2 GiB/ 14.4 GiB]  77% Done  11.4 MiB/s ETA 00:04:53         |// [40/46 files][ 11.2 GiB/ 14.4 GiB]  77% Done  12.0 MiB/s ETA 00:04:38         -- [40/46 files][ 11.2 GiB/ 14.4 GiB]  77% Done  11.7 MiB/s ETA 00:04:44         \|| [40/46 files][ 11.2 GiB/ 14.4 GiB]  77% Done  10.8 MiB/s ETA 00:05:07         /-- [40/46 files][ 11.2 GiB/ 14.4 GiB]  77% Done  11.1 MiB/s ETA 00:04:56         \\ [40/46 files][ 11.2 GiB/ 14.4 GiB]  77% Done  12.1 MiB/s ETA 00:04:30         |// [40/46 files][ 11.2 GiB/ 14.4 GiB]  77% Done  10.9 MiB/s ETA 00:05:00         -- [40/46 files][ 11.2 GiB/ 14.4 GiB]  77% Done  11.5 MiB/s ETA 00:04:44         \|| [40/46 files][ 11.3 GiB/ 14.4 GiB]  78% Done  11.9 MiB/s ETA 00:04:33         // [40/46 files][ 11.3 GiB/ 14.4 GiB]  78% Done  10.3 MiB/s ETA 00:05:15         -\\ [40/46 files][ 11.3 GiB/ 14.4 GiB]  78% Done  10.7 MiB/s ETA 00:05:02         || [40/46 files][ 11.3 GiB/ 14.4 GiB]  78% Done  11.6 MiB/s ETA 00:04:38         /-- [40/46 files][ 11.3 GiB/ 14.4 GiB]  78% Done  11.8 MiB/s ETA 00:04:30         \\ [40/46 files][ 11.3 GiB/ 14.4 GiB]  78% Done  11.8 MiB/s ETA 00:04:31         |// [40/46 files][ 11.3 GiB/ 14.4 GiB]  78% Done  13.1 MiB/s ETA 00:04:03         -\\ [40/46 files][ 11.4 GiB/ 14.4 GiB]  78% Done  12.4 MiB/s ETA 00:04:15         || [40/46 files][ 11.4 GiB/ 14.4 GiB]  78% Done  12.1 MiB/s ETA 00:04:21         /-- [40/46 files][ 11.4 GiB/ 14.4 GiB]  78% Done  11.9 MiB/s ETA 00:04:23         \|| [40/46 files][ 11.4 GiB/ 14.4 GiB]  78% Done  11.8 MiB/s ETA 00:04:26         // [40/46 files][ 11.4 GiB/ 14.4 GiB]  78% Done  12.1 MiB/s ETA 00:04:17         -\\ [40/46 files][ 11.4 GiB/ 14.4 GiB]  78% Done  10.4 MiB/s ETA 00:04:58         |// [40/46 files][ 11.4 GiB/ 14.4 GiB]  79% Done  11.0 MiB/s ETA 00:04:40         -- [40/46 files][ 11.4 GiB/ 14.4 GiB]  79% Done  10.5 MiB/s ETA 00:04:53         \|| [40/46 files][ 11.4 GiB/ 14.4 GiB]  79% Done  10.4 MiB/s ETA 00:04:57         // [40/46 files][ 11.4 GiB/ 14.4 GiB]  79% Done  10.1 MiB/s ETA 00:05:03         -\\ [40/46 files][ 11.5 GiB/ 14.4 GiB]  79% Done  12.1 MiB/s ETA 00:04:11         |// [40/46 files][ 11.5 GiB/ 14.4 GiB]  79% Done  11.6 MiB/s ETA 00:04:21         -- [40/46 files][ 11.5 GiB/ 14.4 GiB]  79% Done  11.8 MiB/s ETA 00:04:16         \|| [40/46 files][ 11.5 GiB/ 14.4 GiB]  79% Done  12.4 MiB/s ETA 00:04:04         // [40/46 files][ 11.5 GiB/ 14.4 GiB]  79% Done  11.8 MiB/s ETA 00:04:15         -\\ [40/46 files][ 11.5 GiB/ 14.4 GiB]  79% Done  12.1 MiB/s ETA 00:04:07         || [40/46 files][ 11.5 GiB/ 14.4 GiB]  79% Done  12.3 MiB/s ETA 00:04:02         /-- [40/46 files][ 11.6 GiB/ 14.4 GiB]  79% Done  13.0 MiB/s ETA 00:03:48         \\ [40/46 files][ 11.6 GiB/ 14.4 GiB]  80% Done  12.6 MiB/s ETA 00:03:53         |// [40/46 files][ 11.6 GiB/ 14.4 GiB]  80% Done  12.6 MiB/s ETA 00:03:52         -\\ [40/46 files][ 11.6 GiB/ 14.4 GiB]  80% Done  12.2 MiB/s ETA 00:04:00         |// [40/46 files][ 11.6 GiB/ 14.4 GiB]  80% Done  12.2 MiB/s ETA 00:03:58         -- [40/46 files][ 11.6 GiB/ 14.4 GiB]  80% Done  12.1 MiB/s ETA 00:03:58         \|| [40/46 files][ 11.6 GiB/ 14.4 GiB]  80% Done  12.5 MiB/s ETA 00:03:50         // [40/46 files][ 11.6 GiB/ 14.4 GiB]  80% Done  12.8 MiB/s ETA 00:03:44         -\\ [40/46 files][ 11.6 GiB/ 14.4 GiB]  80% Done  12.8 MiB/s ETA 00:03:43         |// [40/46 files][ 11.7 GiB/ 14.4 GiB]  80% Done  12.8 MiB/s ETA 00:03:42         -\\ [40/46 files][ 11.7 GiB/ 14.4 GiB]  80% Done  12.2 MiB/s ETA 00:03:51         || [40/46 files][ 11.7 GiB/ 14.4 GiB]  80% Done  12.4 MiB/s ETA 00:03:47         /-- [40/46 files][ 11.7 GiB/ 14.4 GiB]  81% Done  12.8 MiB/s ETA 00:03:39         \|| [40/46 files][ 11.7 GiB/ 14.4 GiB]  81% Done  13.2 MiB/s ETA 00:03:30         // [40/46 files][ 11.7 GiB/ 14.4 GiB]  81% Done  13.9 MiB/s ETA 00:03:19         -\\ [40/46 files][ 11.8 GiB/ 14.4 GiB]  81% Done  14.2 MiB/s ETA 00:03:14         || [40/46 files][ 11.8 GiB/ 14.4 GiB]  81% Done  13.1 MiB/s ETA 00:03:30         /-- [40/46 files][ 11.8 GiB/ 14.4 GiB]  81% Done  13.2 MiB/s ETA 00:03:27         \|| [40/46 files][ 11.8 GiB/ 14.4 GiB]  81% Done  12.6 MiB/s ETA 00:03:35         /-- [40/46 files][ 11.8 GiB/ 14.4 GiB]  81% Done  12.8 MiB/s ETA 00:03:31         \\ [40/46 files][ 11.8 GiB/ 14.4 GiB]  81% Done  12.7 MiB/s ETA 00:03:32         |// [40/46 files][ 11.8 GiB/ 14.4 GiB]  81% Done  13.4 MiB/s ETA 00:03:20         -- [40/46 files][ 11.8 GiB/ 14.4 GiB]  82% Done  13.5 MiB/s ETA 00:03:17         \|| [40/46 files][ 11.8 GiB/ 14.4 GiB]  82% Done  13.4 MiB/s ETA 00:03:18         /-- [40/46 files][ 11.9 GiB/ 14.4 GiB]  82% Done  12.6 MiB/s ETA 00:03:30         \\ [40/46 files][ 11.9 GiB/ 14.4 GiB]  82% Done  12.5 MiB/s ETA 00:03:31         |// [40/46 files][ 11.9 GiB/ 14.4 GiB]  82% Done  12.1 MiB/s ETA 00:03:35         -\\ [40/46 files][ 11.9 GiB/ 14.4 GiB]  82% Done  12.3 MiB/s ETA 00:03:32         || [40/46 files][ 11.9 GiB/ 14.4 GiB]  82% Done  13.0 MiB/s ETA 00:03:19         /-- [40/46 files][ 11.9 GiB/ 14.4 GiB]  82% Done  13.7 MiB/s ETA 00:03:07         \\ [40/46 files][ 11.9 GiB/ 14.4 GiB]  82% Done  13.6 MiB/s ETA 00:03:08         |// [40/46 files][ 12.0 GiB/ 14.4 GiB]  82% Done  13.1 MiB/s ETA 00:03:13         -- [40/46 files][ 12.0 GiB/ 14.4 GiB]  82% Done  12.5 MiB/s ETA 00:03:23         \|| [40/46 files][ 12.0 GiB/ 14.4 GiB]  82% Done  12.6 MiB/s ETA 00:03:20         /-- [40/46 files][ 12.0 GiB/ 14.4 GiB]  83% Done  12.4 MiB/s ETA 00:03:22         \\ [40/46 files][ 12.0 GiB/ 14.4 GiB]  83% Done  12.8 MiB/s ETA 00:03:15         |// [40/46 files][ 12.0 GiB/ 14.4 GiB]  83% Done  13.1 MiB/s ETA 00:03:09         -\\ [40/46 files][ 12.0 GiB/ 14.4 GiB]  83% Done  14.2 MiB/s ETA 00:02:54         || [40/46 files][ 12.0 GiB/ 14.4 GiB]  83% Done  14.1 MiB/s ETA 00:02:53         /-- [40/46 files][ 12.1 GiB/ 14.4 GiB]  83% Done  14.5 MiB/s ETA 00:02:48         \|| [40/46 files][ 12.1 GiB/ 14.4 GiB]  83% Done  13.7 MiB/s ETA 00:02:57         // [40/46 files][ 12.1 GiB/ 14.4 GiB]  83% Done  12.7 MiB/s ETA 00:03:09         -\\ [40/46 files][ 12.1 GiB/ 14.4 GiB]  83% Done  12.8 MiB/s ETA 00:03:06         |// [40/46 files][ 12.1 GiB/ 14.4 GiB]  83% Done  11.9 MiB/s ETA 00:03:20         -- [40/46 files][ 12.1 GiB/ 14.4 GiB]  83% Done  11.8 MiB/s ETA 00:03:20         \|| [40/46 files][ 12.1 GiB/ 14.4 GiB]  84% Done  12.3 MiB/s ETA 00:03:12         // [40/46 files][ 12.1 GiB/ 14.4 GiB]  84% Done  11.8 MiB/s ETA 00:03:19         -\\ [40/46 files][ 12.2 GiB/ 14.4 GiB]  84% Done  11.7 MiB/s ETA 00:03:19         |// [40/46 files][ 12.2 GiB/ 14.4 GiB]  84% Done  12.0 MiB/s ETA 00:03:13         -- [40/46 files][ 12.2 GiB/ 14.4 GiB]  84% Done  12.1 MiB/s ETA 00:03:11         \|| [40/46 files][ 12.2 GiB/ 14.4 GiB]  84% Done  12.2 MiB/s ETA 00:03:08         /-- [40/46 files][ 12.2 GiB/ 14.4 GiB]  84% Done  12.8 MiB/s ETA 00:02:59         \\ [40/46 files][ 12.2 GiB/ 14.4 GiB]  84% Done  12.8 MiB/s ETA 00:02:58         |// [40/46 files][ 12.2 GiB/ 14.4 GiB]  84% Done  13.0 MiB/s ETA 00:02:54         -\\ [40/46 files][ 12.2 GiB/ 14.4 GiB]  84% Done  12.6 MiB/s ETA 00:02:59         || [40/46 files][ 12.3 GiB/ 14.4 GiB]  84% Done  12.6 MiB/s ETA 00:02:56         /-- [40/46 files][ 12.3 GiB/ 14.4 GiB]  85% Done  13.1 MiB/s ETA 00:02:49         \|| [40/46 files][ 12.3 GiB/ 14.4 GiB]  85% Done  13.1 MiB/s ETA 00:02:48         // [40/46 files][ 12.3 GiB/ 14.4 GiB]  85% Done  13.2 MiB/s ETA 00:02:46         -\\ [40/46 files][ 12.3 GiB/ 14.4 GiB]  85% Done  12.7 MiB/s ETA 00:02:51         \ [41/46 files][ 12.3 GiB/ 14.4 GiB]  85% Done  13.0 MiB/s ETA 00:02:47         |// [41/46 files][ 12.3 GiB/ 14.4 GiB]  85% Done  12.6 MiB/s ETA 00:02:52         -\\ [41/46 files][ 12.3 GiB/ 14.4 GiB]  85% Done  12.7 MiB/s ETA 00:02:49         || [41/46 files][ 12.4 GiB/ 14.4 GiB]  85% Done  13.0 MiB/s ETA 00:02:44         /-- [41/46 files][ 12.4 GiB/ 14.4 GiB]  85% Done  13.0 MiB/s ETA 00:02:43         \|| [41/46 files][ 12.4 GiB/ 14.4 GiB]  85% Done  13.6 MiB/s ETA 00:02:35         // [41/46 files][ 12.4 GiB/ 14.4 GiB]  85% Done  13.5 MiB/s ETA 00:02:35         -\\ [41/46 files][ 12.4 GiB/ 14.4 GiB]  85% Done  13.4 MiB/s ETA 00:02:35         || [41/46 files][ 12.4 GiB/ 14.4 GiB]  86% Done  12.9 MiB/s ETA 00:02:40         /-- [41/46 files][ 12.4 GiB/ 14.4 GiB]  86% Done  12.5 MiB/s ETA 00:02:45         \|| [41/46 files][ 12.4 GiB/ 14.4 GiB]  86% Done  12.4 MiB/s ETA 00:02:44         // [41/46 files][ 12.5 GiB/ 14.4 GiB]  86% Done  12.7 MiB/s ETA 00:02:40         -\\ [41/46 files][ 12.5 GiB/ 14.4 GiB]  86% Done  13.1 MiB/s ETA 00:02:33         || [41/46 files][ 12.5 GiB/ 14.4 GiB]  86% Done  13.6 MiB/s ETA 00:02:27         | [42/46 files][ 12.5 GiB/ 14.4 GiB]  86% Done  13.7 MiB/s ETA 00:02:25         /-- [42/46 files][ 12.5 GiB/ 14.4 GiB]  86% Done  13.0 MiB/s ETA 00:02:32         \\ [42/46 files][ 12.5 GiB/ 14.4 GiB]  86% Done  12.3 MiB/s ETA 00:02:41         |// [42/46 files][ 12.5 GiB/ 14.4 GiB]  86% Done  12.2 MiB/s ETA 00:02:41         -\\ [42/46 files][ 12.5 GiB/ 14.4 GiB]  86% Done  12.4 MiB/s ETA 00:02:37         || [42/46 files][ 12.6 GiB/ 14.4 GiB]  86% Done  12.3 MiB/s ETA 00:02:37         /-- [42/46 files][ 12.6 GiB/ 14.4 GiB]  87% Done  14.1 MiB/s ETA 00:02:16         \|| [42/46 files][ 12.6 GiB/ 14.4 GiB]  87% Done  14.8 MiB/s ETA 00:02:08         // [42/46 files][ 12.6 GiB/ 14.4 GiB]  87% Done  14.5 MiB/s ETA 00:02:11         -\\ [42/46 files][ 12.6 GiB/ 14.4 GiB]  87% Done  14.2 MiB/s ETA 00:02:12         |// [42/46 files][ 12.6 GiB/ 14.4 GiB]  87% Done  13.7 MiB/s ETA 00:02:15         -- [42/46 files][ 12.6 GiB/ 14.4 GiB]  87% Done  13.0 MiB/s ETA 00:02:22         \|| [42/46 files][ 12.6 GiB/ 14.4 GiB]  87% Done  12.7 MiB/s ETA 00:02:25         // [42/46 files][ 12.6 GiB/ 14.4 GiB]  87% Done  11.9 MiB/s ETA 00:02:34         -\\ [42/46 files][ 12.7 GiB/ 14.4 GiB]  87% Done  11.6 MiB/s ETA 00:02:37         |// [42/46 files][ 12.7 GiB/ 14.4 GiB]  87% Done  11.6 MiB/s ETA 00:02:35         -- [42/46 files][ 12.7 GiB/ 14.4 GiB]  87% Done  12.0 MiB/s ETA 00:02:29         \|| [42/46 files][ 12.7 GiB/ 14.4 GiB]  87% Done  12.2 MiB/s ETA 00:02:26         /-- [42/46 files][ 12.7 GiB/ 14.4 GiB]  88% Done  12.5 MiB/s ETA 00:02:21         \\ [42/46 files][ 12.7 GiB/ 14.4 GiB]  88% Done  13.0 MiB/s ETA 00:02:14         |// [42/46 files][ 12.7 GiB/ 14.4 GiB]  88% Done  13.4 MiB/s ETA 00:02:09         -\\ [42/46 files][ 12.8 GiB/ 14.4 GiB]  88% Done  13.6 MiB/s ETA 00:02:06         || [42/46 files][ 12.8 GiB/ 14.4 GiB]  88% Done  13.7 MiB/s ETA 00:02:05         /-- [42/46 files][ 12.8 GiB/ 14.4 GiB]  88% Done  14.0 MiB/s ETA 00:02:01         \|| [42/46 files][ 12.8 GiB/ 14.4 GiB]  88% Done  13.9 MiB/s ETA 00:02:01         // [42/46 files][ 12.8 GiB/ 14.4 GiB]  88% Done  13.8 MiB/s ETA 00:02:01         -\\ [42/46 files][ 12.8 GiB/ 14.4 GiB]  88% Done  14.0 MiB/s ETA 00:01:57         || [42/46 files][ 12.8 GiB/ 14.4 GiB]  88% Done  14.0 MiB/s ETA 00:01:57         /-- [42/46 files][ 12.9 GiB/ 14.4 GiB]  89% Done  14.1 MiB/s ETA 00:01:55         \|| [42/46 files][ 12.9 GiB/ 14.4 GiB]  89% Done  13.6 MiB/s ETA 00:01:58         // [42/46 files][ 12.9 GiB/ 14.4 GiB]  89% Done  13.0 MiB/s ETA 00:02:02         -\\ [42/46 files][ 12.9 GiB/ 14.4 GiB]  89% Done  12.6 MiB/s ETA 00:02:06         |// [42/46 files][ 12.9 GiB/ 14.4 GiB]  89% Done  12.4 MiB/s ETA 00:02:07         / [43/46 files][ 12.9 GiB/ 14.4 GiB]  89% Done  12.4 MiB/s ETA 00:02:06         -\\ [44/46 files][ 12.9 GiB/ 14.4 GiB]  89% Done  12.0 MiB/s ETA 00:02:10         || [44/46 files][ 12.9 GiB/ 14.4 GiB]  89% Done  12.3 MiB/s ETA 00:02:05         /-- [44/46 files][ 12.9 GiB/ 14.4 GiB]  89% Done  11.5 MiB/s ETA 00:02:13         \\ [44/46 files][ 13.0 GiB/ 14.4 GiB]  89% Done  11.5 MiB/s ETA 00:02:12         |// [44/46 files][ 13.0 GiB/ 14.4 GiB]  89% Done  11.4 MiB/s ETA 00:02:12         -- [44/46 files][ 13.0 GiB/ 14.4 GiB]  89% Done  10.4 MiB/s ETA 00:02:24         \|| [44/46 files][ 13.0 GiB/ 14.4 GiB]  89% Done  10.1 MiB/s ETA 00:02:28         /-- [44/46 files][ 13.0 GiB/ 14.4 GiB]  90% Done  11.5 MiB/s ETA 00:02:08         \\ [44/46 files][ 13.0 GiB/ 14.4 GiB]  90% Done  11.1 MiB/s ETA 00:02:12         |// [44/46 files][ 13.0 GiB/ 14.4 GiB]  90% Done  11.4 MiB/s ETA 00:02:08         -- [44/46 files][ 13.0 GiB/ 14.4 GiB]  90% Done  12.6 MiB/s ETA 00:01:54         \|| [44/46 files][ 13.0 GiB/ 14.4 GiB]  90% Done  12.7 MiB/s ETA 00:01:52         /-- [44/46 files][ 13.1 GiB/ 14.4 GiB]  90% Done  12.5 MiB/s ETA 00:01:53         \\ [44/46 files][ 13.1 GiB/ 14.4 GiB]  90% Done  12.2 MiB/s ETA 00:01:55         |// [44/46 files][ 13.1 GiB/ 14.4 GiB]  90% Done  12.0 MiB/s ETA 00:01:55         -\\ [44/46 files][ 13.1 GiB/ 14.4 GiB]  90% Done  12.2 MiB/s ETA 00:01:53         || [44/46 files][ 13.1 GiB/ 14.4 GiB]  90% Done  12.3 MiB/s ETA 00:01:51         /-- [44/46 files][ 13.1 GiB/ 14.4 GiB]  90% Done  12.5 MiB/s ETA 00:01:48         \|| [44/46 files][ 13.1 GiB/ 14.4 GiB]  90% Done  12.5 MiB/s ETA 00:01:47         // [44/46 files][ 13.1 GiB/ 14.4 GiB]  91% Done  11.8 MiB/s ETA 00:01:53         -\\ [44/46 files][ 13.2 GiB/ 14.4 GiB]  91% Done  11.4 MiB/s ETA 00:01:55         |// [44/46 files][ 13.2 GiB/ 14.4 GiB]  91% Done  11.3 MiB/s ETA 00:01:55         -- [44/46 files][ 13.2 GiB/ 14.4 GiB]  91% Done  11.1 MiB/s ETA 00:01:56         \|| [44/46 files][ 13.2 GiB/ 14.4 GiB]  91% Done  11.6 MiB/s ETA 00:01:50         // [44/46 files][ 13.2 GiB/ 14.4 GiB]  91% Done  12.0 MiB/s ETA 00:01:45         -\\ [44/46 files][ 13.2 GiB/ 14.4 GiB]  91% Done  12.4 MiB/s ETA 00:01:41         |// [44/46 files][ 13.2 GiB/ 14.4 GiB]  91% Done  12.3 MiB/s ETA 00:01:41         -- [44/46 files][ 13.2 GiB/ 14.4 GiB]  91% Done  12.2 MiB/s ETA 00:01:41         \|| [44/46 files][ 13.2 GiB/ 14.4 GiB]  91% Done  10.9 MiB/s ETA 00:01:52         /-- [44/46 files][ 13.3 GiB/ 14.4 GiB]  91% Done  10.3 MiB/s ETA 00:01:57         \\ [44/46 files][ 13.3 GiB/ 14.4 GiB]  91% Done  10.5 MiB/s ETA 00:01:54         |// [44/46 files][ 13.3 GiB/ 14.4 GiB]  92% Done  11.1 MiB/s ETA 00:01:46         -\\ [44/46 files][ 13.3 GiB/ 14.4 GiB]  92% Done  12.4 MiB/s ETA 00:01:34         || [44/46 files][ 13.3 GiB/ 14.4 GiB]  92% Done  12.7 MiB/s ETA 00:01:31         /-- [44/46 files][ 13.3 GiB/ 14.4 GiB]  92% Done  12.8 MiB/s ETA 00:01:29         \|| [44/46 files][ 13.3 GiB/ 14.4 GiB]  92% Done  12.0 MiB/s ETA 00:01:34         // [44/46 files][ 13.3 GiB/ 14.4 GiB]  92% Done  11.9 MiB/s ETA 00:01:35         -\\ [44/46 files][ 13.4 GiB/ 14.4 GiB]  92% Done  10.8 MiB/s ETA 00:01:43         |// [44/46 files][ 13.4 GiB/ 14.4 GiB]  92% Done  11.7 MiB/s ETA 00:01:33         -- [44/46 files][ 13.4 GiB/ 14.4 GiB]  92% Done  12.0 MiB/s ETA 00:01:31         \|| [44/46 files][ 13.4 GiB/ 14.4 GiB]  92% Done  12.8 MiB/s ETA 00:01:24         // [44/46 files][ 13.4 GiB/ 14.4 GiB]  92% Done  12.5 MiB/s ETA 00:01:25         -\\ [44/46 files][ 13.4 GiB/ 14.4 GiB]  92% Done  11.0 MiB/s ETA 00:01:35         |// [44/46 files][ 13.4 GiB/ 14.4 GiB]  93% Done  11.0 MiB/s ETA 00:01:34         -\\ [44/46 files][ 13.4 GiB/ 14.4 GiB]  93% Done  11.6 MiB/s ETA 00:01:28         || [44/46 files][ 13.4 GiB/ 14.4 GiB]  93% Done  12.0 MiB/s ETA 00:01:24         /-- [44/46 files][ 13.5 GiB/ 14.4 GiB]  93% Done  12.8 MiB/s ETA 00:01:17         \\ [45/46 files][ 13.5 GiB/ 14.4 GiB]  93% Done  14.3 MiB/s ETA 00:01:08         |// [45/46 files][ 13.5 GiB/ 14.4 GiB]  93% Done  14.3 MiB/s ETA 00:01:07         -\\ [45/46 files][ 13.5 GiB/ 14.4 GiB]  93% Done  13.9 MiB/s ETA 00:01:09         || [45/46 files][ 13.5 GiB/ 14.4 GiB]  93% Done  13.7 MiB/s ETA 00:01:08         /-- [45/46 files][ 13.5 GiB/ 14.4 GiB]  93% Done  13.2 MiB/s ETA 00:01:10         \|| [45/46 files][ 13.6 GiB/ 14.4 GiB]  93% Done  12.8 MiB/s ETA 00:01:11         // [45/46 files][ 13.6 GiB/ 14.4 GiB]  93% Done  13.1 MiB/s ETA 00:01:09         -\\ [45/46 files][ 13.6 GiB/ 14.4 GiB]  94% Done  12.8 MiB/s ETA 00:01:09         |// [45/46 files][ 13.6 GiB/ 14.4 GiB]  94% Done  12.6 MiB/s ETA 00:01:09         -- [45/46 files][ 13.6 GiB/ 14.4 GiB]  94% Done  12.4 MiB/s ETA 00:01:10         \|| [45/46 files][ 13.6 GiB/ 14.4 GiB]  94% Done  12.1 MiB/s ETA 00:01:10         // [45/46 files][ 13.6 GiB/ 14.4 GiB]  94% Done  11.6 MiB/s ETA 00:01:12         -\\ [45/46 files][ 13.6 GiB/ 14.4 GiB]  94% Done  12.1 MiB/s ETA 00:01:08         |// [45/46 files][ 13.6 GiB/ 14.4 GiB]  94% Done  12.7 MiB/s ETA 00:01:04         -\\ [45/46 files][ 13.7 GiB/ 14.4 GiB]  94% Done  13.7 MiB/s ETA 00:00:58         || [45/46 files][ 13.7 GiB/ 14.4 GiB]  94% Done  14.0 MiB/s ETA 00:00:55         /-- [45/46 files][ 13.7 GiB/ 14.4 GiB]  94% Done  14.1 MiB/s ETA 00:00:54         \|| [45/46 files][ 13.7 GiB/ 14.4 GiB]  94% Done  13.7 MiB/s ETA 00:00:55         // [45/46 files][ 13.7 GiB/ 14.4 GiB]  95% Done  13.1 MiB/s ETA 00:00:56         -\\ [45/46 files][ 13.7 GiB/ 14.4 GiB]  95% Done  12.2 MiB/s ETA 00:01:00         || [45/46 files][ 13.7 GiB/ 14.4 GiB]  95% Done  12.3 MiB/s ETA 00:00:58         /-- [45/46 files][ 13.8 GiB/ 14.4 GiB]  95% Done  12.1 MiB/s ETA 00:00:58         \|| [45/46 files][ 13.8 GiB/ 14.4 GiB]  95% Done  12.4 MiB/s ETA 00:00:55         // [45/46 files][ 13.8 GiB/ 14.4 GiB]  95% Done  12.2 MiB/s ETA 00:00:55         -\\ [45/46 files][ 13.8 GiB/ 14.4 GiB]  95% Done  12.2 MiB/s ETA 00:00:54         |// [45/46 files][ 13.8 GiB/ 14.4 GiB]  95% Done  12.5 MiB/s ETA 00:00:52         -- [45/46 files][ 13.8 GiB/ 14.4 GiB]  95% Done  12.4 MiB/s ETA 00:00:52         \|| [45/46 files][ 13.8 GiB/ 14.4 GiB]  95% Done  12.2 MiB/s ETA 00:00:51         // [45/46 files][ 13.8 GiB/ 14.4 GiB]  95% Done  12.6 MiB/s ETA 00:00:49         -\\ [45/46 files][ 13.8 GiB/ 14.4 GiB]  95% Done  12.9 MiB/s ETA 00:00:46         |// [45/46 files][ 13.9 GiB/ 14.4 GiB]  96% Done  13.0 MiB/s ETA 00:00:45         -- [45/46 files][ 13.9 GiB/ 14.4 GiB]  96% Done  14.2 MiB/s ETA 00:00:40         \|| [45/46 files][ 13.9 GiB/ 14.4 GiB]  96% Done  14.4 MiB/s ETA 00:00:38         /-- [45/46 files][ 13.9 GiB/ 14.4 GiB]  96% Done  14.2 MiB/s ETA 00:00:38         \\ [45/46 files][ 13.9 GiB/ 14.4 GiB]  96% Done  14.0 MiB/s ETA 00:00:38         |// [45/46 files][ 13.9 GiB/ 14.4 GiB]  96% Done  13.6 MiB/s ETA 00:00:38         -\\ [45/46 files][ 14.0 GiB/ 14.4 GiB]  96% Done  12.3 MiB/s ETA 00:00:41         || [45/46 files][ 14.0 GiB/ 14.4 GiB]  96% Done  12.6 MiB/s ETA 00:00:39         /-- [45/46 files][ 14.0 GiB/ 14.4 GiB]  96% Done  12.1 MiB/s ETA 00:00:39         \\ [45/46 files][ 14.0 GiB/ 14.4 GiB]  96% Done  11.9 MiB/s ETA 00:00:39         |// [45/46 files][ 14.0 GiB/ 14.4 GiB]  96% Done  11.1 MiB/s ETA 00:00:41         -\\ [45/46 files][ 14.0 GiB/ 14.4 GiB]  96% Done  10.9 MiB/s ETA 00:00:41         || [45/46 files][ 14.0 GiB/ 14.4 GiB]  97% Done  11.0 MiB/s ETA 00:00:39         /-- [45/46 files][ 14.0 GiB/ 14.4 GiB]  97% Done  10.9 MiB/s ETA 00:00:39         \|| [45/46 files][ 14.0 GiB/ 14.4 GiB]  97% Done  11.2 MiB/s ETA 00:00:36         // [45/46 files][ 14.0 GiB/ 14.4 GiB]  97% Done  11.3 MiB/s ETA 00:00:35         -\\ [45/46 files][ 14.1 GiB/ 14.4 GiB]  97% Done  11.1 MiB/s ETA 00:00:35         |// [45/46 files][ 14.1 GiB/ 14.4 GiB]  97% Done  11.2 MiB/s ETA 00:00:34         -- [45/46 files][ 14.1 GiB/ 14.4 GiB]  97% Done  12.1 MiB/s ETA 00:00:30         \|| [45/46 files][ 14.1 GiB/ 14.4 GiB]  97% Done  11.5 MiB/s ETA 00:00:31         // [45/46 files][ 14.1 GiB/ 14.4 GiB]  97% Done  11.8 MiB/s ETA 00:00:29         -\\ [45/46 files][ 14.1 GiB/ 14.4 GiB]  97% Done  11.8 MiB/s ETA 00:00:28         || [45/46 files][ 14.1 GiB/ 14.4 GiB]  97% Done  11.6 MiB/s ETA 00:00:27         /-- [45/46 files][ 14.1 GiB/ 14.4 GiB]  97% Done  11.5 MiB/s ETA 00:00:26         \|| [45/46 files][ 14.2 GiB/ 14.4 GiB]  98% Done  12.0 MiB/s ETA 00:00:24         /-- [45/46 files][ 14.2 GiB/ 14.4 GiB]  98% Done  11.9 MiB/s ETA 00:00:23         \\ [45/46 files][ 14.2 GiB/ 14.4 GiB]  98% Done  11.9 MiB/s ETA 00:00:22         |// [45/46 files][ 14.2 GiB/ 14.4 GiB]  98% Done  12.1 MiB/s ETA 00:00:21         -- [45/46 files][ 14.2 GiB/ 14.4 GiB]  98% Done  12.4 MiB/s ETA 00:00:19         \|| [45/46 files][ 14.2 GiB/ 14.4 GiB]  98% Done  12.8 MiB/s ETA 00:00:18         // [45/46 files][ 14.2 GiB/ 14.4 GiB]  98% Done  12.8 MiB/s ETA 00:00:17         -\\ [45/46 files][ 14.2 GiB/ 14.4 GiB]  98% Done  12.3 MiB/s ETA 00:00:17         |// [45/46 files][ 14.2 GiB/ 14.4 GiB]  98% Done  11.9 MiB/s ETA 00:00:16         -- [45/46 files][ 14.3 GiB/ 14.4 GiB]  98% Done  11.5 MiB/s ETA 00:00:16         \|| [45/46 files][ 14.3 GiB/ 14.4 GiB]  98% Done  10.5 MiB/s ETA 00:00:16         /-- [45/46 files][ 14.3 GiB/ 14.4 GiB]  98% Done   9.4 MiB/s ETA 00:00:18         \\ [45/46 files][ 14.3 GiB/ 14.4 GiB]  98% Done   8.5 MiB/s ETA 00:00:19         |// [45/46 files][ 14.3 GiB/ 14.4 GiB]  98% Done   7.1 MiB/s ETA 00:00:21         -\\ [45/46 files][ 14.3 GiB/ 14.4 GiB]  99% Done   6.7 MiB/s ETA 00:00:22         || [45/46 files][ 14.3 GiB/ 14.4 GiB]  99% Done   6.8 MiB/s ETA 00:00:20         /-- [45/46 files][ 14.3 GiB/ 14.4 GiB]  99% Done   6.8 MiB/s ETA 00:00:19         \|| [45/46 files][ 14.3 GiB/ 14.4 GiB]  99% Done   8.3 MiB/s ETA 00:00:14         // [45/46 files][ 14.3 GiB/ 14.4 GiB]  99% Done   9.6 MiB/s ETA 00:00:11         -\\ [45/46 files][ 14.4 GiB/ 14.4 GiB]  99% Done  10.2 MiB/s ETA 00:00:09         |// [45/46 files][ 14.4 GiB/ 14.4 GiB]  99% Done  10.6 MiB/s ETA 00:00:08         -- [45/46 files][ 14.4 GiB/ 14.4 GiB]  99% Done  11.1 MiB/s ETA 00:00:07         \|| [45/46 files][ 14.4 GiB/ 14.4 GiB]  99% Done  10.8 MiB/s ETA 00:00:06         /-- [45/46 files][ 14.4 GiB/ 14.4 GiB]  99% Done  10.5 MiB/s ETA 00:00:05         \\ [45/46 files][ 14.4 GiB/ 14.4 GiB]  99% Done  10.1 MiB/s ETA 00:00:04         |// [45/46 files][ 14.4 GiB/ 14.4 GiB]  99% Done   9.6 MiB/s ETA 00:00:03         -\\ [45/46 files][ 14.4 GiB/ 14.4 GiB]  99% Done   9.4 MiB/s ETA 00:00:03         || [45/46 files][ 14.4 GiB/ 14.4 GiB]  99% Done   8.6 MiB/s ETA 00:00:02         /-- [45/46 files][ 14.4 GiB/ 14.4 GiB]  99% Done   8.6 MiB/s ETA 00:00:01         \\ [46/46 files][ 14.4 GiB/ 14.4 GiB] 100% Done   8.2 MiB/s ETA 00:00:00         
+Operation completed over 46 objects/14.4 GiB.                                    
+[0:30:28] Still working on:
+[0:30:28]   src
+[0:30:38] Still working on:
+[0:30:38]   src
+[0:30:48] Still working on:
+[0:30:48]   src
+[0:30:58] Still working on:
+[0:30:58]   src
+[0:31:08] Still working on:
+[0:31:08]   src
+[0:31:18] Still working on:
+[0:31:18]   src
+[0:31:28] Still working on:
+[0:31:28]   src
+[0:31:38] Still working on:
+[0:31:38]   src
+[0:31:48] Still working on:
+[0:31:48]   src
+[0:31:58] Still working on:
+[0:31:58]   src
+[0:32:08] Still working on:
+[0:32:08]   src
+[0:32:18] Still working on:
+[0:32:18]   src
+[0:32:28] Still working on:
+[0:32:28]   src
+[0:32:38] Still working on:
+[0:32:38]   src
+[0:32:48] Still working on:
+[0:32:48]   src
+[0:32:58] Still working on:
+[0:32:58]   src
+[0:33:08] Still working on:
+[0:33:08]   src
+[0:33:18] Still working on:
+[0:33:18]   src
+[0:33:28] Still working on:
+[0:33:28]   src
+[0:33:38] Still working on:
+[0:33:38]   src
+[0:33:48] Still working on:
+[0:33:48]   src
+[0:33:58] Still working on:
+[0:33:58]   src
+[0:34:08] Still working on:
+[0:34:08]   src
+[0:34:09] Still working on:
+[0:34:09]   src
+[0:34:09] Still working on:
+[0:34:09]   src
+
+WARNING: 'src\third_party\libphonenumber\dist' is no longer part of this client.
+It is recommended that you manually remove it or use 'gclient sync -D' next time.
+
+WARNING: 'src\third_party\ink_stroke_modeler\src' is no longer part of this client.
+It is recommended that you manually remove it or use 'gclient sync -D' next time.
+
+WARNING: 'src\third_party\engflow-reclient-configs' is no longer part of this client.
+It is recommended that you manually remove it or use 'gclient sync -D' next time.
+
+WARNING: 'src\third_party\dawn\third_party\dxc' is no longer part of this client.
+It is recommended that you manually remove it or use 'gclient sync -D' next time.
+
+WARNING: 'src\third_party\catapult\third_party\webpagereplay' is no longer part of this client.
+It is recommended that you manually remove it or use 'gclient sync -D' next time.
+________ running 'python3 src/electron/script/apply_all_patches.py src/electron/patches/config.json' in 'C:\electron'
+[perfetto] No patches to apply in src/third_party/perfetto
+[libaddressinput] Applying: fix: include format_element.h for FormatElement completeness
+warning: unable to find all commit-graph files
+[squirrel.mac] Applying: build: add GN config
+[squirrel.mac] Applying: fix: don't leave a broken app behind when an install is interrupted (#335)
+[ReactiveObjC] Applying: build: conditionally import EXT headers from framework or from relative path
+[ReactiveObjC] Applying: chore: explicitly cast LONG_MAX to double
+warning: unable to find all commit-graph files
+[boringssl] Applying: expose ripemd160
+[boringssl] Applying: feat: expose several extra cipher functions
+[webrtc] Applying: fix: Handle PipeWire capturer initialization and management
+[sqlite] Applying: fix: rename sqlite win32 exports to avoid conflicts with Node.js
+[nan] Applying: fix: correct usages of v8::ReturnValue<void>::Set[NonEmpty] for new API
+[nan] Applying: fix: replace usage of removed WriteUtf8 with WriteUtf8V2
+[nan] Applying: test: use v8 version check instead of node version check
+[nan] Applying: fix: remove deprecated PropertyCallbackInfo::Holder()
+[nan] Applying: fix deprecation of v8::Context and v8::Object API methods
+[nan] Applying: Remove AccessControl enum for v8 14.4.59
+[nan] Applying: chore: add .yarnrc.yml and yarn.lock file to use yarn v4
+[nan] Applying: chore: handle deprecation of v8::ReturnValue<void>::Set(Local<S>)
+[nan] Applying: chore: handle removal of v8::PropertyCallbackInfo<T>::This()
+[nan] Applying: fix: add ExternalPointerTypeTag to v8::External API calls
+[nan] Applying: 8236212: [api] Remove deprecated methods, pt.2
+C:\electron\src\electron\script\apply_all_patches.py:20: UserWarning: repo not found: src/third_party/minigbm/src
+  warnings.warn(f'repo not found: {repo}')
+[ffmpeg] Applying: fix: link with @loader_path/libffmpeg.dylib
+[ffmpeg] Applying: avformat/mov: zero uninitialized tts_data realloc slack
+[ffmpeg] Applying: avcodec/h264_slice: reset next_output_pic
+[ffmpeg] Applying: avformat/mov: keep frag_index.current on its fragment in update_frag_index()
+[ffmpeg] Applying: avformat/mov: clamp tts_count to index entry count in mov_read_trun
+[pdfium] Applying: Construct array at once in CJS_Global::EnumProperties
+[pdfium] Applying: Avoid const_cast when repairing malformed JPEG input data
+[pdfium] Applying: Handle re-entrancy during form field focus transitions
+[pdfium] Applying: Make ~CFXJSE_FormCalcContext() clear internal binding of value_
+[skia] Applying: [ganesh] Handle deferred writePixels failure
+[skia] Applying: [M157] [Vulkan] Sleep after device lost on certain GPUs
+[skia] Applying: [M156] [ganesh] Fix skew matrix multiply in EllipticalRRectOp and avoid self intersections
+[skia] Applying: Add unit tests for anisotropically scaled/rotated stroked rrects
+[skia] Applying: [M157] [Ganesh] Initialize fCurrentRenderPass in GrVkOpsRenderPass.
+[chromium] warning: unable to find all commit-graph files
+[dawn] .git/rebase-apply/patch:200: new blank line at EOF.
+[dawn] +
+[dawn] .git/rebase-apply/patch:272: new blank line at EOF.
+[dawn] +
+[dawn] .git/rebase-apply/patch:330: new blank line at EOF.
+[dawn] +
+[dawn] .git/rebase-apply/patch:803: new blank line at EOF.
+[dawn] +
+[dawn] .git/rebase-apply/patch:861: new blank line at EOF.
+[dawn] +
+[dawn] warning: 5 lines add whitespace errors.
+[dawn] Applying: Split buffer<->texture copies to work around Intel row-pitch limitation
+[dawn] Applying: [M157] Enable SplitBufferTextureCopyForOversizedRow on ARM, ImgTec, and Qualcomm
+[dawn] Applying: [M157] Fix use-after-free for empty buffer/texture copy workarounds
+[dawn] Applying: [dawn][vk] Allow querying and filtering on Vulkan device/driver UUIDs.
+[dawn] Applying: [native] Fix shared memory EndAccess after device loss/destruction.
+[dawn] Applying: [opengl] Check for unchecked GL errors before data is app-visible
+[dawn] Applying: [opengl] Check for GPU resets before data is app-visible
+[dawn] Applying: [ir] Clamp workgroup runtime-sized arrays
+[dawn] Applying: [dawn][vk] Handle noop draw for AddWorkToEmptyPass workaround.
+[dawn] Applying: [ir] Fix broken robustness tests
+[angle] Applying: Translator: Fix name collision for long struct names
+[angle] Applying: GL: Double clear for robust resource init on Mali and Adreno
+[angle] Applying: GL: add defer_gl_delete_buffers workaround.
+[angle] Applying: [M156] Translator: Wrap struct constructors after init
+[angle] Applying: Translator: Validate constructor size after array inference
+[angle] Applying: Translator: Work around monomorphizer crash vs comma corner case
+[angle] Applying: [M157] Vulkan: Reject non-8-bit cross-format transfers in CopyTexture
+[angle] Applying: [M157] D3D11: Reject mixed 3D/non-3D and overlapping layers
+[angle] Applying: [M157]D3D11: Fix source coordinate clamping in StretchedBlitNearest
+[angle] Applying: Translator: Rename variables that are extracted from switch
+[angle] Applying: Translator: Apply loop-forward-progress transform to PowerVR
+[angle] Applying: Translator: Even more finite loop detection bugfixes
+[angle] Applying: Vulkan: Fix enabling ensureLoopForwardProgress
+[angle] Applying: Translator: Move AST rebuild code out of ASSERT
+[angle] Applying: Translator: Fix constant switch folding vs length()
+[angle] Applying: D3D11: Clip readPixels area to render target subresource bounds
+[angle] Applying: GL: Avoid FBO driver hash collisions
+[angle] Applying: D3D11: Clamp constant buffer range size and offset
+[angle] Applying: Vulkan: Include noncoherent atom size alignment
+[angle] warning: disabling bitmap writing, as some objects are not being packed
+[v8] Applying: build: warn instead of abort on builtin PGO profile mismatch
+[v8] Applying: src: use legacy trace macros in perfetto to support all phases
+[v8] Applying: fix: allow embedder slots of non-API objects in snapshot serialization
+[v8] Applying: [wasm] Match source URL when reusing cached Scripts in WasmEngine
+[v8] Applying: [maglev] Only treat PREVIOUS_INDEX loads from InitialValue as non-aliasing
+[v8] Applying: [runtime] Fix TOCTOU with FastKeyAccumulator::may_have_elements_ and GSABs
+[v8] Applying: [parser] Parse dynamic import arguments as AssignmentExpression
+[v8] Applying: [parser] Preserve strict arrow parameter errors across nested parens
+[v8] Applying: [parser] Validate non-arrow call arguments as expressions
+[v8] Applying: [parser] Parse yield operand as AssignmentExpression
+[v8] Applying: [parser] Preserve strict parameter errors when reparsing lazy arrow functions
+[v8] Applying: [parser] Consolidate and remove redundant AcceptINScopes
+[v8] Applying: [preparser] Validate formal parameters even when body has syntax error
+[v8] Applying: [parser] Validate non-pattern sub-expressions in patterns and arrow heads
+[v8] Applying: [parser] Fix error validation in object rest/spread properties
+[v8] Applying: [parser] Report kStrictEvalArguments in destructuring sub-patterns
+[v8] Applying: [parser] Parse bracketed property keys and template spans as expressions
+[v8] Applying: [parser] Validate expression before rewriting invalid for-in/of LHS
+[v8] Applying: [parser] Fix arrow head declaration and pattern error validation
+[v8] Applying: [parser] Check IsIdentifier for `for (async of ...)` restriction
+[v8] Applying: [parser] Validate expression errors before rewriting invalid LHS
+[v8] Applying: [parser] Restrict arrow cover-grammar extensions to arrow head scopes
+[v8] Applying: Reland "[parser] Only classify arrow parameters and set initializers in arrow heads"
+[v8] Applying: [interpreter] Avoid emitting switches and jump tables in dead code
+[v8] Applying: [maglev] DCHECK ContextScopeInfo invariants across control flow
+[v8] Applying: [termination exception] Don't swallow termination exceptions in IteratorClose
+[v8] Applying: [intl] Bound BigInt and decimal string inputs to NumberFormat
+[v8] Applying: [M156] [ic] Fix the megamorphic cache variant of the DefineNamedOwn-inside-class bug
+[v8] Applying: [runtime] Add a test ensuring we don't generate const properties for keyed properties in inappropriate places
+[v8] Applying: [compiler] Ignore stale kReceiver call feedback on non-apply calls
+[v8] Applying: [maglev] Use WithFallback in VisitIntrinsicAsyncFunctionAwait
+[v8] Applying: [regexp] Propagate Trace::Flush errors
+[v8] Applying: [profiler] Relax AllocationNode name DCHECK for script functions
+[v8] Applying: [wasm][turboshaft] Fix AssertNotNullTypecheck and WasmTypeCheckOp effects
+[v8] Applying: Lower default stack size on Android
+[v8] Applying: [regexp] Don't share results cache entries with captures across realms
+[v8] Applying: [wasm] Fix Proxy-on-Prototype trap lookup on handler prototype
+[v8] warning: disabling bitmap writing, as some objects are not being packed
+[node] Applying: build: add GN build files
+[node] Applying: Pass all globals through "require"
+[node] Applying: build: modify js2c.py to allow injection of original-fs and custom embedder JS
+[node] Applying: fix: handle BoringSSL and OpenSSL incompatibilities
+[node] Applying: feat: add UV_LOOP_INTERRUPT_ON_IO_CHANGE option to uv_loop_configure
+[node] Applying: support V8 sandboxed pointers
+[node] Applying: build: ensure native module compilation fails if not using a new enough builder
+[node] Applying: fix: expose the built-in electron module via the ESM loader
+[node] Applying: chore: expose ImportModuleDynamically and HostInitializeImportMetaObjectCallback to embedders
+[node] Applying: fix: do not resolve electron entrypoints
+[node] Applying: fix: allow passing fileExists fn to legacyMainResolve
+[node] Applying: chore: disable deprecation ftbfs in simdjson header
+[node] Applying: build: allow unbundling of Node.js dependencies
+[node] Applying: build: use Chromium's crdtp std::string traits
+[node] Applying: refactor: attach cppgc heap on v8::Isolate creation
+[node] Applying: fix: expose ReadFileSync override for modules
+[node] Applying: test: accomodate V8 thenable stack trace change in snapshot
+[node] Applying: chore: exclude electron_node folder from exit-time-destructors
+[node] Applying: Remove deprecated `GetIsolate`
+[node] Applying: fix: redefined macos sdk header symbols
+[node] Applying: Delete deprecated fields on v8::Isolate
+[node] Applying: Promote deprecation of v8::Context and v8::Object API methods
+[node] Applying: fix: ensure TraverseParent bails on resource path exit
+[node] Applying: Reland "[temporal] Unflag Temporal"
+[node] Applying: src: refactor module_wrap.cc to update FixedArray::Get params
+[node] Applying: src: refactor WasmStreaming::Finish to accept a callback
+[node] Applying: src: stop using `v8::PropertyCallbackInfo<T>::This()`
+[node] Applying: fix: add ExternalPointerTypeTag to v8::External API calls
+[node] Applying: test: update V8 serialization wire format version to 16
+[node] Applying: electron: build-time V8 code cache for the electron/js2c bundles
+[node] Applying: electron: enable node startup snapshot generation in Chromium's V8
+[node] Applying: fix: preserve node symbols and vtables under thinlto
+[node] Applying: chore: cast const away when freeing uv_cpu_info_t.model
+[node] Applying: chore: silence sqlite sign-compare warnings
+[node] Applying: inspector: adapt to crdtp Dispatchable API change
+[node] Applying: fix: use a dedicated CppHeapPointerTag for cppgc wrappables
+[node] Applying: src: stop using removed v8 promise reject events
+[node] Applying: src: stop using deprecated Get/SetPrototypeV2 and HolderV2
+[node] Applying: [v8] Prepare for migrating v8::MicrotaskQueue to cppgc
+[node] Applying: fix: don't arm delayed worker task timers after the platform's StopTask ran
+[node] Applying: inspector: defer remaining JS execution from V8 interrupts
+[node] Applying: src: migrate to setter/definer interceptor callbacks returning v8::Boolean
+[node] Applying: src: adapt async_context_frame to CPED API returning v8::Data
+[node] Applying: build: perfetto-sdk
+[node] Applying: lib: add perfetto support
+[node] Applying: src: fix trace macro compatibility
+[node] Applying: src: add perfetto trace agent
+[node] Applying: src: fix perfetto build on GetTraceFilePath
+[node] Applying: src,test: disable trace events tests when perfetto is enabled
+[node] Applying: test: account for libc++ rm error on Electron Linux
+[node] Applying: fix: use embedder perfetto client when available
+[node] Applying: src: fix external reference registration for new CFunction lifetime
+[node] Applying: fix: do not pass removed JSPI V8 flag
+[node] Applying: fix: allow Electron's linked bindings under the permission model
+[node] Applying: test: drop removed wasm rab integration flag
+[node] Applying: test: skip rmSync permission error test when running as root
+[node] Applying: test: skip openssl config test under BoringSSL
+[node] Applying: tls: adapt the upstream SPKI blocklist for Electron
+[node] warning: disabling bitmap writing, as some objects are not being packed
+[chromium] Applying: build_gn.patch
+[chromium] Applying: build: resolve PGO profiles from Electron state files
+[chromium] Applying: fix: improve shortcut text of Accelerator
+[chromium] Applying: blink_local_frame.patch
+[chromium] Applying: can_create_window.patch
+[chromium] Applying: disable_hidden.patch
+[chromium] Applying: dom_storage_limits.patch
+[chromium] Applying: render_widget_host_view_mac.patch
+[chromium] Applying: gin_enable_disable_v8_platform.patch
+[chromium] Applying: feat: enable setting aspect ratio to 0
+[chromium] Applying: boringssl BUILD.gn
+[chromium] Applying: gtk_visibility.patch
+[chromium] Applying: resource_file_conflict.patch
+[chromium] Applying: scroll_bounce_flag.patch
+[chromium] Applying: chore: revert [OSCrypt] Remove sync backend
+[chromium] Applying: mas: avoid private macOS API usage
+[chromium] Applying: add DidInstallConditionalFeatures
+[chromium] Applying: desktop_media_list.patch
+[chromium] Applying: proxy_config_monitor.patch
+[chromium] Applying: gritsettings_resource_ids.patch
+[chromium] Applying: isolate_holder.patch
+[chromium] Applying: notification_provenance.patch
+[chromium] Applying: dump_syms.patch
+[chromium] Applying: command-ismediakey.patch
+[chromium] Applying: printing.patch
+[chromium] Applying: support_mixed_sandbox_with_zygote.patch
+[chromium] Applying: build_add_electron_tracing_category.patch
+[chromium] Applying: worker_context_will_destroy.patch
+[chromium] Applying: frame_host_manager.patch
+[chromium] Applying: crashpad_pid_check.patch
+[chromium] Applying: network_service_allow_remote_certificate_verification_logic.patch
+[chromium] Applying: add_contentgpuclient_precreatemessageloop_callback.patch
+[chromium] Applying: feat: enable picture in picture mode for video players
+[chromium] Applying: fix: disabling compositor recycling
+[chromium] Applying: allow new privileges in unsandboxed child processes
+[chromium] Applying: expose SetUserAgent on NetworkContext
+[chromium] Applying: add WebMessagePortConverter::EntangleAndInjectMessagePortChannel
+[chromium] Applying: ignore_rc_check.patch
+[chromium] Applying: remove usage of incognito APIs in the spellchecker
+[chromium] Applying: allow disabling blink scheduler throttling per RenderView
+[chromium] Applying: hack plugin response interceptor to point to electron
+[chromium] Applying: feat: add support for overriding the base spellchecker download URL
+[chromium] Applying: feat: enable off-screen rendering with viz compositor
+[chromium] Applying: feat: allow embedders to add observers on created hunspell dictionaries
+[chromium] Applying: allow in-process windows to have different web prefs
+[chromium] Applying: refactor: expose cursor changes to the WebContentsObserver
+[chromium] Applying: upload_list: add LoadSync method
+[chromium] Applying: Allow setting secondary label via SimpleMenuModel
+[chromium] Applying: feat: add streaming-protocol registry to multibuffer_data_source
+[chromium] Applying: Adjust accessibility_ui for Electron
+[chromium] Applying: feat: add hook to notify script ready from WorkerScriptController
+[chromium] Applying: chore: provide IsWebContentsCreationOverridden with full params
+[chromium] Applying: fix: export zlib symbols
+[chromium] Applying: web_contents.patch
+[chromium] Applying: fix: also propagate fullscreen state for outer frame
+[chromium] Applying: build_libc++_as_static_library
+[chromium] Applying: only create a console if logging to stderr
+[chromium] Applying: fix: media key usage with globalShortcuts
+[chromium] Applying: feat: expose raw response headers from URLLoader
+[chromium] Applying: extend ProcessSingleton
+[chromium] Applying: add ui::ScopedCliboardWriter::WriteUnsafeRawData
+[chromium] Applying: feat: Add data parameter to ProcessSingleton
+[chromium] Applying: fix: adapt exclusive_access for electron needs
+[chromium] Applying: fix: non-client mouse tracking and message bubbling on windows
+[chromium] Applying: build: make libcxx_abi_unstable false for electron
+[chromium] Applying: Make gtk::GetLibGdkPixbuf and gtk::GetLibGdk public
+[chromium] Applying: custom_protocols_plzserviceworker.patch
+[chromium] Applying: feat: filter out non-shareable windows in the current application in ScreenCaptureKitDevice
+[chromium] Applying: short-circuit permissions checks in MediaStreamDevicesController
+[chromium] Applying: chore: add electron deps to gitignores
+[chromium] Applying: chore: modify chromium handling of mouse events
+[chromium] Applying: add electron deps to license credits file
+[chromium] Applying: fix: crash loading non-standard schemes in iframes
+[chromium] Applying: Create browser v8 snapshot file name fuse
+[chromium] Applying: feat: configure launch options for service process
+[chromium] Applying: feat: ensure mas builds of the same application can use safestorage
+[chromium] Applying: fix: on-screen-keyboard hides on input blur in webview
+[chromium] Applying: fix: Adjust caption-removing style call
+[chromium] Applying: build: allow electron to use exec_script
+[chromium] Applying: chore: introduce blocking api for //electron
+[chromium] Applying: chore: patch out partition attribute DCHECK for webviews
+[chromium] Applying: chore: patch out Profile methods
+[chromium] Applying: add gin::Converter support for ArrayBufferView
+[chromium] Applying: refactor: expose HostImportModuleDynamically and HostGetImportMetaProperties to embedders
+[chromium] Applying: feat: expose DocumentLoader::SetDefersLoading on WebDocumentLoader
+[chromium] Applying: allow disabling throttling in the `viz::DisplayScheduler` per `ui::Compositor`
+[chromium] Applying: fix: select the first menu item when opened via keyboard
+[chromium] Applying: fix: return v8::Value from LocalFrame::RequestExecuteScript
+[chromium] Applying: fix: use delegated generic capturer when available
+[chromium] Applying: expose WebBlob::Path to allow embedders to get file paths
+[chromium] Applying: fix: move AutoPipSettingsHelper behind branding buildflag
+[chromium] Applying: Revert "Remove the AllowAggressiveThrottlingWithWebSocket feature."
+[chromium] Applying: feat: allow passing of ObjectTemplate to ObjectTemplateBuilder
+[chromium] Applying: chore: remove CHECK_IS_TEST on script injection tracker
+[chromium] Applying: Enable V8 code cache for custom schemes
+[chromium] Applying: refactor: expose file system access blocklist
+[chromium] Applying: feat: add support for missing dialog features to //shell_dialogs
+[chromium] Applying: feat: enable passing exit code on service process crash
+[chromium] Applying: chore: remove reference to //chrome/browser/themes
+[chromium] Applying: build: allow electron mojom interfaces to depend on blink mojom_platform
+[chromium] Applying: Remove DXGI GMB keyed-mutex
+[chromium] Applying: feat: allow usage of SCContentSharingPicker on supported platforms
+[chromium] Applying: chore: partial revert of https://chromium-review.googlesource.com/c/chromium/src/+/5894233
+[chromium] Applying: fix: adjust headless mode handling in native widget
+[chromium] Applying: refactor: unfilter unresponsive events
+[chromium] Applying: feat: Corner Smoothing CSS rule and Blink painting
+[chromium] Applying: build: add public config simdutf_config
+[chromium] Applying: fix: handle embedder windows shown after WebContentsViewCocoa attach
+[chromium] Applying: feat: add signals when embedder cleanup callbacks run for gin::wrappable
+[chromium] Applying: feat: separate content settings callback for sync and async clipboard
+[chromium] Applying: fix: re-enable synchronous spellcheck on Windows
+[chromium] Applying: chore: "grandfather in" Electron Views and Delegates
+[chromium] Applying: refactor: patch electron PermissionTypes into blink
+[chromium] Applying: fix: resolve dynamic background material update issue on Windows 11
+[chromium] Applying: feat: add support for embedder snapshot validation
+[chromium] Applying: chore: restore some deprecated wrapper utility in gin
+[chromium] Applying: chore: expose isolate parameter in script lifecycle observers
+[chromium] Applying: Revert: partial "Remove unused PreHandleMouseEvent"
+[chromium] Applying: Allow electron to depend on components/os_crypt/sync.
+[chromium] Applying: Expose ReferrerScriptInfo::HostDefinedOptionsIndex
+[chromium] Applying: fix: check for file existence before setting mtime
+[chromium] Applying: fix: allow setting tray id
+[chromium] Applying: expose GTK UI platform field
+[chromium] Applying: patch: osr control screen info
+[chromium] Applying: refactor: allow customizing config in FreedesktopSecretKeyProvider
+[chromium] Applying: fix: set correct app id on Linux
+[chromium] Applying: feat: plumb node_integration_in_worker through WorkerSettings
+[chromium] Applying: fix: use fresh LazyNow for OnEndWorkItemImpl after DidRunTask
+[chromium] Applying: fix: pulseaudio stream and icon names
+[chromium] Applying: fix: fire MENU_POPUP_START for dynamically created ARIA menus
+[chromium] Applying: feat: allow enabling extensions on custom protocols
+[chromium] Applying: fix: initialize COM on DesktopMediaListCaptureThread on Windows
+[chromium] Applying: chore: register node as a dynamic trace category prefix
+[chromium] Applying: fix: make macOS text replacement work on `contenteditable`
+[chromium] Applying: fix: allow reentrancy on DownloadManagerImpl observer list
+[chromium] Applying: fix: add ShouldUseBundledFrontendResources delegate for remote debugging
+[chromium] Applying: fix: constrain AllowUniversalAccessFromFileURLs to file: origins in agent assignment
+[chromium] Applying: fix: add ReinitializeGeneratedCodeCacheContext to StoragePartitionImpl
+[chromium] Applying: feat: carry embedder startup data in CreateNewWindowReply
+[chromium] Applying: feat: deliver service worker preload data via EmbeddedWorkerStartParams
+[chromium] Applying: buil.git/rebase-apply/patch:142: new blank line at EOF.
+[chromium] +
+[chromium] .git/rebase-apply/patch:155: new blank line at EOF.
+[chromium] +
+[chromium] .git/rebase-apply/patch:168: new blank line at EOF.
+[chromium] +
+[chromium] .git/rebase-apply/patch:181: new blank line at EOF.
+[chromium] +
+[chromium] .git/rebase-apply/patch:192: new blank line at EOF.
+[chromium] +
+[chromium] warning: squelched 7 whitespace errors
+[chromium] warning: 12 lines add whitespace errors.
+[chromium] d: allow resource allowlist generation for Linux and macOS
+[chromium] Applying: build: disable LLVM unroll-add-parallel-reductions on Apple targets
+[chromium] Applying: fix: guard WebstorePrivateApi factory against null delegate
+[chromium] Applying: Allow authenticator responses to override client_data_json
+[chromium] Applying: dbus: Let embedders exit cleanly when the bus connection is lost
+[chromium] Applying: chore: let the embedder handle shared D-Bus disconnects
+[chromium] Applying: Remove `CR_XCODE_BUILD` define from `BUILD.gn`
+[chromium] Applying: chore: add to UBSan ignorelists
+[chromium] Applying: Revert "Remove the feature flag kDropInputEventsWhilePaintHolding"
+[chromium] Applying: fix: disable enable_resource_allowlist_generation on windows
+[chromium] Applying: fix: fall back to an unlocalized Touch ID prompt reason when the string is empty
+[chromium] Applying: Revert "Only preload SwiftShader in GPU sandbox init when allowed"
+[chromium] Applying: fix: use a private D-Bus connection for each status icon
+[chromium] Applying: [WebHID][WebUSB] Pass the frame to CanRequestDevicePermission()
+[chromium] Applying: [WebHID][WebUSB] Key document services on the requesting frame's origin
+[chromium] Applying: fix: restore snap-compatible dbusmenu object path
+[chromium] Applying: fix: allow any exit code in BrowserMainRunner::SetOverrideResultCode
+[chromium] Applying: gin: Copy ASCII one-byte strings out directly in Converter<std::string>
+[chromium] Applying: gin: Mark Invoker as stack allocated and drop raw_ptr for its Arguments
+[chromium] Applying: fix: gate webstorePrivate on a delegated availability check
+[chromium] Applying: build: drop the unused //chrome/browser/win dep from color mixers
+[chromium] Applying: fix: plumb the requesting frame through pointer lock requests
+[chromium] Applying: fix: find-in-page frame traversal across inner WebContents
+[chromium] Applying: Test and fix for ShadowRealm last resort full gc crash
+[chromium] Applying: fix: deliver clicks that another process posts to a background app
+[chromium] Applying: [tracing] Let TracingControllerImpl start from a perfetto config
+[chromium] Applying: Restore mouse cursor for native dialogs on Windows
+[chromium] Applying: Revert GTK module pinning on Linux
+[chromium] Applying: ServiceWorker: Drop ServiceWorkerMainResourceHandle for CSP-sandboxed workers
+[chromium] Applying: fix: avoid misaligned char16_t reads in crdtp string deserialization
+[chromium] Applying: feat: let the host of a remote NSWindow set more of its behavior
+[chromium] Applying: [X11] Restore timeout for in-flight selection requests
+[chromium] Applying: fix: handle a null pending call in dbus::ObjectProxy
+[chromium] Applying: views: Defer MenuRunnerImpl destruction when released in OnMenuClosed
+[chromium] Applying: views: Deduplicate deferred destruction in MenuRunnerImpl::OnMenuClosed
+[chromium] Applying: [ozone/wayland] Do not export toplevels that have no role
+[chromium] Applying: Redact opaque script positions in LoAF promise attribution
+[chromium] Applying: [GPU Security] Restore texture bindings on every GLES2 draw exit path
+[chromium] Applying: [WebCodecs] Create flush() promises in the caller's realm
+[chromium] Applying: Block WebSocketConnector creation in PDF renderer processes
+[chromium] Applying: gpu: Zero-initialize the offscreen backbuffer in ResizeOffscreenFramebuffer
+[chromium] Applying: Guard against re-hashing in SVGResource::ResourceContainer
+[chromium] Applying: Synchronize form control autofill state with suggested values
+[chromium] Applying: [Clear-Site-Data] Prevent cross-site fetch clearing unpartitioned data
+[chromium] Applying: [GPU Security] Improve GPU fence handle validation and lifetime.
+[chromium] Applying: Unregister AnimationFrameTimingMonitor from CoreProbeSink on Shutdown
+[chromium] Applying: Guard OnWorkerTaskCompleted and clear Member fields on Shutdown
+[chromium] Applying: idle: Reject opaque origins in IdleManagerImpl::HasPermission
+[chromium] Applying: [HiC] Supress paint invalidation of spell/grammar markers in canvas subtree
+[chromium] Applying: [M156] Disallow percentage in calc() for <length>
+[chromium] Applying: [PDF] Do not expose PDF extension frames during script execution
+[chromium] Applying: CacheStorage: Treat opaque responses as credentialed for CORP
+[chromium] Applying: Fix BrowserInterfaceBrokerImpl and MojoBinderPolicyApplier lifetime with kLazyBrowserInterfaceBroker
+[chromium] Applying: Treat ORB-blocked media responses as CORS cross-origin
+[chromium] Applying: Don't retry ORB-blocked media range requests
+[chromium] Applying: [HiC] Use unvisited color for image map focus rings
+[chromium] Applying: [scheduler] Unregister microtask cal.git/rebase-apply/patch:79: new blank line at EOF.
+[chromium] +
+[chromium] warning: 1 line adds whitespace errors.
+[chromium] lback in ~EventLoop
+[chromium] Applying: gpu: Verify context restore after using the passthrough shared context
+[chromium] Applying: Crash on incrementing counter overflow in cc animations
+[chromium] Applying: Ignore OpenURL requests without a frame tree id during prerendering
+[chromium] Applying: Fix bugs when worker terminates during MediaSource attachment
+[chromium] Applying: Ensure GatherObservations references remain safe to use
+[chromium] Applying: Let CSSParser::ParseFont() parse the shorthand directly
+[chromium] Applying: [HiC] Suppress snapshot generation for drawables in top layer
+[chromium] Applying: [html-in-canvas] Keep MailboxTextureBacking single-threaded
+[chromium] Applying: [html-in-canvas] Harden VideoTextureBacking
+[chromium] Applying: Avoid holding Attribute& across WillModifyAttribute()
+[chromium] Applying: [M156] Check navigation lifetime before handling URL override exceptions
+[chromium] Applying: [M156] [PiP] Prevent UAF in EnterVideoPictureInPicture on Document PiP child
+[chromium] Applying: Prevent Range::expand() from crossing shadow boundaries
+[chromium] Applying: [Web Bundles] Support signature-based SRI.
+[chromium] Applying: Key media UrlIndex by requesting SecurityOrigin
+[chromium] Applying: [Permissions] Do not use the visible URL for opaque main frame origins
+[chromium] Applying: [agy][gfx] CHECK buffer dimensions in gbm_wrapper
+[chromium] Applying: [M157] Use WindowTracker in NativeWindowOcclusionTrackerWin
+[chromium] Applying: Printing: Upgrade a DCHECK() in PrintRenderFrameHelper
+[chromium] Applying: [M157] [HiC] Protect against illegal layer modification during WillCommit
+[chromium] Applying: [M157] [Views] Guard against menu items being deleted mid-insertion.
+[chromium] Applying: [M156] Serialize CSSUnparsedValue directly in toString
+[chromium] Applying: [M156] Do not composite backdrop-filter animations with reference filters
+[chromium] Applying: Forbid AnimationTrigger behavior map mutations during compositor updates
+[chromium] Applying: Harden Element attribute mutation methods against re-entrant changes
+[chromium] Applying: [views] Skip SetWindowDisplayAffinity for unchanged or hidden windows
+[chromium] Applying: Reland "viz: Don't propose the same rounded-display mask candidate twice"
+[chromium] Applying: gpu: Check GL errors before marking CopySharedImage dest cleared
+[chromium] Applying: gpu: Check GL errors before marking WebGPU Skia-fallback images cleared
+[chromium] Applying: gpu: Check GL errors before marking passthrough shared image cleared
+[chromium] Applying: Add entries to the SPKI blocklist
+[chromium] Applying: WebGL2: Suppress framebuffer-render-to-layer.html on Windows D3D11
+[chromium] Applying: [M157] [navigation] Match MHTML MIME types case-insensitively in the browser
+[chromium] Applying: [M157] [navigation] Add kill switch for case-insensitive MHTML download check
+[chromium] Applying: [M157] Treat recorderer snap() failure as a failure
+[chromium] Applying: [MSE] Clean up cross-document MediaSource state on context destruction
+[chromium] Applying: SimpleSynchronousEntry::ScanSparseFile: verify header key as well.
+[chromium] Applying: [M156] [ImageCapture] Scope device session lookups to the requesting frame
+[chromium] Applying: [M157] Disallow differing origins in most synchronous about:blank commits
+[chromium] Applying: fix: guard DevTools Fetch resume and body collection
+[chromium] Applying: Missing ConsumeWhitespace() for canvas font parsing
+[chromium] Applying: [M156] Zero-initialize allocations in ZstdSourceStream::customMalloc
+[chromium] Applying: [occlusion] Fix inverted manual window occlusion on window switches on Mac
+[chromium] Applying: feat: add PreloadRealmGlobalScope
+[chromium] Applying: [HiC] Fix slot assignment iteration during SetIsInCanvasSubtree
+[chromium] Applying: Make Skia's shared context current before pruning transfer cache.
+[chromium] Applying: [Media] Disallow mixing opaque and non-opaque responses in MultiBuffer
+[chromium] Applying: [event-timing] Fix target frame attribution and verify source window in CanExposeNode
+[chromium] Applying: [M156] [canvas2d] Resolve context filter before obtaining PaintCanvas and state
+[chromium] Applying: [M156] [Canvas2d] Inline Canvas2DRecorderContext::DrawInternal into Draw
+[chromium] Applying: [Media] Validate data origin before mutating UrlData or redirecting
+[chromium] Applying: [Extensions] Prevent accessor execution during global property lookup
+[chromium] Applying: [IntersectionObserver] Skip geometry computation for a throttled frame
+[chromium] Applying: [HiC] Fix IsInCanvasSubtree bookkeeping for slotted reinsertion
+[chromium] Applying: [M156] [a11y] Defer restoring parents of aria-own.git/rebase-apply/patch:64: new blank line at EOF.
+[chromium] +
+[chromium] warning: 1 line adds whitespace errors.
+[chromium] .git/rebase-apply/patch:534: new blank line at EOF.
+[chromium] +
+[chromium] warning: 1 line adds whitespace errors.
+[v8] Collecting referenced commits: 10757Collecting referenced commits: 14376Collecting referenced commits: 20818Collecting referenced commits: 31582Collecting referenced commits: 33796, done.
+[chromium] ed children during removal
+[chromium] Applying: Make singleton Persistents in css/ thread local
+[chromium] Applying: PagePopup: Fix dangling WebPagePopupImpl::opener_web_view_
+[chromium] Applying: Set XMLParsingRust to experimental and fix XMLDocumentParserRs bugs
+[chromium] Applying: [canvas] Prevent reentrant context replacement in getContext
+[chromium] Applying: [gpu] Fail insertRecording on context loss
+[chromium] Applying: [Views] Create ViewGuard to ensure a view's existence in a scope
+[chromium] Applying: [Views] Guard live menu updates against malicious AX callbacks
+[chromium] Applying: Avoid dangling AtomicString refs across WillModifyAttribute
+[chromium] Applying: [gl] CHECK glGenTextures does not return 0
+[chromium] Applying: [Media] Disable kDisallowMixedOpaqueMediaResponses by default
+[chromium] Applying: Harden XMLDocumentParserRs FFI borrows and re-entrancy handling
+[chromium] Applying: Avoid stale-lifecycle state when computing intersections
+[chromium] Applying: [gl] Check gl reset status for 0 glGen texture ids
+[chromium] Applying: [gpu] Check SubmitIfNecessary before clear in RasterDecoder/CopySIHelper
+[chromium] Applying: [Media] Require consistent resource length and don't retry SW failures
+[chromium] Applying: [Media] Fix UrlData::CanAcceptDataFrom CHECK failures
+[chromium] Applying: [Media] Align MultiBuffer redirect handling with Blink loading stack
+[chromium] Applying: [Media] Re-enable kDisallowMixedOpaqueMediaResponses by default
+[chromium] Applying: Use owned iterators in XML parser xml_ffi
+[chromium] Applying: [M156] Snapshot srcdoc value during NavigationRequest creation
+[chromium] Applying: [M156] mojo: Harden Windows pipe adoption and IO completions
+[chromium] Applying: [gpu] Check GrContext flush success instead of semaphores
+[chromium] Applying: [M156] [FedCM] Return early in RedirectTo() if the navigation destroys it
+[chromium] Applying: [M156] Prevent out-of-bounds marker reads during highlight painting
+[chromium] Applying: [Views] Spot-protect button updates in dialogs.
+[chromium] Applying: [M156] [DirectShow] Release the capture filter before the sink on teardown
+[chromium] Applying: [Workers] Plumb SanitizeScriptErrors state through worker error reporting
+[chromium] Applying: [mac] Reject overlapping Open() calls in NativeScreenCapturePickerMac
+[chromium] Applying: VT: Don't paint view transition content under SVG reference filters
+[chromium] Applying: [EyeDropper] Respect captured frame row stride
+[chromium] Applying: [HiC] Invalidate visited link colors when IsInCanvasSubtree changes
+[chromium] Applying: Stop all matching clients in `VideoCaptureController::StopSession`.
+[chromium] Applying: hid: Prevent UAF in OnPermissionRevoked
+[chromium] Applying: Revoke Directory capability after unzip and harden extension unpack
+[chromium] Applying: [a11y] Guard against re-entrancy during Windows accessibility updates
+[chromium] Applying: [Wayland] Fix UAF in WaylandZwpLinuxDmabuf::NotifyRequestCreateBufferDone
+[chromium] Applying: [svg] Fall back to masking when SVG clip path union fails
+[chromium] Applying: Fix uninitialized pixel reads in ConvertVideoFrameToRGBPixels()
+[chromium] Applying: Prevent tainted canvas image exports through the clipboard
+[chromium] Applying: [DomStorage] Validate namespace IDs from the renderer
+[chromium] Applying: Prevent cross-origin pixels in ImageDocument copy commands
+[chromium] Applying: Exclude <select> autofill preview text from copy and drag
+[chromium] Applying: [html-in-canvas] Disallow canvas-external SVG filters
+[chromium] Applying: Add some hardening around PAC-related C++ strings passed to v8.
+[chromium] Applying: [mac] Restrict renderer sandbox process-info-pidinfo to self
+[chromium] Applying: [html-in-canvas] Fix filter dirty bit clearing
+[chromium] Applying: Skip loading system libspeechd.so.2 under MemorySanitizer
+[chromium] Applying: [M158] Use std::ranges::fill and base::span in PartitionRoot
+[chromium] Applying: fix: allow WebContentsImpl::CenterSelection on all platforms
+Hook 'python3 src/electron/script/apply_all_patches.py src/electron/patches/config.json' took 164.49 secs
+________ running 'python3 src/electron/script/patches-mtime-cache.py apply --cache-file src/electron/patches/mtime-cache.json' in 'C:\electron'
+________ running 'python3 -c import os, subprocess; os.chdir(os.path.join("src", "electron")); subprocess.check_call(["node", ".yarn/releases/yarn-4.18.0.cjs", "install", "--immutable"]);' in 'C:\electron'
+➤ YN0000: · Yarn 4.18.0
+➤ YN0000: ┌ Resolution step
+➤ YN0000: └ Completed in 0s 225ms
+➤ YN0000: ┌ Fetch step
+➤ YN0013: │ 8 packages were added to the project (+ 6.49 MiB).
+➤ YN0000: └ Completed in 1s 706ms
+➤ YN0000: ┌ Link step
+➤ YN0007: │ @electron-ci/menu-helper@workspace:spec/fixtures/native-addon/menu-helper must be built because it never has been before or the last one failed
+➤ YN0007: │ @electron-ci/mouse-input@workspace:spec/fixtures/native-addon/mouse-input must be built because it never has been before or the last one failed
+➤ YN0008: │ @electron-ci/dev-root@workspace:. must be rebuilt because its dependency tree changed
+➤ YN0000: └ Completed in 21s 665ms
+➤ YN0000: · Done in 23s 796ms
+Hook 'python3 -c 'import os, subprocess; os.chdir(os.path.join("src", "electron")); subprocess.check_call(["node", ".yarn/releases/yarn-4.18.0.cjs", "install", "--immutable"]);'' took 24.91 secs
+________ running 'node src/electron/script/gen-siso-revision.js' in 'C:\electron'
+________ running 'python3 src/electron/script/pgo/download-profiles.py --targets win-x64,win-arm64' in 'C:\electron'
+win-x64: downloading https://dev-cdn-experimental.electronjs.org/pgo/electron-win-x64-1794713269-6bfc23bf15.profdata
+win-x64: removed stale electron-win-x64-1790713491-cc55ece839.profdata
+win-x64: wrote electron-win-x64-1794713269-6bfc23bf15.profdata (376.5 MB)
+win-arm64: downloading https://dev-cdn-experimental.electronjs.org/pgo/electron-win-arm64-1794713269-6bfc23bf15.profdata
+win-arm64: removed stale electron-win-arm64-1790713491-cc55ece839.profdata
+win-arm64: wrote electron-win-arm64-1794713269-6bfc23bf15.profdata (372.7 MB)
+Hook 'python3 src/electron/script/pgo/download-profiles.py --targets win-x64,win-arm64' took 64.00 secs
+________ running 'python3 src/electron/script/pgo/download-profiles.py --targets v8-builtins' in 'C:\electron'
+v8-builtins: downloading https://dev-cdn-experimental.electronjs.org/pgo/electron-v8-x64-1794710512-6bfc23bf15.profile
+v8-builtins: wrote electron-v8-builtins.profile (4.2 MB, electron-v8-x64-1794710512-6bfc23bf15.profile)
+________ running 'vpython3.bat -vpython-spec src/vpython.toml -vpython-tool install' in 'C:\electron'
+Hook 'vpython3.bat -vpython-spec src/vpython.toml -vpython-tool install' took 45.71 secs
+________ running 'python3 src/build/landmines.py' in 'C:\electron'
+________ running 'python3 src/third_party/depot_tools/update_depot_tools_toggle.py --disable' in 'C:\electron'
+________ running 'python3 src/tools/remove_stale_files.py src/third_party/test_fonts/test_fonts.tar.gz src/third_party/node/node_modules.tar.gz src/third_party/tfhub_models src/tools/clang/crashreports' in 'C:\electron'
+________ running 'python3 src/tools/remove_stale_pyc_files.py src/android_webview/tools src/build/android src/gpu/gles2_conform_support src/infra src/ppapi src/printing src/third_party/blink/renderer/build/scripts src/third_party/blink/tools src/third_party/catapult src/third_party/mako src/tools' in 'C:\electron'
+________ running 'python3 src/build/vs_toolchain.py update --force' in 'C:\electron'
+________ running 'python3 src/build/util/lastchange.py -o src/build/util/LASTCHANGE' in 'C:\electron'
+________ running 'python3 src/build/util/lastchange.py -m GPU_LISTS_VERSION --revision-id-only --header src/gpu/config/gpu_lists_version.h' in 'C:\electron'
+________ running 'python3 src/build/util/lastchange.py -m SKIA_COMMIT_HASH -s src/third_party/skia --header src/skia/ext/skia_commit_hash.h' in 'C:\electron'
+________ running 'python3 src/build/util/lastchange.py -m DAWN_COMMIT_HASH -s src/third_party/dawn --revision src/gpu/webgpu/DAWN_VERSION --header src/gpu/webgpu/dawn_commit_hash.h' in 'C:\electron'
+________ running 'python3 src/third_party/depot_tools/download_from_google_storage.py --no_resume --bucket chromium-browser-clang/rc -s src/build/toolchain/win/rc/win/rc.exe.sha1' in 'C:\electron'
+________ running 'python3 src/third_party/depot_tools/download_from_google_storage.py --no_resume --directory --recursive --num_threads=16 --bucket chromium-apache-win32 src/third_party/apache-win32' in 'C:\electron'
+________ running 'python3 src/buildtools/reclient_cfgs/configure_reclient_cfgs.py --rbe_instance projects/rbe-chrome-untrusted/instances/default_instance --reproxy_cfg_template reproxy.cfg.template --rewrapper_cfg_project  --skip_remoteexec_cfg_fetch --quiet' in 'C:\electron'
+________ running 'python3 src/build/config/siso/configure_siso.py --rbe_instance projects/rbe-chrome-untrusted/instances/default_instance --reapi_instance  --reapi_address  --reapi_backend_config_path  --credential-helper ' in 'C:\electron'
+________ running 'python3 src/build/util/tast_control.py -o src/chromeos/tast_control.gni -t src/chromeos/tast_control.gni.template -i src/chromeos/tast_control_disabled_tests.txt --input-public src/chromeos/tast_control_disabled_tests_public_builders.txt -f src/chromeos/tast_control_flaky_tests.txt' in 'C:\electron'
+SYNC EXIT 0 2026-11-20T14:33:16
