@@ -37,7 +37,10 @@ patches/electron-45/apply.sh <src> --not-group ported # the drafts, on top
 patches/electron-45/apply.sh <src> --reverse          # undo
 ```
 
-`--group` and `--not-group` take comma-separated lists. Order matters inside the series:
+`--group` and `--not-group` take comma-separated lists. `--check` tests against the committed
+tree (HEAD), so checking a subset only passes when the patches it stacks on are already
+committed: on a pristine tree `--check --not-group ported` reports c60 and c61 as rejects,
+because they sit on c03. Order matters inside the series:
 `03` → `60` → `61` stack on the same files, as do `10` → `12`, `13` → `14` and `50` → `51`.
 Each diff starts with a long description (stock behaviour, what changes, risks, how to A/B);
 read it before touching the patch.

@@ -35,6 +35,10 @@ if [ $# -eq 0 ]; then
   set -- $(tr -d '\r' < "$HERE/series.txt" | grep -v '^[[:space:]]*#' | grep -v '^[[:space:]]*$' | awk '{print $1 "/" $2}')
 fi
 
+# Scratch files live in one private (0700) directory.
+TMPD="$(mktemp -d)" || { echo "cannot create a temporary directory"; exit 1; }
+trap 'rm -rf "$TMPD"' EXIT
+
 changed=0; same=0; fail=0
 for item in "$@"; do
   root="${item%%/*}"; file="${item#*/}"
@@ -42,7 +46,7 @@ for item in "$@"; do
   if [ -z "$dir" ] || [ ! -d "$dir" ]; then echo "NO TREE    $item"; fail=$((fail+1)); continue; fi
   commit="$(git -C "$dir" log --format=%H --fixed-strings --grep="kcc-series: $root/$file" -1)"
   if [ -z "$commit" ]; then echo "NO COMMIT  $item"; fail=$((fail+1)); continue; fi
-  tmp="$(mktemp)"
+  tmp="$TMPD/new.diff"
   if [ -f "$patch" ]; then
     awk '/^diff --git /{exit} {print}' "$patch" | tr -d '\r' > "$tmp"
   else

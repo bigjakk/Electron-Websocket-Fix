@@ -55,14 +55,16 @@ root_dir() {
   esac
 }
 
-SERIES="$(mktemp)"; ERR="$(mktemp)"
-IDX_chromium=""; IDX_electron=""; IDX_v8=""
-cleanup() { rm -f "$SERIES" "$ERR" "$IDX_chromium" "$IDX_electron" "$IDX_v8"; }
-trap cleanup EXIT
+# All scratch files live in one private (0700) directory, so nothing is ever
+# created at a guessable path in a shared temp directory.
+TMPD="$(mktemp -d)" || { echo "cannot create a temporary directory"; exit 1; }
+trap 'rm -rf "$TMPD"' EXIT
+SERIES="$TMPD/series"; ERR="$TMPD/err"
 
 tr -d '\r' < "$HERE/series.txt" | grep -v '^[[:space:]]*#' | grep -v '^[[:space:]]*$' > "$SERIES"
 if [ "$MODE" = reverse ]; then
-  awk '{a[NR]=$0} END{for(i=NR;i>0;i--)print a[i]}' "$SERIES" > "$SERIES.r" && mv "$SERIES.r" "$SERIES"
+  awk '{a[NR]=$0} END{for(i=NR;i>0;i--)print a[i]}' "$SERIES" > "$TMPD/series.r" &&
+    mv "$TMPD/series.r" "$SERIES"
 fi
 
 ok=0; fail=0
@@ -95,10 +97,9 @@ while read -r root file group _; do
         echo "FAILED   $root/$file  (not applied, or edited since)"; fail=$((fail+1))
       fi ;;
     check)
-      eval "idx=\$IDX_$root"
-      if [ -z "$idx" ]; then
-        idx="$(mktemp)"; eval "IDX_$root=\$idx"
-        rm -f "$idx"  # git wants to create the index file itself
+      # One scratch index per checkout; git creates the file itself.
+      idx="$TMPD/index-$root"
+      if [ ! -f "$idx" ]; then
         GIT_INDEX_FILE="$idx" git -C "$dir" read-tree HEAD
       fi
       if GIT_INDEX_FILE="$idx" git -C "$dir" apply --cached --whitespace=nowarn "$patch" 2> "$ERR"; then
