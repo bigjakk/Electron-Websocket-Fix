@@ -87,7 +87,7 @@ Not verified
   subject and from what ANGLE does with the label.
 
 diff --git a/gpu/command_buffer/service/gles2_cmd_decoder_passthrough_doers.cc b/gpu/command_buffer/service/gles2_cmd_decoder_passthrough_doers.cc
-index 982aa58bd..546ca66ef 100644
+index 982aa58bd32611f12f50e3c476c25fa02eb5ea25..546ca66ef6f0453c88809b17d889eb78bc7b051f 100644
 --- a/gpu/command_buffer/service/gles2_cmd_decoder_passthrough_doers.cc
 +++ b/gpu/command_buffer/service/gles2_cmd_decoder_passthrough_doers.cc
 @@ -9,6 +9,7 @@
@@ -147,7 +147,7 @@ index 982aa58bd..546ca66ef 100644
  
    BoundTexture* bound_texture =
 diff --git a/gpu/command_buffer/service/texture_manager.h b/gpu/command_buffer/service/texture_manager.h
-index c4be683cf..23e1dd6c8 100644
+index c4be683cfbffda1865ec6395bfe1ed8e1c8494ec..23e1dd6c866383ee83cc24a01176b223d8bd2c10 100644
 --- a/gpu/command_buffer/service/texture_manager.h
 +++ b/gpu/command_buffer/service/texture_manager.h
 @@ -76,6 +76,13 @@ class GPU_GLES2_EXPORT TexturePassthrough final

@@ -93,7 +93,7 @@ still gates SetSchedulerClient(this) in the constructor; 156 is the last
 milestone with that kill switch (removed at 159).
 
 diff --git a/components/viz/service/display/display.cc b/components/viz/service/display/display.cc
-index 366fa5bf5..f788ff422 100644
+index 366fa5bf59f9cc365a6e38114cf918ad7789b680..f788ff4223f155a4a972d5048b1da09b747d4c94 100644
 --- a/components/viz/service/display/display.cc
 +++ b/components/viz/service/display/display.cc
 @@ -440,6 +440,11 @@ void Display::SetVisible(bool visible) {
@@ -136,7 +136,7 @@ index 366fa5bf5..f788ff422 100644
  
  void Display::SetNeedsOneBeginFrame(const BeginFrameArgs& args) {
 diff --git a/components/viz/service/display/display.h b/components/viz/service/display/display.h
-index ce097b3c0..4a26d77ca 100644
+index ce097b3c0cb783fa39854a99d07aa8e4f587b26b..4a26d77cae0ebc56c68e40cea9fbf0d4c677b3d7 100644
 --- a/components/viz/service/display/display.h
 +++ b/components/viz/service/display/display.h
 @@ -128,6 +128,11 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
@@ -152,7 +152,7 @@ index ce097b3c0..4a26d77ca 100644
    // draw outside of this rect.
    void SetOutputSurfaceClipRect(const gfx::Rect& clip_rect);
 diff --git a/components/viz/service/display/display_scheduler.cc b/components/viz/service/display/display_scheduler.cc
-index d3a2bf969..74b8d8303 100644
+index d3a2bf969c14f001bf0a902c788bed5cb5fbbe72..74b8d8303df1bee6a803dce9fa7d40bb548b1096 100644
 --- a/components/viz/service/display/display_scheduler.cc
 +++ b/components/viz/service/display/display_scheduler.cc
 @@ -11,6 +11,7 @@
@@ -276,7 +276,7 @@ index d3a2bf969..74b8d8303 100644
    pending_swaps_--;
  
 diff --git a/components/viz/service/display/display_scheduler.h b/components/viz/service/display/display_scheduler.h
-index 15c3c786f..90c3e25b1 100644
+index 15c3c786ff4ac5d6f279633c6c43f8ab514630a5..90c3e25b1db36469450996d9f0413033bdb33058 100644
 --- a/components/viz/service/display/display_scheduler.h
 +++ b/components/viz/service/display/display_scheduler.h
 @@ -58,6 +58,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
@@ -324,7 +324,7 @@ index 15c3c786f..90c3e25b1 100644
  
    base::TimeTicks last_targeted_latch_time_;
 diff --git a/components/viz/service/display/display_scheduler_base.h b/components/viz/service/display/display_scheduler_base.h
-index 690f1b270..e36b65428 100644
+index 690f1b270b0883807a781703efd2d4f9d0e14c9e..e36b65428da8bb22ba39ce629f2ea663d268c199 100644
 --- a/components/viz/service/display/display_scheduler_base.h
 +++ b/components/viz/service/display/display_scheduler_base.h
 @@ -65,6 +65,13 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
@@ -342,7 +342,7 @@ index 690f1b270..e36b65428 100644
    // ReportFrameTime can use ADPF hints. If ADPF hints are used they will be run
    // with the |boost_type| boost type.
 diff --git a/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc b/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc
-index c5e95659c..5116f320c 100644
+index c5e95659c48ec06e011700c78799cb7c3c4de568..5116f320c1cb9181813b409146b7e1cdf9287ae8 100644
 --- a/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc
 +++ b/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.cc
 @@ -384,6 +384,12 @@ void RootCompositorFrameSinkImpl::SetOutputIsSecure(bool secure) {
@@ -359,7 +359,7 @@ index c5e95659c..5116f320c 100644
      base::TimeTicks timebase,
      base::TimeDelta interval) {
 diff --git a/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.h b/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.h
-index 91a243401..8661ac972 100644
+index 91a24340185e821fe2e99c92b26eb196b6bda2ca..8661ac972134da53f8182a450fde7df4800873cf 100644
 --- a/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.h
 +++ b/components/viz/service/frame_sinks/root_compositor_frame_sink_impl.h
 @@ -85,6 +85,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
@@ -371,7 +371,7 @@ index 91a243401..8661ac972 100644
  #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
    void UpdateRefreshRate(float refresh_rate) override;
 diff --git a/services/viz/privileged/mojom/compositing/display_private.mojom b/services/viz/privileged/mojom/compositing/display_private.mojom
-index fb1b88b35..6c355e55e 100644
+index fb1b88b359d4caa1b1162b9e4c4200e82f0c764a..6c355e55e1dba494c0b44b71018312a0a68a9e17 100644
 --- a/services/viz/privileged/mojom/compositing/display_private.mojom
 +++ b/services/viz/privileged/mojom/compositing/display_private.mojom
 @@ -57,6 +57,12 @@ interface DisplayPrivate {
@@ -388,7 +388,7 @@ index fb1b88b35..6c355e55e 100644
    // is not a sync IPC, as all current uses are during tear down of the root
    // compositor frame sink and are immediately followed by a call to
 diff --git a/ui/compositor/compositor.cc b/ui/compositor/compositor.cc
-index f8f0fd04a..d10b8f18a 100644
+index f8f0fd04a9e2ddd35c6c818e3773f9b49915ef9c..d10b8f18ae017497a4999fe034232d5d614a68d8 100644
 --- a/ui/compositor/compositor.cc
 +++ b/ui/compositor/compositor.cc
 @@ -380,6 +380,9 @@ void Compositor::SetLayerTreeFrameSink(
@@ -417,7 +417,7 @@ index f8f0fd04a..d10b8f18a 100644
      mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer) {
    if (display_private_)
 diff --git a/ui/compositor/compositor.h b/ui/compositor/compositor.h
-index 8d2e633bb..a0bf2f42a 100644
+index 8d2e633bba4231cfdfa4cfe198ce6f58411b8d03..a0bf2f42a8e205d461a2387f71461ab27676c219 100644
 --- a/ui/compositor/compositor.h
 +++ b/ui/compositor/compositor.h
 @@ -306,6 +306,12 @@ class COMPOSITOR_EXPORT Compositor

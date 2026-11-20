@@ -80,7 +80,7 @@ Platforms: all (no platform-specific code).
 Not verified: compilation.
 
 diff --git a/third_party/blink/renderer/modules/webaudio/panner_handler.cc b/third_party/blink/renderer/modules/webaudio/panner_handler.cc
-index 1c46560af..35b4b17dc 100644
+index 1c46560af72fb8bc1f3a5f3948e0a47963b85eac..35b4b17dc76ecceb5c16582134e2d48fe200c85f 100644
 --- a/third_party/blink/renderer/modules/webaudio/panner_handler.cc
 +++ b/third_party/blink/renderer/modules/webaudio/panner_handler.cc
 @@ -7,6 +7,7 @@
@@ -154,7 +154,7 @@ index 1c46560af..35b4b17dc 100644
      total_gain_values_[k] = CalculateDistanceConeGain(
          panner_position, orientation, listener_position);
 diff --git a/third_party/blink/renderer/modules/webaudio/panner_handler.h b/third_party/blink/renderer/modules/webaudio/panner_handler.h
-index d0a4747a3..d018f511e 100644
+index d0a4747a386b188328666fd82ebc4d0ec9d25ebd..d018f511e67576cf74b39325e728663f02115045 100644
 --- a/third_party/blink/renderer/modules/webaudio/panner_handler.h
 +++ b/third_party/blink/renderer/modules/webaudio/panner_handler.h
 @@ -159,6 +159,10 @@ class PannerHandler final : public AudioHandler {

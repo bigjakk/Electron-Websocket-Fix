@@ -89,7 +89,7 @@ against the clip rectangle was not measured; if it does not, part 2 simply
 runs less often.
 
 diff --git a/ui/views/win/hwnd_message_handler.cc b/ui/views/win/hwnd_message_handler.cc
-index b0eed3081..bedcf0593 100644
+index b0eed3081bea1f23c23894b16825a1671af01ddb..bedcf05936234846ff8c9b5cc1c917a03331bf7f 100644
 --- a/ui/views/win/hwnd_message_handler.cc
 +++ b/ui/views/win/hwnd_message_handler.cc
 @@ -323,6 +323,18 @@ bool RawWheelPacketHasMotion(const RAWMOUSE& mouse) {

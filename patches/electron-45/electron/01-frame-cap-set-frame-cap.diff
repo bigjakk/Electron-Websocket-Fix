@@ -35,7 +35,7 @@ widget()->GetCompositor() route (native_window.cc, SetBackgroundThrottling)
 both still exist.
 
 diff --git a/shell/browser/api/electron_api_base_window.cc b/shell/browser/api/electron_api_base_window.cc
-index 0c00515..3c376b3 100644
+index 0c005156b545950a0df7718d8c394f97fbcc00d2..3c376b3f0844d9bf9774431c20cda6ecba7e4cb1 100644
 --- a/shell/browser/api/electron_api_base_window.cc
 +++ b/shell/browser/api/electron_api_base_window.cc
 @@ -14,6 +14,7 @@
@@ -85,7 +85,7 @@ index 0c00515..3c376b3 100644
        .SetMethod<&BaseWindow::SetRepresentedFilename>("setRepresentedFilename")
        .SetMethod<&BaseWindow::GetRepresentedFilename>("getRepresentedFilename")
 diff --git a/shell/browser/api/electron_api_base_window.h b/shell/browser/api/electron_api_base_window.h
-index 93b2615..65513c6 100644
+index 93b26154286545cce54436eb467cf987bbb9b9fa..65513c6053053bd3a414b07f822fc5fa80493187 100644
 --- a/shell/browser/api/electron_api_base_window.h
 +++ b/shell/browser/api/electron_api_base_window.h
 @@ -215,6 +215,9 @@ class BaseWindow : public gin_helper::TrackableObject<BaseWindow>,

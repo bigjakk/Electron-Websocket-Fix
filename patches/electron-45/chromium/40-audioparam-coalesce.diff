@@ -131,7 +131,7 @@ in any other way (a SetValue or ramp event left in a listener timeline
 disables coalescing for that param until it is pruned).
 
 diff --git a/third_party/blink/renderer/modules/webaudio/audio_param_handler.cc b/third_party/blink/renderer/modules/webaudio/audio_param_handler.cc
-index 2f4828436..20991d915 100644
+index 2f4828436507e91b94e5466e4bb5e6407337f529..20991d915769d6e82bfd78da3fe81cfc86002d25 100644
 --- a/third_party/blink/renderer/modules/webaudio/audio_param_handler.cc
 +++ b/third_party/blink/renderer/modules/webaudio/audio_param_handler.cc
 @@ -10,6 +10,7 @@

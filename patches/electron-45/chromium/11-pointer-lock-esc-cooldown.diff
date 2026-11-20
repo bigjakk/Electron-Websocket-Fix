@@ -74,7 +74,7 @@ Platforms: all (browser process, UI thread, platform-independent).
 Not compiled. base/feature_list.h is newly included in this file.
 
 diff --git a/chrome/browser/ui/exclusive_access/pointer_lock_controller.cc b/chrome/browser/ui/exclusive_access/pointer_lock_controller.cc
-index eebf15545..963113c3f 100644
+index eebf155451f560b498b18bb13713fedb32194675..963113c3fb8a4a4159feb888dcd015de2c9610f5 100644
 --- a/chrome/browser/ui/exclusive_access/pointer_lock_controller.cc
 +++ b/chrome/browser/ui/exclusive_access/pointer_lock_controller.cc
 @@ -4,6 +4,7 @@

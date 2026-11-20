@@ -161,7 +161,7 @@ pointer lock being torn down. When the gate is closed the sub-pixel remainder
 is cleared and ordinary mouse moves flow as in a plain lock.
 
 diff --git a/ui/events/devices/x11/device_data_manager_x11.cc b/ui/events/devices/x11/device_data_manager_x11.cc
-index 0fd92a26c..a03fbc9b1 100644
+index 0fd92a26c8859579e162d6543b290d10afa2c838..a03fbc9b13f981244e9b13c7fa814f534792f14b 100644
 --- a/ui/events/devices/x11/device_data_manager_x11.cc
 +++ b/ui/events/devices/x11/device_data_manager_x11.cc
 @@ -188,6 +188,7 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
@@ -225,7 +225,7 @@ index 0fd92a26c..a03fbc9b1 100644
      const std::vector<KeyboardDevice>& devices) {
    std::vector<KeyboardDevice> keyboards(devices);
 diff --git a/ui/events/devices/x11/device_data_manager_x11.h b/ui/events/devices/x11/device_data_manager_x11.h
-index 5e1448134..d0f79891c 100644
+index 5e14481343aa5dcf3a729a283c046f2321d25fb9..d0f79891c9c9cac70b9186a297dba45dc89229cf 100644
 --- a/ui/events/devices/x11/device_data_manager_x11.h
 +++ b/ui/events/devices/x11/device_data_manager_x11.h
 @@ -280,6 +280,16 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
@@ -257,7 +257,7 @@ index 5e1448134..d0f79891c 100644
    std::vector<x11::Input::DeviceId> master_pointers_;
  
 diff --git a/ui/ozone/platform/x11/x11_window.cc b/ui/ozone/platform/x11/x11_window.cc
-index abfb4a6cf..e958539cc 100644
+index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262b0ecf347 100644
 --- a/ui/ozone/platform/x11/x11_window.cc
 +++ b/ui/ozone/platform/x11/x11_window.cc
 @@ -5,6 +5,7 @@
@@ -477,7 +477,7 @@ index abfb4a6cf..e958539cc 100644
    if (is_security_surface_) {
      std::erase(GetSecuritySurfaces(), xwindow_);
 diff --git a/ui/ozone/platform/x11/x11_window.h b/ui/ozone/platform/x11/x11_window.h
-index 41904ec1f..8c5a12f57 100644
+index 41904ec1f607bc82931eec2e408a5c1304d3d02a..8c5a12f571fcf5a49c686b85292a3939767d9fed 100644
 --- a/ui/ozone/platform/x11/x11_window.h
 +++ b/ui/ozone/platform/x11/x11_window.h
 @@ -44,6 +44,7 @@ class WmSync;
@@ -533,7 +533,7 @@ index 41904ec1f..8c5a12f57 100644
  
    base::CancelableOnceCallback<void(x11::Cursor)> on_cursor_loaded_;
 diff --git a/ui/platform_window/extensions/x11_extension.cc b/ui/platform_window/extensions/x11_extension.cc
-index 06282a7bb..454d6c1d0 100644
+index 06282a7bbab9688c8bfc731fc8a5f2d2d2cf3729..454d6c1d0e6430d51c9942f04ece3744005bab4c 100644
 --- a/ui/platform_window/extensions/x11_extension.cc
 +++ b/ui/platform_window/extensions/x11_extension.cc
 @@ -15,6 +15,10 @@ DEFINE_UI_CLASS_PROPERTY_KEY(X11Extension*, kX11ExtensionKey, nullptr)
@@ -548,7 +548,7 @@ index 06282a7bb..454d6c1d0 100644
                                     X11Extension* x11_extension) {
    platform_window->SetProperty(kX11ExtensionKey, x11_extension);
 diff --git a/ui/platform_window/extensions/x11_extension.h b/ui/platform_window/extensions/x11_extension.h
-index d11f20464..42fbd6e43 100644
+index d11f20464ed4120f41620f9dfc389178a41abcf0..42fbd6e438d6e51509f9d6f0a165725739386a5a 100644
 --- a/ui/platform_window/extensions/x11_extension.h
 +++ b/ui/platform_window/extensions/x11_extension.h
 @@ -49,6 +49,13 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11Extension {
@@ -566,7 +566,7 @@ index d11f20464..42fbd6e43 100644
    virtual ~X11Extension();
  
 diff --git a/ui/views/widget/desktop_aura/desktop_window_tree_host_linux.cc b/ui/views/widget/desktop_aura/desktop_window_tree_host_linux.cc
-index 3b6e7c0b5..a64d5ff7a 100644
+index 3b6e7c0b55b8cfdbad42237dfd7082e520976bb3..a64d5ff7a76755db4fefd1963695048d7f7bf789 100644
 --- a/ui/views/widget/desktop_aura/desktop_window_tree_host_linux.cc
 +++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_linux.cc
 @@ -11,11 +11,14 @@
@@ -645,7 +645,7 @@ index 3b6e7c0b5..a64d5ff7a 100644
      const gfx::Size& size) {
    if (GetX11Extension()) {
 diff --git a/ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h b/ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h
-index 73e98a4aa..88eb8424b 100644
+index 73e98a4aa21bfe514287e5138909de11a98ffe15..88eb8424b7f6531d44324c653939c3420fa32eca 100644
 --- a/ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h
 +++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h
 @@ -112,6 +112,11 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux

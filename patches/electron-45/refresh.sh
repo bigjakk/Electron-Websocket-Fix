@@ -52,7 +52,10 @@ for item in "$@"; do
   else
     printf 'Subject: %s\n\n(describe this patch)\n\n' "$file" > "$tmp"
   fi
-  git -C "$dir" diff --no-color --no-ext-diff "$commit^" "$commit" | tr -d '\r' >> "$tmp"
+  # --full-index: abbreviated blob ids grow with the size of the repository
+  # (9 hex digits in a sparse checkout, 13 in a full Chromium one), which would
+  # make every diff "change" between checkouts; full ids do not.
+  git -C "$dir" diff --no-color --no-ext-diff --full-index "$commit^" "$commit" | tr -d '\r' >> "$tmp"
   mkdir -p "$(dirname "$patch")"
   if [ -f "$patch" ] && cmp -s "$tmp" "$patch"; then
     same=$((same+1)); rm -f "$tmp"

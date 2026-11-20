@@ -60,7 +60,7 @@ a wheel tick in one RAWMOUSE packet follows from the HID report layout and
 was not measured on hardware here.
 
 diff --git a/ui/views/win/hwnd_message_handler.cc b/ui/views/win/hwnd_message_handler.cc
-index 1b89cd94b..b0eed3081 100644
+index 1b89cd94b56bb0f8fd4eadd14227a762bf3eaffb..b0eed3081bea1f23c23894b16825a1671af01ddb 100644
 --- a/ui/views/win/hwnd_message_handler.cc
 +++ b/ui/views/win/hwnd_message_handler.cc
 @@ -17,6 +17,7 @@

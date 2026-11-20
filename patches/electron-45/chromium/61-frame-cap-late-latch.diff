@@ -146,7 +146,7 @@ Not verified (nothing was compiled or run)
   the queue would never be emptied.
 
 diff --git a/components/viz/common/frame_sinks/begin_frame_source.cc b/components/viz/common/frame_sinks/begin_frame_source.cc
-index 943494cb1..61194b455 100644
+index 943494cb15cd3f398a97c7ca3d43775abd1dcb04..61194b455e6bd8177f531a2fe8b3a33ce749c8f6 100644
 --- a/components/viz/common/frame_sinks/begin_frame_source.cc
 +++ b/components/viz/common/frame_sinks/begin_frame_source.cc
 @@ -171,6 +171,10 @@ void BeginFrameSource::SetIsGpuBusy(bool busy) {
@@ -227,7 +227,7 @@ index 943494cb1..61194b455 100644
  }
  
 diff --git a/components/viz/common/frame_sinks/begin_frame_source.h b/components/viz/common/frame_sinks/begin_frame_source.h
-index 001f395ef..36b23cf9d 100644
+index 001f395ef7295c1d4d1bef7868e15e84a11544fb..36b23cf9d58d5a3ce5bd283276a02a6add8a4d86 100644
 --- a/components/viz/common/frame_sinks/begin_frame_source.h
 +++ b/components/viz/common/frame_sinks/begin_frame_source.h
 @@ -227,6 +227,19 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
@@ -300,7 +300,7 @@ index 001f395ef..36b23cf9d 100644
    base::TimeDelta vsync_interval_ = BeginFrameArgs::DefaultInterval();
    std::optional<base::TimeDelta> max_vrr_interval_ = std::nullopt;
 diff --git a/components/viz/service/display/display_scheduler.cc b/components/viz/service/display/display_scheduler.cc
-index f756ad13e..09754b174 100644
+index f756ad13e2b0a69e8efb091a9e828e135742bbc9..09754b174e57246402b36e6d520b318dc99dcb66 100644
 --- a/components/viz/service/display/display_scheduler.cc
 +++ b/components/viz/service/display/display_scheduler.cc
 @@ -69,6 +69,24 @@ base::TimeDelta FrameCapIntervalFromFps(int fps) {
@@ -428,7 +428,7 @@ index f756ad13e..09754b174 100644
    // change is a user action -- no re-gridding of in-flight acks).
    FlushPendingSwapAckDelay();
 diff --git a/components/viz/service/display/display_scheduler.h b/components/viz/service/display/display_scheduler.h
-index 76a718200..f04cf3f6d 100644
+index 76a71820020ba092ec6d5ae6e5e2474f574b94fa..f04cf3f6d395f3f5489865a98cb9c58d5951533d 100644
 --- a/components/viz/service/display/display_scheduler.h
 +++ b/components/viz/service/display/display_scheduler.h
 @@ -133,6 +133,14 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
@@ -462,7 +462,7 @@ index 76a718200..f04cf3f6d 100644
    bool observing_begin_frame_source_;
  
 diff --git a/components/viz/service/frame_sinks/compositor_frame_sink_support.cc b/components/viz/service/frame_sinks/compositor_frame_sink_support.cc
-index 798d04318..b814489c8 100644
+index 798d04318b0de157f88d568c9b4b8f87f4024656..b814489c874d7c72cd46eaaa62e069894d50d4d6 100644
 --- a/components/viz/service/frame_sinks/compositor_frame_sink_support.cc
 +++ b/components/viz/service/frame_sinks/compositor_frame_sink_support.cc
 @@ -1080,6 +1080,18 @@ void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
@@ -507,7 +507,7 @@ index 798d04318..b814489c8 100644
    adjusted_args.dispatch_time = base::TimeTicks::Now();
    if (begin_frame_interval().is_positive()) {
 diff --git a/components/viz/service/frame_sinks/compositor_frame_sink_support.h b/components/viz/service/frame_sinks/compositor_frame_sink_support.h
-index 78659653c..4c717222e 100644
+index 78659653c9b8d0c1dbcaa93dfd8c42fd74744a5e..4c717222e340dd3b276fcd176a33974c5736da62 100644
 --- a/components/viz/service/frame_sinks/compositor_frame_sink_support.h
 +++ b/components/viz/service/frame_sinks/compositor_frame_sink_support.h
 @@ -394,6 +394,11 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport

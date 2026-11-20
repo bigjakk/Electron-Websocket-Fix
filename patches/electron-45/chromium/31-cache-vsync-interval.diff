@@ -88,7 +88,7 @@ Not verified
 - The per-call cost figures are from the owner's trace, not re-measured.
 
 diff --git a/ui/gl/dcomp_presenter.cc b/ui/gl/dcomp_presenter.cc
-index c66c1319f..fd8b2374b 100644
+index c66c1319f2939b032594d3242cbc7bef1db85474..fd8b2374ba74ae11b46a6a8dce0cf880f440b372 100644
 --- a/ui/gl/dcomp_presenter.cc
 +++ b/ui/gl/dcomp_presenter.cc
 @@ -6,13 +6,16 @@
@@ -154,7 +154,7 @@ index c66c1319f..fd8b2374b 100644
      // caller.
      task_runner_->PostTask(FROM_HERE,
 diff --git a/ui/gl/dcomp_presenter.h b/ui/gl/dcomp_presenter.h
-index 6d7a4636c..c7f9a7b3d 100644
+index 6d7a4636c53a37799c2211577f8b3591e929763d..c7f9a7b3d11c84c619ab18ac0e02b5e497741b6c 100644
 --- a/ui/gl/dcomp_presenter.h
 +++ b/ui/gl/dcomp_presenter.h
 @@ -140,6 +140,10 @@ class GL_EXPORT DCompPresenter : public Presenter,

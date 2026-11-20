@@ -113,7 +113,7 @@ GC end to the last sweep slice stays well below the GC interval.
 Platforms: all. Not compiled here.
 
 diff --git a/src/flags/flag-definitions.h b/src/flags/flag-definitions.h
-index 528cf0e9..e948c088 100644
+index 528cf0e9c059e9be7c000eb4c655961311d79c8f..e948c0883e07851ad461d2a5d60f3d1549dbf04b 100644
 --- a/src/flags/flag-definitions.h
 +++ b/src/flags/flag-definitions.h
 @@ -2852,6 +2852,9 @@ DEFINE_NEG_NEG_IMPLICATION(cppheap_incremental_marking,
@@ -127,7 +127,7 @@ index 528cf0e9..e948c088 100644
  DEFINE_BOOL(memory_balancer, false,
              "use membalancer, "
 diff --git a/src/flags/flags.cc b/src/flags/flags.cc
-index 3a87e4c7..69ef3462 100644
+index 3a87e4c7e61962f5f45c6c3d5292ea066b538acd..69ef346244f59eff511075fe41e3fd4ef73ca559 100644
 --- a/src/flags/flags.cc
 +++ b/src/flags/flags.cc
 @@ -631,6 +631,12 @@ uint32_t ComputeFlagListHash() {
@@ -144,7 +144,7 @@ index 3a87e4c7..69ef3462 100644
      if (flag.PointsTo(&v8_flags.concurrent_sparkplug) ||
          flag.PointsTo(&v8_flags.concurrent_recompilation) ||
 diff --git a/src/heap/cppgc-internal/heap-config.h b/src/heap/cppgc-internal/heap-config.h
-index d2c0e4a4..3917aab2 100644
+index d2c0e4a4621186532ced38b0ab0325ddc5c25f27..3917aab2bf24364616359c62cd701db77cf61210 100644
 --- a/src/heap/cppgc-internal/heap-config.h
 +++ b/src/heap/cppgc-internal/heap-config.h
 @@ -52,6 +52,10 @@ struct SweepingConfig {
@@ -159,7 +159,7 @@ index d2c0e4a4..3917aab2 100644
  
  struct GCConfig {
 diff --git a/src/heap/cppgc-internal/sweeper.cc b/src/heap/cppgc-internal/sweeper.cc
-index b771a1b5..7b9cd8ba 100644
+index b771a1b52de318f7cbb7d19cd0bdcad10f65a0ad..7b9cd8ba500a878c37e4191a708ed1f5fb2e586a 100644
 --- a/src/heap/cppgc-internal/sweeper.cc
 +++ b/src/heap/cppgc-internal/sweeper.cc
 @@ -1445,9 +1445,6 @@ class Sweeper::SweeperImpl final {
@@ -190,7 +190,7 @@ index b771a1b5..7b9cd8ba 100644
          default:
            UNREACHABLE();
 diff --git a/src/heap/cppgc-js/cpp-heap.cc b/src/heap/cppgc-js/cpp-heap.cc
-index c23ec777..e65bc815 100644
+index c23ec777922ed92e2b67cf8cf9fe26cd1d61a7a5..e65bc815d569036734eaa649a8873fd9bd3539cc 100644
 --- a/src/heap/cppgc-js/cpp-heap.cc
 +++ b/src/heap/cppgc-js/cpp-heap.cc
 @@ -1081,7 +1081,9 @@ void CppHeap::CompactAndSweep() {

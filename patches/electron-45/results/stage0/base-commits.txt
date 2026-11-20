@@ -1,0 +1,5 @@
+# Base commits the KCC series was applied on (Stage 0, 2026-11-20T14:35:05-08:00)
+src       8add51604cf1b2b144d0d431649229d8a3066a3b  Chromium 156.0.8078.100 (46876a0c2df3492ed67a8846950ba6d37170b58c) + Electron v45.4.1's 301 Chromium patches
+electron  deaded07eebdfe9a3737884933b1acbe65971f64  tag v45.4.1
+v8        94a69781b2f5c673c6579713f09af4b86311ad64  V8 15.6.75.57 (pinned 5e51e9c6079c7fa65ca75e7919c81ea50734302e) + Electron's 37 V8 patches
+src/electron/DEPS chromium_version: 156.0.8078.100

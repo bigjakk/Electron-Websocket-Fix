@@ -125,7 +125,7 @@ Risks / not verified
 - TimeDelta * double is used for the scaling (as upstream does elsewhere).
 
 diff --git a/gpu/ipc/service/command_buffer_stub.cc b/gpu/ipc/service/command_buffer_stub.cc
-index a8dc0b439..3c63876b8 100644
+index a8dc0b43948eaea959627b22698df93f68b0b2ab..3c63876b851be88b32bc24e82c9cd01fe40d874d 100644
 --- a/gpu/ipc/service/command_buffer_stub.cc
 +++ b/gpu/ipc/service/command_buffer_stub.cc
 @@ -49,6 +49,10 @@
@@ -163,7 +163,7 @@ index a8dc0b439..3c63876b8 100644
    // Just update the time if already scheduled.
    if (process_delayed_work_timer_.IsRunning()) {
 diff --git a/ui/accelerated_widget_mac/ca_layer_tree_coordinator.mm b/ui/accelerated_widget_mac/ca_layer_tree_coordinator.mm
-index b71a9cab7..663e9d999 100644
+index b71a9cab764aa901f1e0eb572e0dd2a73bb844a1..663e9d99974f293e011bb124d6f0d2757721a384 100644
 --- a/ui/accelerated_widget_mac/ca_layer_tree_coordinator.mm
 +++ b/ui/accelerated_widget_mac/ca_layer_tree_coordinator.mm
 @@ -26,6 +26,7 @@
@@ -195,7 +195,7 @@ index b71a9cab7..663e9d999 100644
    }
  
 diff --git a/ui/gl/gl_features.cc b/ui/gl/gl_features.cc
-index 882ac8560..2e75aa146 100644
+index 882ac8560e57f93b973a8e0ea47309d15fe5d1f5..2e75aa146e80c2f6ecba4a1cbf4a2dbe575cad1d 100644
 --- a/ui/gl/gl_features.cc
 +++ b/ui/gl/gl_features.cc
 @@ -4,6 +4,8 @@
@@ -242,7 +242,7 @@ index 882ac8560..2e75aa146 100644
  #if BUILDFLAG(IS_ANDROID)
    static bool enabled = base::android::android_info::sdk_int() >=
 diff --git a/ui/gl/gl_features.h b/ui/gl/gl_features.h
-index cdba376f6..b99828daf 100644
+index cdba376f640577b0b290e9825bc721bba9d3c027..b99828daf4d0cd26428e9f33e1c2267711fcd7d9 100644
 --- a/ui/gl/gl_features.h
 +++ b/ui/gl/gl_features.h
 @@ -21,6 +21,15 @@ GL_EXPORT bool UseGpuVsync();

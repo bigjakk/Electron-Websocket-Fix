@@ -145,7 +145,7 @@ taken only from TurboFan code, so the gain depends on the call sites being
 optimised and monomorphic.
 
 diff --git a/third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl b/third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl
-index 716699967..d3d48b0ec 100644
+index 716699967bddb71b9a34b56c068d0d3d3d45286d..d3d48b0ec281d2bf8bbf2ccebddcd5a375cdc343 100644
 --- a/third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl
 +++ b/third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl
 @@ -444,9 +444,9 @@ interface mixin WebGL2RenderingContextBase {
@@ -171,7 +171,7 @@ index 716699967..d3d48b0ec 100644
      /* Reading */
      void readPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type,
 diff --git a/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.idl b/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.idl
-index b52eae0a6..9febd38f7 100644
+index b52eae0a688233c315be736e5af4c2a0453c3a2e..9febd38f7517d61075bd88473df553ba166647d1 100644
 --- a/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.idl
 +++ b/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.idl
 @@ -472,7 +472,7 @@ interface mixin WebGLRenderingContextBase {

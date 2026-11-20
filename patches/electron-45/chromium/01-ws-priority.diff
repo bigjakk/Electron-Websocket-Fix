@@ -17,7 +17,7 @@ Chromium 156.0.8078.100 (Electron 45.4.1), 2026-11-20: the Chromium 152
 revision applies unchanged apart from line offsets.
 
 diff --git a/third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc b/third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc
-index 365ce53b5..55bc404d6 100644
+index 365ce53b567c9076d8b982e8021f2e1f3a7b7ab5..55bc404d6cfe10f45d16c6567e49105e61509aaa 100644
 --- a/third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc
 +++ b/third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.cc
 @@ -2688,7 +2688,15 @@ TaskPriority MainThreadSchedulerImpl::ComputePriority(

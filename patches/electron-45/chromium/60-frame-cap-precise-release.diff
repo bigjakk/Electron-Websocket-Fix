@@ -123,7 +123,7 @@ Not verified (nothing was compiled or run)
   costs one thread wake-up per frame.
 
 diff --git a/components/viz/common/frame_sinks/begin_frame_source.cc b/components/viz/common/frame_sinks/begin_frame_source.cc
-index 9b5c568c3..943494cb1 100644
+index 9b5c568c31a5b5777c764ff1c17262a81db36710..943494cb15cd3f398a97c7ca3d43775abd1dcb04 100644
 --- a/components/viz/common/frame_sinks/begin_frame_source.cc
 +++ b/components/viz/common/frame_sinks/begin_frame_source.cc
 @@ -314,6 +314,17 @@ void BackToBackBeginFrameSource::DidFinishFrame(
@@ -164,7 +164,7 @@ index 9b5c568c3..943494cb1 100644
      return;
    }
 diff --git a/components/viz/common/frame_sinks/begin_frame_source.h b/components/viz/common/frame_sinks/begin_frame_source.h
-index 6c80d236d..001f395ef 100644
+index 6c80d236d73ea331d9fec085d3752a46cb9e6459..001f395ef7295c1d4d1bef7868e15e84a11544fb 100644
 --- a/components/viz/common/frame_sinks/begin_frame_source.h
 +++ b/components/viz/common/frame_sinks/begin_frame_source.h
 @@ -216,6 +216,17 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
@@ -216,7 +216,7 @@ index 6c80d236d..001f395ef 100644
  };
  
 diff --git a/components/viz/service/BUILD.gn b/components/viz/service/BUILD.gn
-index 2dff02a63..283fed000 100644
+index 2dff02a63c0b26ee1604efe35b88959d5684d9f5..283fed00031eac98fbc7ef60281b132a4bb429ba 100644
 --- a/components/viz/service/BUILD.gn
 +++ b/components/viz/service/BUILD.gn
 @@ -486,6 +486,8 @@ viz_component("service") {
@@ -229,7 +229,7 @@ index 2dff02a63..283fed000 100644
        "display/overlay_processor_delegated_support.h",
        "display/overlay_processor_win.cc",
 diff --git a/components/viz/service/display/display_scheduler.cc b/components/viz/service/display/display_scheduler.cc
-index 74b8d8303..f756ad13e 100644
+index 74b8d8303df1bee6a803dce9fa7d40bb548b1096..f756ad13e2b0a69e8efb091a9e828e135742bbc9 100644
 --- a/components/viz/service/display/display_scheduler.cc
 +++ b/components/viz/service/display/display_scheduler.cc
 @@ -27,6 +27,10 @@
@@ -385,7 +385,7 @@ index 74b8d8303..f756ad13e 100644
    // change is a user action -- no re-gridding of in-flight acks).
    FlushPendingSwapAckDelay();
 diff --git a/components/viz/service/display/display_scheduler.h b/components/viz/service/display/display_scheduler.h
-index 90c3e25b1..76a718200 100644
+index 90c3e25b1db36469450996d9f0413033bdb33058..76a71820020ba092ec6d5ae6e5e2474f574b94fa 100644
 --- a/components/viz/service/display/display_scheduler.h
 +++ b/components/viz/service/display/display_scheduler.h
 @@ -15,6 +15,7 @@
@@ -440,7 +440,7 @@ index 90c3e25b1..76a718200 100644
  
 diff --git a/components/viz/service/display/frame_cap_precise_timer_win.cc b/components/viz/service/display/frame_cap_precise_timer_win.cc
 new file mode 100644
-index 000000000..4bc425105
+index 0000000000000000000000000000000000000000..4bc42510500a8f27c224ee6bbe7c1b2dd79db8ac
 --- /dev/null
 +++ b/components/viz/service/display/frame_cap_precise_timer_win.cc
 @@ -0,0 +1,122 @@
@@ -568,7 +568,7 @@ index 000000000..4bc425105
 +}  // namespace viz
 diff --git a/components/viz/service/display/frame_cap_precise_timer_win.h b/components/viz/service/display/frame_cap_precise_timer_win.h
 new file mode 100644
-index 000000000..830516bda
+index 0000000000000000000000000000000000000000..830516bdaa0394b7fdc470bae90dd9cbf11b6666
 --- /dev/null
 +++ b/components/viz/service/display/frame_cap_precise_timer_win.h
 @@ -0,0 +1,78 @@

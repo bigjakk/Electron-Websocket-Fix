@@ -78,7 +78,7 @@ default is off in any case.
 Not verified: not compiled.
 
 diff --git a/third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.cc b/third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.cc
-index 413283b18..80b5e1327 100644
+index 413283b18259dd13c6dc9b0933d8dd1c20a78a19..80b5e1327206bc03af76c06a2dd42ed938954464 100644
 --- a/third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.cc
 +++ b/third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.cc
 @@ -4,6 +4,7 @@

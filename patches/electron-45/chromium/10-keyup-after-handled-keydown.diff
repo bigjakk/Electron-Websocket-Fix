@@ -65,7 +65,7 @@ Not compiled; ui::DomCode and base::flat_set are already used by this
 header (keyboard_keys_to_lock_).
 
 diff --git a/content/browser/renderer_host/render_widget_host_impl.cc b/content/browser/renderer_host/render_widget_host_impl.cc
-index 7b5c2d36a..e5c8ebbe3 100644
+index 7b5c2d36aa1c141e55ace0686f453b1c8c555933..e5c8ebbe3408c09a2fd58a1112e01636d3e7557d 100644
 --- a/content/browser/renderer_host/render_widget_host_impl.cc
 +++ b/content/browser/renderer_host/render_widget_host_impl.cc
 @@ -1883,32 +1883,38 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
@@ -155,7 +155,7 @@ index 7b5c2d36a..e5c8ebbe3 100644
    GetRenderInputRouter()->SetupInputRouter(GetScaleFactorForView(view_.get()));
  }
 diff --git a/content/browser/renderer_host/render_widget_host_impl.h b/content/browser/renderer_host/render_widget_host_impl.h
-index a9ad4bee3..555804706 100644
+index a9ad4bee3b649cd8eb5e2064620872540282d4c4..5558047064087a45805aaf65d4d1f8b0d71142aa 100644
 --- a/content/browser/renderer_host/render_widget_host_impl.h
 +++ b/content/browser/renderer_host/render_widget_host_impl.h
 @@ -1569,19 +1569,25 @@ class CONTENT_EXPORT RenderWidgetHostImpl

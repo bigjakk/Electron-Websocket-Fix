@@ -99,7 +99,7 @@ Platforms: all (browser process, UI thread). Not compiled, TypeScript
 not type-checked here.
 
 diff --git a/lib/browser/api/web-contents.ts b/lib/browser/api/web-contents.ts
-index 1f7f125..c322dd6 100644
+index 1f7f125e3abec5264d64989a7fa20c2b66fba17f..c322dd693394388168075d332f679e18fd98caac 100644
 --- a/lib/browser/api/web-contents.ts
 +++ b/lib/browser/api/web-contents.ts
 @@ -429,11 +429,19 @@ WebContents.prototype._init = function () {
@@ -123,7 +123,7 @@ index 1f7f125..c322dd6 100644
    });
  };
 diff --git a/shell/browser/api/electron_api_web_contents.cc b/shell/browser/api/electron_api_web_contents.cc
-index 65b5e51..f4bb0b0 100644
+index 65b5e518fb49975b678a760426669c0caea8f6a8..f4bb0b0ac8651b6f401a14091c71227180b9c44a 100644
 --- a/shell/browser/api/electron_api_web_contents.cc
 +++ b/shell/browser/api/electron_api_web_contents.cc
 @@ -23,6 +23,7 @@
@@ -185,7 +185,7 @@ index 65b5e51..f4bb0b0 100644
        .SetMethod<&WebContents::Reload>("reload")
        .SetMethod<&WebContents::ReloadIgnoringCache>("reloadIgnoringCache")
 diff --git a/shell/browser/api/electron_api_web_contents.h b/shell/browser/api/electron_api_web_contents.h
-index 37c5ec2..e953306 100644
+index 37c5ec256c620f8b8268af964b0d66f22209e7b9..e953306a616e227fecbe33d46026a94c2680bb02 100644
 --- a/shell/browser/api/electron_api_web_contents.h
 +++ b/shell/browser/api/electron_api_web_contents.h
 @@ -473,6 +473,12 @@ class WebContents final : public ExclusiveAccessContext,
@@ -214,7 +214,7 @@ index 37c5ec2..e953306 100644
    // browsing refcount.
    bool caret_browsing_counted_ = false;
 diff --git a/typings/internal-electron.d.ts b/typings/internal-electron.d.ts
-index 68f70e6..8dea0bb 100644
+index 68f70e6b9050a66cf279679e15628a020cbd2448..8dea0bbc84a2b27e2503cb94366cc7786696d072 100644
 --- a/typings/internal-electron.d.ts
 +++ b/typings/internal-electron.d.ts
 @@ -89,6 +89,8 @@ declare namespace Electron {

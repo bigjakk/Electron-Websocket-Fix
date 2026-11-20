@@ -110,7 +110,7 @@ Not verified: nothing was compiled or measured; the allocation counts above
 come from reading the code.
 
 diff --git a/third_party/blink/renderer/platform/widget/input/main_thread_event_queue.cc b/third_party/blink/renderer/platform/widget/input/main_thread_event_queue.cc
-index 7a59c1756..7da797f92 100644
+index 7a59c1756266e5f9cae169b70581f3d36ead53a2..7da797f9250e33fa2ed7782b5b95f67273d5375e 100644
 --- a/third_party/blink/renderer/platform/widget/input/main_thread_event_queue.cc
 +++ b/third_party/blink/renderer/platform/widget/input/main_thread_event_queue.cc
 @@ -88,6 +88,22 @@ bool IsGestureScroll(WebInputEvent::Type type) {
