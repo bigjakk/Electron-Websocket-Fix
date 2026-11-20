@@ -20,12 +20,16 @@
 //   ?label=<s>   shown in the HUD; lets two views in one window be told apart
 // The page draws every frame (WebGL2 clear, 2D fill if WebGL2 is missing) so
 // that every frame carries damage and reaches a swap.
+//   ?mode=webgl  draw with WebGL2 (default); mode=2d uses a 2D canvas, which on
+//                a machine without a GPU avoids the per-frame WebGL readback and
+//                leaves more headroom above the caps under test
 const params = new URLSearchParams(location.search);
 const busyMs = parseFloat(params.get('busy') || '0');
 const label = params.get('label') || 'main';
+const mode = params.get('mode') || 'webgl';
 const canvas = document.getElementById('c');
 const hud = document.getElementById('hud');
-const gl = canvas.getContext('webgl2', { antialias: false, alpha: false });
+const gl = mode === 'webgl' ? canvas.getContext('webgl2', { antialias: false, alpha: false }) : null;
 const ctx2d = gl ? null : canvas.getContext('2d', { alpha: false });
 
 let frames = 0;

@@ -1,14 +1,14 @@
 # Synthetic checks for the drafted patches of the KCC Electron 45 series.
 # Each check runs the same binary with the patch's switch off and on.
 #
-#   run-checks.ps1 -Exe <electron.exe> -OutDir <dir> [-Only c10,e10,c21,v01,c20,c40,c41,c60]
+#   run-checks.ps1 -Exe <electron.exe> -OutDir <dir> [-Only c10,e10,c21,v01,c20,c40,c41,c60,c61]
 #
 # Writes one log / JSON per run into -OutDir and a summary.txt. A check that
 # cannot be exercised on this machine says so instead of passing.
 param(
   [Parameter(Mandatory = $true)][string]$Exe,
   [Parameter(Mandatory = $true)][string]$OutDir,
-  [string[]]$Only = @('c10', 'e10', 'c21', 'v01', 'c20', 'c40', 'c41', 'c60')
+  [string[]]$Only = @('c10', 'e10', 'c21', 'v01', 'c20', 'c40', 'c41', 'c60', 'c61')
 )
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\kcc-flags.ps1"
@@ -166,6 +166,28 @@ if ($Only -contains 'c60') {
   $on = ($rows | Where-Object { $_.run -like 'on*' } | Measure-Object viz -Average).Average
   $ok = (@($rows | Where-Object { -not (Clean $_.r) }).Count -eq 0)
   Verdict 'c60' $ok ("VizCompositorThread at a 144 cap: off {0:N1} %, on {1:N1} % of a core (mean of 2 runs each); the cap held in every run: {2}" -f $off, $on, (@($rows | Where-Object { [math]::Abs($_.fps - 144) / 144 -gt 0.01 }).Count -eq 0))
+}
+
+# ---- c61: input age under a cap (trace) ----------------------------------------
+if ($Only -contains 'c61') {
+  $lat = @{}
+  foreach ($busy in 0, 3) {
+    foreach ($mode in 'off', 'on') {
+      $name = "c61-latency-busy$busy-$mode"
+      $f = if ($mode -eq 'on') { Join-KccFeatures @('KccFrameCapLateLatch') } else { @() }
+      $r = Run $name (@('frame-cap-test.js', '--kcc-suite=latency', '--kcc-cap=144', "--kcc-busy=$busy", '--kcc-mode=webgl', "--kcc-out=$OutDir\$name.json") + $f)
+      $l = $r.res.latency
+      $lat["$busy|$mode"] = $l
+      $fps = ($r.res.measurements | Select-Object -First 1).fps
+      Say ("       c61 busy {0} ms, KccFrameCapLateLatch {1}: exit {2}, {3:N2} fps; submit->display draw p50 {4:N2} ms; main frame start->display draw p10/p50/p90 {5:N2}/{6:N2}/{7:N2} ms; main frame {8:N2} ms$(CrashNote $r)" -f `
+        $busy, $mode, $r.code, $fps, $l.submitToDisplayDrawMs.p50, $l.beginMainFrameToDisplayDrawMs.p10, $l.beginMainFrameToDisplayDrawMs.p50, $l.beginMainFrameToDisplayDrawMs.p90, $l.mainFrameMs.p50)
+      if (-not (Clean $r)) { $script:allPass = $false }
+    }
+  }
+  foreach ($busy in 0, 3) {
+    $off = $lat["$busy|off"].beginMainFrameToDisplayDrawMs.p50; $on = $lat["$busy|on"].beginMainFrameToDisplayDrawMs.p50
+    Say ("c61    INFO  busy {0} ms at a 144 cap (period 6.94 ms): input age at display draw p50 {1:N2} ms off -> {2:N2} ms on ({3:+0.00;-0.00} ms)" -f $busy, $off, $on, ($on - $off))
+  }
 }
 
 Say "`n$(if ($script:allPass) { 'SYNTHETIC CHECKS: PASS' } else { 'SYNTHETIC CHECKS: SOME FAILED (see above)' })"
