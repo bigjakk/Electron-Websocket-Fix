@@ -198,7 +198,7 @@ if ($Only -contains 'c41') {
   $shas = @($h | ForEach-Object { $_.sha } | Select-Object -Unique)
   $ok = (@($h | Where-Object { -not (Clean $_.r) }).Count -eq 0) -and $shas.Count -eq 1 -and $h[0].nonZero -gt 0
   Verdict 'c41' $ok "4 renders (off x2, on x2): $($shas.Count) distinct buffer(s); identical sample for sample: $($shas.Count -eq 1)"
-  Get-ChildItem "$OutDir\c41-hrtf-*.f32" | Select-Object -Skip 1 | Remove-Item  # keep one buffer
+  Get-ChildItem "$OutDir\c41-hrtf-*.f32" | Remove-Item  # 7.7 MB each; the SHA-256 above identifies them
 }
 
 # ---- c60: GPU-process CPU time at a 144 cap ------------------------------------

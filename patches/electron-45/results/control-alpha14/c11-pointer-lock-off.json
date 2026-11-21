@@ -1,0 +1,77 @@
+{
+  "versions": "45.0.0-alpha.14",
+  "switchOn": false,
+  "steps": [
+    {
+      "atMs": 2,
+      "what": "request with gesture",
+      "result": "locked"
+    },
+    {
+      "atMs": 39,
+      "what": "Esc",
+      "result": "unlocked after 35 ms"
+    },
+    {
+      "atMs": 40,
+      "what": "request with gesture 35 ms after Esc",
+      "result": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+    },
+    {
+      "atMs": 1515,
+      "what": "request with gesture 1510 ms after Esc",
+      "result": "locked"
+    },
+    {
+      "atMs": 1561,
+      "what": "Esc",
+      "result": "unlocked after 45 ms"
+    },
+    {
+      "atMs": 7071,
+      "what": "request WITHOUT gesture 5554 ms after Esc",
+      "result": "rejected NotAllowedError: A user gesture is required to request Pointer Lock."
+    }
+  ],
+  "checks": [
+    {
+      "name": "lock with a user gesture",
+      "pass": true,
+      "detail": "locked"
+    },
+    {
+      "name": "Esc releases the lock",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "switch off: re-lock inside the cooldown is refused (kUserEscapeCooldown)",
+      "pass": true,
+      "detail": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+    },
+    {
+      "name": "control: re-lock 1.5 s after Esc succeeds",
+      "pass": true,
+      "detail": "locked"
+    },
+    {
+      "name": "control: a request without a user gesture is refused",
+      "pass": true,
+      "detail": "rejected NotAllowedError: A user gesture is required to request Pointer Lock."
+    }
+  ],
+  "events": [],
+  "relockAfterEsc": {
+    "msAfterEsc": 36,
+    "result": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+  },
+  "pageEvents": [
+    "change locked @1204.1",
+    "change unlocked @1206.2",
+    "error @1241.7",
+    "change locked @2716.9",
+    "change unlocked @2717.8",
+    "error @8272.9"
+  ],
+  "exitCode": 0
+}

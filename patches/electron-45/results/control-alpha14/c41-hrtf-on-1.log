@@ -1,0 +1,4 @@
+﻿# 2026-11-20T23:14:58  C:\electron\src\out\Release\electron.exe page-check.js --kcc-page=hrtf.html --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\control-alpha14\c41-hrtf-on-1.json --kcc-raw-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\control-alpha14\c41-hrtf-on-1.f32 --enable-features=KccHrtfPannerKRateAngles
+
+[page-check:hrtf.html] {"hash":"c0da18b9","perPanner":[{"model":"HRTF","hash":"143e489c"},{"model":"HRTF","hash":"ee6cfdda"},{"model":"HRTF","hash":"1cdbb37d"},{"model":"HRTF","hash":"688562de"},{"model":"equalpower","hash":"7a6e4f08"}],"framesPerContext":192000,"nonZero":1909369,"peak":0.6948411464691162,"rawBytes":7680000}
+# exit 0  2026-11-20T23:15:02

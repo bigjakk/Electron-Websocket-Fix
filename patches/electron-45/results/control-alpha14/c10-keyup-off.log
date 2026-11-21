@@ -1,0 +1,10 @@
+﻿# 2026-11-20T23:08:51  C:\electron\src\out\Release\electron.exe keyup-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\control-alpha14\c10-keyup-off.json
+
+[keyup-test] sendInputEvent: page saw [keydown KeyA]; before-input-event saw [keyDown KeyA, keyDown KeyP]
+[keyup-test] FAIL  sendInputEvent: page receives keyup A after a prevented key  page: keydown KeyA
+[keyup-test] PASS  sendInputEvent: prevented key never reaches the page  page: keydown KeyA
+[keyup-test] CDP: page saw [keydown KeyA]; before-input-event saw [keyDown KeyA, keyDown KeyP]
+[keyup-test] FAIL  CDP: page receives keyup A after a prevented key  page: keydown KeyA
+[keyup-test] PASS  CDP: prevented key never reaches the page  page: keydown KeyA
+[keyup-test] PASS  control: unprevented keys all arrive  page: keydown KeyA, keydown KeyS, keyup KeyS, keyup KeyA
+# exit 1  2026-11-20T23:08:56

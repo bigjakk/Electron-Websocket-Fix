@@ -1,0 +1,77 @@
+{
+  "versions": "45.0.0-alpha.14",
+  "switchOn": true,
+  "steps": [
+    {
+      "atMs": 2,
+      "what": "request with gesture",
+      "result": "locked"
+    },
+    {
+      "atMs": 47,
+      "what": "Esc",
+      "result": "unlocked after 43 ms"
+    },
+    {
+      "atMs": 48,
+      "what": "request with gesture 44 ms after Esc",
+      "result": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+    },
+    {
+      "atMs": 1510,
+      "what": "request with gesture 1504 ms after Esc",
+      "result": "locked"
+    },
+    {
+      "atMs": 1556,
+      "what": "Esc",
+      "result": "unlocked after 45 ms"
+    },
+    {
+      "atMs": 7064,
+      "what": "request WITHOUT gesture 5552 ms after Esc",
+      "result": "rejected NotAllowedError: A user gesture is required to request Pointer Lock."
+    }
+  ],
+  "checks": [
+    {
+      "name": "lock with a user gesture",
+      "pass": true,
+      "detail": "locked"
+    },
+    {
+      "name": "Esc releases the lock",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "switch on: re-lock inside the cooldown succeeds",
+      "pass": false,
+      "detail": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+    },
+    {
+      "name": "control: re-lock 1.5 s after Esc succeeds",
+      "pass": true,
+      "detail": "locked"
+    },
+    {
+      "name": "control: a request without a user gesture is refused",
+      "pass": true,
+      "detail": "rejected NotAllowedError: A user gesture is required to request Pointer Lock."
+    }
+  ],
+  "events": [],
+  "relockAfterEsc": {
+    "msAfterEsc": 44,
+    "result": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+  },
+  "pageEvents": [
+    "change locked @1104.0",
+    "change unlocked @1105.8",
+    "error @1150.0",
+    "change locked @2611.8",
+    "change unlocked @2613.1",
+    "error @8165.6"
+  ],
+  "exitCode": 1
+}

@@ -1,0 +1,2 @@
+
+[gpu-status] {"versions":{"electron":"45.0.0-alpha.14","chrome":"156.0.8077.0","v8":"15.6.69-electron.0","node":"24.21.0"},"gpu_compositing":"disabled_software","webgl2":{"vendor":"Google Inc. (Microsoft)","renderer":"ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)","version":"WebGL 2.0 (OpenGL ES 3.0 Chromium)"}}

@@ -1,0 +1,50 @@
+{
+  "versions": "45.0.0-alpha.14",
+  "checks": [
+    {
+      "name": "sendInputEvent: page receives keyup A after a prevented key",
+      "pass": false,
+      "detail": "page: keydown KeyA"
+    },
+    {
+      "name": "sendInputEvent: prevented key never reaches the page",
+      "pass": true,
+      "detail": "page: keydown KeyA"
+    },
+    {
+      "name": "CDP: page receives keyup A after a prevented key",
+      "pass": false,
+      "detail": "page: keydown KeyA"
+    },
+    {
+      "name": "CDP: prevented key never reaches the page",
+      "pass": true,
+      "detail": "page: keydown KeyA"
+    },
+    {
+      "name": "control: unprevented keys all arrive",
+      "pass": true,
+      "detail": "page: keydown KeyA, keydown KeyS, keyup KeyS, keyup KeyA"
+    }
+  ],
+  "events": [],
+  "sendInputEvent": {
+    "page": [
+      "keydown KeyA"
+    ],
+    "beforeInputEvent": [
+      "keyDown KeyA",
+      "keyDown KeyP"
+    ]
+  },
+  "cdp": {
+    "page": [
+      "keydown KeyA"
+    ],
+    "beforeInputEvent": [
+      "keyDown KeyA",
+      "keyDown KeyP"
+    ]
+  },
+  "exitCode": 1
+}

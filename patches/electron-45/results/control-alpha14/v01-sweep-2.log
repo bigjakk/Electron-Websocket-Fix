@@ -1,0 +1,10 @@
+﻿# 2026-11-20T23:12:24  C:\electron\src\out\Release\electron.exe v8-sweep-flag-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\control-alpha14\v01-sweep-2.json --kcc-trace=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\control-alpha14\v01-sweep-2-trace.json --kcc-expect-ms=2 --js-flags=--cppheap-max-incremental-sweep-duration-ms=2
+
+Error: unrecognized flag --cppheap-max-incremental-sweep-duration-ms=2
+Try --help for options
+Error: unrecognized flag --cppheap-max-incremental-sweep-duration-ms=2
+Try --help for options
+[v8-sweep] page churn rounds 341; slices {"CppGC.SweepInLowPriorityTask":{"count":782,"values":{"5":782},"maxSliceMs":7.915,"p50SliceMs":0.002}}
+[v8-sweep] PASS  incremental sweep slices were traced  782 slices
+[v8-sweep] FAIL  every slice carries max_duration_ms = 2  values seen: {"5":782}
+# exit 1  2026-11-20T23:12:45

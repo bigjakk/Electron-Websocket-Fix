@@ -1,0 +1,103 @@
+{
+  "versions": "45.0.0-alpha.14",
+  "enableFeatures": "KccLeanLockedMouseMove",
+  "phases": {
+    "raw-move": {
+      "plan": "40,5,3,0,2000",
+      "before": null,
+      "inject": {
+        "err": null,
+        "out": "OK 40 packets in 80 ms",
+        "stderr": ""
+      },
+      "stats": {
+        "mousemoves": 4,
+        "mx": 200,
+        "my": 120,
+        "pointermoves": 4,
+        "px": 200,
+        "py": 120,
+        "coalescedSumX": 200,
+        "coalescedHist": {
+          "2": 1,
+          "8": 1,
+          "15": 2
+        },
+        "predictedHist": {
+          "0": 1,
+          "10": 3
+        },
+        "maxCoalesced": 15,
+        "maxPredicted": 10,
+        "wheels": 0,
+        "wheelDeltaY": 0,
+        "unlockedMoves": 0
+      },
+      "stillLocked": true
+    },
+    "raw-wheel": {
+      "plan": "40,5,0,120,10000",
+      "before": null,
+      "inject": {
+        "err": null,
+        "out": "OK 40 packets in 407 ms",
+        "stderr": ""
+      },
+      "stats": {
+        "mousemoves": 0,
+        "mx": 0,
+        "my": 0,
+        "pointermoves": 0,
+        "px": 0,
+        "py": 0,
+        "coalescedSumX": 0,
+        "coalescedHist": {},
+        "predictedHist": {},
+        "maxCoalesced": 0,
+        "maxPredicted": 0,
+        "wheels": 16,
+        "wheelDeltaY": -4000,
+        "unlockedMoves": 0
+      },
+      "stillLocked": true
+    },
+    "after-plain-request": {
+      "plan": "40,5,3,0,2000",
+      "before": "locked",
+      "inject": {
+        "err": null,
+        "out": "OK 40 packets in 80 ms",
+        "stderr": ""
+      },
+      "stats": {
+        "mousemoves": 5,
+        "mx": 352,
+        "my": 113,
+        "pointermoves": 5,
+        "px": 352,
+        "py": 113,
+        "coalescedSumX": 352,
+        "coalescedHist": {
+          "2": 2,
+          "9": 1,
+          "13": 1,
+          "15": 1
+        },
+        "predictedHist": {
+          "0": 1,
+          "10": 4
+        },
+        "maxCoalesced": 15,
+        "maxPredicted": 10,
+        "wheels": 0,
+        "wheelDeltaY": 0,
+        "unlockedMoves": 0
+      },
+      "stillLocked": true
+    }
+  },
+  "problems": [],
+  "events": [],
+  "lock": "locked",
+  "exitCode": 0
+}

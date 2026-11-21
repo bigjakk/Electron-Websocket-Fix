@@ -1,0 +1,41 @@
+﻿synthetic checks  2026-11-20T23:08:51
+exe: C:\electron\src\out\Release\electron.exe
+checks: c10,c11,raw,e10,c21,v01,c20,c40,c41
+
+c10    FAIL  flags off: exit 1; page saw [keydown KeyA] via sendInputEvent, [keydown KeyA] via CDP; failed: sendInputEvent: page receives keyup A after a prevented key; CDP: page receives keyup A after a prevented key
+c10    FAIL  flags on: exit 1; page saw [keydown KeyA] via sendInputEvent, [keydown KeyA] via CDP; failed: sendInputEvent: page receives keyup A after a prevented key; CDP: page receives keyup A after a prevented key
+e10    PASS  KccSkipUnobservedInputEmits off: exit 0, 10/10 checks
+e10    PASS  KccSkipUnobservedInputEmits on: exit 0, 10/10 checks
+c11    PASS  KccNoPointerLockEscCooldown off: exit 0; re-lock 36 ms after Esc: rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock.; 5/5 checks
+c11    FAIL  KccNoPointerLockEscCooldown on: exit 1; re-lock 44 ms after Esc: rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock.; 4/5 checks; failed: switch on: re-lock inside the cooldown succeeds (rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock.)
+       raw off: exit 0; raw-move (200,120) in 4 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (356,115) in 6 moves, coalesced max 11, predicted max 10, wheel dY 0
+       raw c12: exit 0; raw-move (200,120) in 4 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (357,115) in 6 moves, coalesced max 13, predicted max 10, wheel dY 0
+       raw c13: exit 0; raw-move (200,120) in 5 moves, coalesced max 18, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (357,115) in 6 moves, coalesced max 16, predicted max 10, wheel dY 0
+       raw c14: exit 0; raw-move (200,120) in 5 moves, coalesced max 22, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,112) in 5 moves, coalesced max 11, predicted max 10, wheel dY 0
+       raw c15: exit 0; raw-move (200,120) in 4 moves, coalesced max 15, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,113) in 5 moves, coalesced max 15, predicted max 10, wheel dY 0
+       raw all: exit 0; raw-move (200,120) in 4 moves, coalesced max 20, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,112) in 6 moves, coalesced max 15, predicted max 10, wheel dY 0
+c12    FAIL  after requestPointerLock() without options on a raw lock: switch off (356,115) (downgraded to OS-accelerated movement), on (357,115) (must stay raw: 200,120)
+c13    FAIL  motion in 40 packets that also carry a wheel tick: switch off (0,0), on (0,0) (must be 200,0); wheel deltaY off -4000, on -4000 (must match)
+c14    PASS  same results as switch off: raw-move (200,120), raw-wheel motion (0,0) vs off (0,0), wheel deltaY -4000 vs off -4000
+c15    FAIL  raw pointermoves: switch off coalesced up to 16, predicted up to 10; on coalesced up to 15, predicted up to 10 (must be 1 and 0); movement (200,120), coalesced entries sum to 200 (must be 200,120 and 200)
+raw    FAIL  every switch on: raw-move (200,120) coalesced max 20; raw-wheel (0,0) wheel -4000; after-plain-request (352,112)
+c21    PASS  fast: err 2ac24dc pix ebb47edf errors 11205 {"1280":5060,"1281":957,"1282":5188} loop 6847 ms turbofan True/True; no-fast: err 2ac24dc pix ebb47edf loop 6492 ms; all flags: err 2ac24dc pix ebb47edf; renderer ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)
+v01    FAIL  flag listed by --v8-options: not listed
+v01    PASS  no flag (stock 5 ms): exit 0; slices {"CppGC.SweepInLowPriorityTask":{"count":166,"values":{"5":166},"maxSliceMs":6.168,"p50SliceMs":5.123}}
+v01    FAIL  --cppheap-max-incremental-sweep-duration-ms=1: exit 1; slices {"CppGC.SweepInLowPriorityTask":{"count":561,"values":{"5":561},"maxSliceMs":6.797,"p50SliceMs":0.002}} | V8: Error: unrecognized flag --cppheap-max-incremental-sweep-duration-ms=1
+v01    FAIL  --cppheap-max-incremental-sweep-duration-ms=2: exit 1; slices {"CppGC.SweepInLowPriorityTask":{"count":782,"values":{"5":782},"maxSliceMs":7.915,"p50SliceMs":0.002}} | V8: Error: unrecognized flag --cppheap-max-incremental-sweep-duration-ms=2
+       c20/c30/c31 flags off: exit 0, 939 frames (117.4 fps), glError 0, RecordMetrics 10, GetVSyncIntervalIfAvailable 0, GetVSyncParameters 941, gpu_compositing disabled_software
+       c20/c30/c31 flags on: exit 0, 819 frames (102.3 fps), glError 0, RecordMetrics 9, GetVSyncIntervalIfAvailable 0, GetVSyncParameters 821, gpu_compositing disabled_software
+c20    FAIL  RecordMetrics slices: off 10, on 9 (must be > 0 and 0)
+c30    PASS  texture-rebind page ran without crash or DCHECK, glError 0, 819 frames with KccLabelTexturesOnce (no counter for the skipped labels in a trace)
+c31    N/A   GetVSyncIntervalIfAvailable never ran (off 0, on 0): DCompPresenter is not used on this machine, so KccCacheVsyncInterval was not exercised; the build ran with it on.
+       c40 flags off: exit 0: never-started t=0.000 8.90->122.82 ms (13.80x); after-run-1 t=0.282 8.58->137.12 ms (15.98x); after-run-2 t=0.511 9.74->128.08 ms (13.15x); after-run-3 t=0.511 9.74->130.40 ms (13.39x)
+       c40 flags on: exit 0: never-started t=0.000 9.40->133.20 ms (14.17x); after-run-1 t=0.322 8.98->144.18 ms (16.06x); after-run-2 t=0.482 15.58->140.16 ms (9.00x); after-run-3 t=0.531 8.86->168.56 ms (19.02x)
+c40    FAIL  with the switch every scenario stays flat (growth <= 1.5x): False; stock grew > 3x in 4 of 4 scenarios
+       c41 off-1: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+       c41 off-2: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+       c41 on-1: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+       c41 on-2: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+c41    PASS  4 renders (off x2, on x2): 1 distinct buffer(s); identical sample for sample: True
+
+SYNTHETIC CHECKS: SOME FAILED (see above)
