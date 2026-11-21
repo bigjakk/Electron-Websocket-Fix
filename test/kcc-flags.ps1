@@ -18,6 +18,20 @@ function Join-KccFeatures([string[]]$features) {
   return @("--enable-features=$($list -join ',')")
 }
 
+# Waits until no process of this electron.exe (browser or child) is left, so
+# that one run's GPU or renderer process never overlaps the next run, and the
+# log handle the children inherited is closed. Returns how many are left.
+function Wait-ElectronGone([string]$exe, [int]$timeoutMs = 20000) {
+  $full = [IO.Path]::GetFullPath($exe)
+  $sw = [Diagnostics.Stopwatch]::StartNew()
+  do {
+    $left = @(Get-Process -Name electron -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $full })
+    if ($left.Count -eq 0) { return 0 }
+    Start-Sleep -Milliseconds 200
+  } while ($sw.ElapsedMilliseconds -lt $timeoutMs)
+  return $left.Count
+}
+
 # Runs electron with the given arguments from the test directory, stdout and
 # stderr both into $log, and returns the exit code. cmd /c keeps native stderr
 # out of PowerShell's error stream.
@@ -29,7 +43,11 @@ function Invoke-Electron([string]$exe, [string[]]$argv, [string]$log) {
     cmd /c "`"$exe`" $quoted >> `"$log`" 2>&1"
     $code = $LASTEXITCODE
   } finally { Pop-Location }
-  Add-Content -Path $log -Value "# exit $code  $(Get-Date -Format s)" -Encoding utf8
+  $left = Wait-ElectronGone $exe
+  $line = "# exit $code  $(Get-Date -Format s)$(if ($left) { "  ($left electron processes still running 20 s after the browser exited)" })"
+  for ($i = 0; $i -lt 40; $i++) {
+    try { Add-Content -Path $log -Value $line -Encoding utf8 -ErrorAction Stop; break } catch { Start-Sleep -Milliseconds 250 }
+  }
   return $code
 }
 

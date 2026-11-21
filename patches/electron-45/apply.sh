@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Apply (or check, or reverse) the Electron 45 patch series in order.
 #
-#   apply.sh <chromium src dir> [--check | --reverse | --commit]
+#   apply.sh <chromium src dir> [--check [--base FILE] | --reverse | --commit]
 #            [--group a,b,...] [--not-group a,b,...]
 #
 # Works in Git Bash on Windows and in the stock bash on Linux and macOS (3.2).
@@ -16,6 +16,11 @@
 # --check      report whether every selected patch would apply to the committed
 #              tree (HEAD), changing nothing. Patches later in the series depend
 #              on earlier ones, so they are stacked in a scratch index.
+# --base FILE  with --check: stack on the commits listed in FILE instead of
+#              HEAD, one "<checkout> <commit>" per line with checkout src,
+#              electron or v8 ('#' lines ignored; the format of
+#              results/stage0/base-commits.txt). In a tree that already has the
+#              series committed this is the check against the pristine tree.
 # --reverse    undo the selected patches, last first (for a plain apply).
 # --commit     apply each patch and commit it locally, one commit per patch,
 #              with the subject "kcc-series: <root>/<file>". Use this for the
@@ -27,7 +32,7 @@
 set -u
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-SRC=""; MODE=apply; GROUPS_IN=""; GROUPS_OUT=""
+SRC=""; MODE=apply; GROUPS_IN=""; GROUPS_OUT=""; BASEFILE=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --check) MODE=check ;;
@@ -35,16 +40,30 @@ while [ $# -gt 0 ]; do
     --commit) MODE=commit ;;
     --group) GROUPS_IN=",$2,"; shift ;;
     --not-group) GROUPS_OUT=",$2,"; shift ;;
-    -h|--help) sed -n '2,28p' "$0"; exit 0 ;;
+    --base) BASEFILE="$2"; shift ;;
+    -h|--help) sed -n '2,33p' "$0"; exit 0 ;;
     *) SRC="$1" ;;
   esac
   shift
 done
 if [ -z "$SRC" ] || [ ! -d "$SRC" ]; then
-  echo "usage: apply.sh <chromium src dir> [--check|--reverse|--commit] [--group LIST] [--not-group LIST]"
+  echo "usage: apply.sh <chromium src dir> [--check [--base FILE]|--reverse|--commit] [--group LIST] [--not-group LIST]"
   exit 2
 fi
 SRC="$(cd "$SRC" && pwd)"
+if [ -n "$BASEFILE" ] && { [ "$MODE" != check ] || [ ! -f "$BASEFILE" ]; }; then
+  echo "--base needs --check and an existing file: $BASEFILE"
+  exit 2
+fi
+# The commit a checkout's scratch index starts from in --check mode.
+check_base() {
+  key="$1"; [ "$key" = chromium ] && key=src
+  b=""
+  if [ -n "$BASEFILE" ]; then
+    b="$(tr -d '\r' < "$BASEFILE" | awk -v k="$key" '$1 == k { print $2; exit }')"
+  fi
+  echo "${b:-HEAD}"
+}
 
 root_dir() {
   case "$1" in
@@ -100,7 +119,9 @@ while read -r root file group _; do
       # One scratch index per checkout; git creates the file itself.
       idx="$TMPD/index-$root"
       if [ ! -f "$idx" ]; then
-        GIT_INDEX_FILE="$idx" git -C "$dir" read-tree HEAD
+        base="$(check_base "$root")"
+        GIT_INDEX_FILE="$idx" git -C "$dir" read-tree "$base" || { echo "cannot read $base in $dir"; exit 1; }
+        [ "$base" = HEAD ] || echo "         ($root stacked on $base)"
       fi
       if GIT_INDEX_FILE="$idx" git -C "$dir" apply --cached --whitespace=nowarn "$patch" 2> "$ERR"; then
         echo "ok       $root/$file"; ok=$((ok+1))
@@ -111,4 +132,16 @@ while read -r root file group _; do
 done < "$SERIES"
 
 echo "$MODE: $ok ok, $fail failed"
+# With --base, also say whether base + the stacked diffs is exactly the tree
+# committed at HEAD, i.e. whether the diffs here are the code in that tree.
+if [ "$MODE" = check ] && [ -n "$BASEFILE" ] && [ "$fail" = 0 ]; then
+  for root in chromium electron v8; do
+    idx="$TMPD/index-$root"; dir="$(root_dir "$root")"
+    [ -f "$idx" ] || continue
+    built="$(GIT_INDEX_FILE="$idx" git -C "$dir" write-tree)"
+    head="$(git -C "$dir" rev-parse 'HEAD^{tree}')"
+    if [ "$built" = "$head" ]; then echo "tree     $root: base + diffs = HEAD ($head)"
+    else echo "TREE     $root: base + diffs ($built) differs from HEAD ($head)"; fail=$((fail+1)); fi
+  done
+fi
 [ "$fail" = 0 ]
