@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>KCC pointer-lock check</title>
+<style>html, body { margin: 0; height: 100%; background: #123; } #t { width: 100%; height: 100%; }</style>
+<div id="t"></div>
+<script>
+  // Driven by pointer-lock-test.js. kccLock() resolves to "locked" or to the
+  // rejection's DOMException name and message.
+  const t = document.getElementById('t');
+  window.kccEvents = [];
+  const stamp = () => performance.now().toFixed(1);
+  document.addEventListener('pointerlockchange', () => kccEvents.push(`change ${document.pointerLockElement ? 'locked' : 'unlocked'} @${stamp()}`));
+  document.addEventListener('pointerlockerror', () => kccEvents.push(`error @${stamp()}`));
+  window.kccLock = (opts) => {
+    try {
+      const p = t.requestPointerLock(opts);
+      if (!p || typeof p.then !== 'function') return Promise.resolve('no promise');
+      return p.then(() => 'locked', (e) => `rejected ${e.name}: ${e.message}`);
+    } catch (e) {
+      return Promise.resolve(`threw ${e.name}: ${e.message}`);
+    }
+  };
+  window.kccLocked = () => document.pointerLockElement === t;
+</script>

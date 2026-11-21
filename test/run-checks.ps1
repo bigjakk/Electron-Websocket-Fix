@@ -1,14 +1,15 @@
 # Synthetic checks for the drafted patches of the KCC Electron 45 series.
 # Each check runs the same binary with the patch's switch off and on.
 #
-#   run-checks.ps1 -Exe <electron.exe> -OutDir <dir> [-Only c10,e10,c21,v01,c20,c40,c41,c60,c61]
+#   run-checks.ps1 -Exe <electron.exe> -OutDir <dir> [-Only c10,c11,raw,e10,c21,v01,c20,c40,c41,c60,c61]
+#   ("raw" covers c12, c13, c14 and c15; "c20" also reports c30 and c31)
 #
 # Writes one log / JSON per run into -OutDir and a summary.txt. A check that
 # cannot be exercised on this machine says so instead of passing.
 param(
   [Parameter(Mandatory = $true)][string]$Exe,
   [Parameter(Mandatory = $true)][string]$OutDir,
-  [string[]]$Only = @('c10', 'e10', 'c21', 'v01', 'c20', 'c40', 'c41', 'c60', 'c61')
+  [string[]]$Only = @('c10', 'c11', 'raw', 'e10', 'c21', 'v01', 'c20', 'c40', 'c41', 'c60', 'c61')
 )
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\kcc-flags.ps1"
@@ -53,6 +54,57 @@ if ($Only -contains 'e10') {
     $n = if ($r.res) { @($r.res.checks).Count } else { 0 }
     $failed = if ($r.res) { @($r.res.checks | Where-Object { -not $_.pass } | ForEach-Object { "$($_.name) ($($_.detail))" }) } else { @('no result') }
     Verdict 'e10' (Clean $r) "KccSkipUnobservedInputEmits $mode`: exit $($r.code), $($n - $failed.Count)/$n checks$(if ($failed.Count) { '; failed: ' + ($failed -join '; ') })$(CrashNote $r)"
+  }
+}
+
+# ---- c11: pointer-lock Esc cooldown -------------------------------------------
+# Not in the brief's list (it files c11 under "cannot be meaningfully checked"),
+# but the cooldown is reachable with a scripted Esc: see pointer-lock-test.js.
+if ($Only -contains 'c11') {
+  foreach ($mode in 'off', 'on') {
+    $f = if ($mode -eq 'on') { Join-KccFeatures @('KccNoPointerLockEscCooldown') } else { @() }
+    $r = Run "c11-pointer-lock-$mode" (@('pointer-lock-test.js', "--kcc-out=$OutDir\c11-pointer-lock-$mode.json") + $f)
+    $n = if ($r.res) { @($r.res.checks).Count } else { 0 }
+    $failed = if ($r.res) { @($r.res.checks | Where-Object { -not $_.pass } | ForEach-Object { "$($_.name) ($($_.detail))" }) } else { @('no result') }
+    Verdict 'c11' (Clean $r) "KccNoPointerLockEscCooldown $mode`: exit $($r.code); re-lock $($r.res.relockAfterEsc.msAfterEsc) ms after Esc: $($r.res.relockAfterEsc.result); $($n - $failed.Count)/$n checks$(if ($failed.Count) { '; failed: ' + ($failed -join '; ') })$(CrashNote $r)"
+  }
+}
+
+# ---- c12 / c13 / c14 / c15: raw input under pointer lock (SendInput) ----------
+# Also outside the brief's list. Injected relative packets take the real
+# WM_INPUT path (HWNDMessageHandler::OnInputEvent) with exact counts; see
+# raw-input-test.js for the phases. Functional only: no cost is measured.
+if ($Only -contains 'raw') {
+  $raw = @{}
+  $cfgs = [ordered]@{ off = @(); c12 = @('KccPinRawPointerLock'); c13 = @('KccRawInputKeepWheelMotion'); c14 = @('KccRawInputFastPath'); c15 = @('KccLeanLockedMouseMove'); all = $KccAllFeatures }
+  foreach ($k in $cfgs.Keys) {
+    $name = "raw-input-$k"
+    $argv = @('raw-input-test.js', "--kcc-out=$OutDir\$name.json") + @(Join-KccFeatures $cfgs[$k])
+    if ($k -eq 'all') { $argv += "--js-flags=$KccAllJsFlags" }
+    $r = Run $name $argv
+    $raw[$k] = $r
+    $ph = $r.res.phases
+    $fmt = { param($p) if ($p) { '({0},{1}) in {2} moves, coalesced max {3}, predicted max {4}, wheel dY {5}' -f $p.stats.mx, $p.stats.my, $p.stats.mousemoves, $p.stats.maxCoalesced, $p.stats.maxPredicted, $p.stats.wheelDeltaY } else { 'no data' } }
+    Say "       raw $k`: exit $($r.code); raw-move $(& $fmt $ph.'raw-move'); raw-wheel $(& $fmt $ph.'raw-wheel'); after-plain-request $(& $fmt $ph.'after-plain-request')$(if ($r.res.problems) { ' | problems: ' + ($r.res.problems -join '; ') })$(CrashNote $r)"
+  }
+  $m = { param($k, $p) $raw[$k].res.phases.$p.stats }
+  $off = $raw.off
+  $injOk = (Clean $off) -and (& $m 'off' 'raw-move').mx -eq 200 -and (& $m 'off' 'raw-move').my -eq 120
+  if (-not $injOk) {
+    Say "raw    N/A   injected packets did not arrive as exact raw motion with the switches off (raw-move $((& $m 'off' 'raw-move').mx),$((& $m 'off' 'raw-move').my)); c12-c15 not checked$(CrashNote $off)"
+    $script:allPass = $false
+  } else {
+    $wOff = (& $m 'off' 'raw-wheel').wheelDeltaY
+    $s = & $m 'c12' 'after-plain-request'; $so = & $m 'off' 'after-plain-request'
+    Verdict 'c12' ((Clean $raw.c12) -and $s.mx -eq 200 -and $s.my -eq 120) "after requestPointerLock() without options on a raw lock: switch off ($($so.mx),$($so.my)) (downgraded to OS-accelerated movement), on ($($s.mx),$($s.my)) (must stay raw: 200,120)$(CrashNote $raw.c12)"
+    $s = & $m 'c13' 'raw-wheel'; $so = & $m 'off' 'raw-wheel'
+    Verdict 'c13' ((Clean $raw.c13) -and $s.mx -eq 200 -and $s.my -eq 0 -and $s.wheelDeltaY -eq $wOff) "motion in 40 packets that also carry a wheel tick: switch off ($($so.mx),$($so.my)), on ($($s.mx),$($s.my)) (must be 200,0); wheel deltaY off $wOff, on $($s.wheelDeltaY) (must match)$(CrashNote $raw.c13)"
+    $a = & $m 'c14' 'raw-move'; $b = & $m 'c14' 'raw-wheel'; $bo = & $m 'off' 'raw-wheel'
+    Verdict 'c14' ((Clean $raw.c14) -and $a.mx -eq 200 -and $a.my -eq 120 -and $b.mx -eq $bo.mx -and $b.my -eq $bo.my -and $b.wheelDeltaY -eq $wOff) "same results as switch off: raw-move ($($a.mx),$($a.my)), raw-wheel motion ($($b.mx),$($b.my)) vs off ($($bo.mx),$($bo.my)), wheel deltaY $($b.wheelDeltaY) vs off $wOff$(CrashNote $raw.c14)"
+    $s = & $m 'c15' 'raw-move'; $so = & $m 'off' 'raw-move'
+    Verdict 'c15' ((Clean $raw.c15) -and $s.mx -eq 200 -and $s.my -eq 120 -and $s.maxCoalesced -eq 1 -and $s.maxPredicted -eq 0 -and $s.coalescedSumX -eq 200) "raw pointermoves: switch off coalesced up to $($so.maxCoalesced), predicted up to $($so.maxPredicted); on coalesced up to $($s.maxCoalesced), predicted up to $($s.maxPredicted) (must be 1 and 0); movement ($($s.mx),$($s.my)), coalesced entries sum to $($s.coalescedSumX) (must be 200,120 and 200)$(CrashNote $raw.c15)"
+    $p1 = & $m 'all' 'raw-move'; $p2 = & $m 'all' 'raw-wheel'; $p3 = & $m 'all' 'after-plain-request'
+    Verdict 'raw' ((Clean $raw.all) -and $p1.mx -eq 200 -and $p1.my -eq 120 -and $p1.maxCoalesced -eq 1 -and $p2.mx -eq 200 -and $p2.wheelDeltaY -eq $wOff -and $p3.mx -eq 200 -and $p3.my -eq 120) "every switch on: raw-move ($($p1.mx),$($p1.my)) coalesced max $($p1.maxCoalesced); raw-wheel ($($p2.mx),$($p2.my)) wheel $($p2.wheelDeltaY); after-plain-request ($($p3.mx),$($p3.my))$(CrashNote $raw.all)"
   }
 }
 

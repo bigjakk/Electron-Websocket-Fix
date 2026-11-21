@@ -12,8 +12,10 @@
 #   latch    KccFrameCapLateLatch
 #   both     KccFrameCapPreciseRelease + KccFrameCapLateLatch
 #   all      every switch of the series (README "Everything on") + --js-flags
-# Heavy-suite rates of every variant are compared with variant "off" when it
-# ran in the same invocation: the rate must not drop by more than 3 %.
+# Heavy-suite rates of every variant are compared with variant "off", from this
+# invocation or, failing that, from off-heavy-<busy>.json already in -OutDir
+# (so variants can run in separate invocations): the rate must not drop by more
+# than 3 %. The summary is summary-<variants>.txt.
 # Never combined with CustomMaxPendingFrames:count/2 (a documented conflict).
 param(
   [Parameter(Mandatory = $true)][string]$Exe,
@@ -30,7 +32,7 @@ $ErrorActionPreference = 'Stop'
 $Variants = @($Variants | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
 $Busy = @($Busy | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
 New-Item -ItemType Directory -Force $OutDir | Out-Null
-$summary = Join-Path $OutDir 'summary.txt'
+$summary = Join-Path $OutDir "summary-$($Variants -join '-').txt"
 Set-Content $summary "frame-cap gate  $(Get-Date -Format s)`nexe: $Exe`nvariants: $($Variants -join ',')  heavy-suite busy: $($Busy -join ', ') ms`n" -Encoding utf8
 
 function Get-VariantFeatures([string]$v) {
@@ -90,6 +92,11 @@ foreach ($v in $Variants) {
 # The rate must not drop compared with the same suite with the switches off.
 foreach ($b in $Busy) {
   $baseKey = "off|$b"
+  $offJson = Join-Path $OutDir "off-heavy-$b.json"
+  if (-not $heavy.ContainsKey($baseKey) -and (Test-Path $offJson)) {
+    $heavy[$baseKey] = Get-Content $offJson -Raw | ConvertFrom-Json
+    Add-Content $summary "`n(variant off for busy $b ms read from $offJson, $((Get-Item $offJson).LastWriteTime.ToString('s')))" -Encoding utf8
+  }
   if (-not $heavy.ContainsKey($baseKey)) { continue }
   $base = $heavy[$baseKey]
   Add-Content $summary "`nheavy suite, busy $b ms, variant off: reach $([math]::Round($base.reach,1)), cap1000 $([math]::Round($base.cap1000,1)), cap240 $([math]::Round($base.cap240,1)), cap144 $([math]::Round($base.cap144,1))" -Encoding utf8
