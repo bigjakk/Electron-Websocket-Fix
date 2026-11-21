@@ -1,0 +1,128 @@
+{
+  "suite": "heavy",
+  "cap": 0,
+  "busy": 5,
+  "mode": "2d",
+  "windowMs": 10000,
+  "enableFeatures": "KccFrameCapPreciseRelease",
+  "featuresVia": "js",
+  "versions": {
+    "electron": "45.4.1",
+    "chrome": "156.0.8078.100",
+    "v8": "15.6.75.57-electron.d384e85dffdbe2dd"
+  },
+  "measurements": [
+    {
+      "label": "main",
+      "fps": 155.8,
+      "frames": 1558,
+      "elapsedMs": 10000,
+      "meanMs": 6.418485237483954,
+      "sdMs": 0.3010120127507468,
+      "p01Ms": 6.100000001490116,
+      "p50Ms": 6.300000004470348,
+      "p99Ms": 7.799999997019768,
+      "maxMs": 9.199999995529652,
+      "name": "uncapped, busy 5 ms"
+    },
+    {
+      "label": "main",
+      "fps": 130.46086174147754,
+      "frames": 1305,
+      "elapsedMs": 10003,
+      "meanMs": 7.665134099616858,
+      "sdMs": 1.736275928748182,
+      "p01Ms": 6.100000001490116,
+      "p50Ms": 7.299999997019768,
+      "p99Ms": 13.100000001490116,
+      "maxMs": 22.600000001490116,
+      "name": "cap 1000, busy 5 ms"
+    },
+    {
+      "label": "main",
+      "fps": 115.89768204641088,
+      "frames": 1159,
+      "elapsedMs": 10000.19999999553,
+      "meanMs": 8.628300258839975,
+      "sdMs": 1.8451044644189676,
+      "p01Ms": 6.5999999940395355,
+      "p50Ms": 8.299999997019768,
+      "p99Ms": 17.69999999552965,
+      "maxMs": 29.80000000447035,
+      "name": "cap 240, busy 5 ms"
+    },
+    {
+      "label": "main",
+      "fps": 115.86871544679484,
+      "frames": 1159,
+      "elapsedMs": 10002.70000000298,
+      "meanMs": 8.630457290770474,
+      "sdMs": 1.9167250923868389,
+      "p01Ms": 6.600000001490116,
+      "p50Ms": 8.299999997019768,
+      "p99Ms": 18.399999998509884,
+      "maxMs": 27.30000000447035,
+      "name": "cap 144, busy 5 ms"
+    }
+  ],
+  "checks": [
+    {
+      "name": "cap 1000 at or above reach (156): window did not freeze",
+      "pass": true,
+      "detail": "uncapped 155.80, capped 130.46 (-16.26 % vs uncapped, informational)"
+    },
+    {
+      "name": "cap 240 at or above reach (156): window did not freeze",
+      "pass": true,
+      "detail": "uncapped 155.80, capped 115.90 (-25.61 % vs uncapped, informational)"
+    },
+    {
+      "name": "cap 144 at or above reach (156): window did not freeze",
+      "pass": true,
+      "detail": "uncapped 155.80, capped 115.87 (informational)"
+    }
+  ],
+  "events": [],
+  "started": "2026-11-21T11:56:02.057Z",
+  "gpuFeatureStatus": {
+    "2d_canvas": "disabled_software",
+    "direct_rendering_display_compositor": "disabled_off_ok",
+    "gpu_compositing": "disabled_software",
+    "multiple_raster_threads": "enabled_on",
+    "opengl": "disabled_off",
+    "rasterization": "disabled_software",
+    "raw_draw": "disabled_off_ok",
+    "skia_graphite": "disabled_off",
+    "trees_in_viz": "disabled_off",
+    "video_decode": "disabled_software",
+    "video_encode": "disabled_software",
+    "webgl": "disabled_off",
+    "webgpu": "disabled_off",
+    "webnn": "disabled_off"
+  },
+  "pageRenderer": "2d",
+  "gpuDevices": [
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    }
+  ],
+  "reach": 155.8,
+  "cap1000": 130.46086174147754,
+  "cap240": 115.89768204641088,
+  "cap144": 115.86871544679484,
+  "finished": "2026-11-21T11:56:47.395Z",
+  "exitCode": 0,
+  "failed": []
+}

@@ -1,0 +1,25 @@
+﻿# 2026-11-21T03:35:25  C:\electron\src\out\Testing\electron.exe frame-cap-test.js --kcc-suite=launch --kcc-cap=240 --kcc-mode=2d --kcc-features=CustomFrameCap:fps/240,KccFrameCapPreciseRelease --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\precise-launch-240.json --enable-logging
+
+[9568:1121/033525.552:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[5744:1121/033525.707:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file:///C:/projects/Electron-Websocket-Fix/test/frame-cap.html?busy=0&label=main&mode=2d (0)
+[frame-cap:launch] page renderer 2d; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:launch] measure launch 240: 240.07 fps (2401 frames / 10001 ms; interval mean 4.166 sd 1.255 p50 4.100 p99 11.700 max 15.50 ms)
+[frame-cap:launch] PASS  launch CustomFrameCap:fps/240  target 240 got 240.07 (0.03 %, tol 1 %)
+[frame-cap:launch] measure launch 240 after hide/show: 239.61 fps (2397 frames / 10004 ms; interval mean 4.173 sd 1.275 p50 4.100 p99 11.400 max 20.00 ms)
+[frame-cap:launch] PASS  launch cap 240 after hide/show  target 240 got 239.61 (-0.16 %, tol 1 %)
+[frame-cap:launch] measure launch 240 after resize: 239.62 fps (2397 frames / 10004 ms; interval mean 4.173 sd 1.308 p50 4.100 p99 11.600 max 19.10 ms)
+[frame-cap:launch] PASS  launch cap 240 after resize  target 240 got 239.62 (-0.16 %, tol 1 %)
+[frame-cap:launch] measure setFrameCap(0) after launch cap: 497.73 fps (4978 frames / 10001 ms; interval mean 2.009 sd 1.304 p50 1.700 p99 10.500 max 16.80 ms)
+[frame-cap:launch] PASS  setFrameCap(0) uncaps a launch cap  launch cap 240, got 497.73 (must exceed 252)
+[frame-cap:launch] measure re-cap 240: 239.68 fps (2397 frames / 10001 ms; interval mean 4.172 sd 1.206 p50 4.100 p99 10.800 max 17.20 ms)
+[frame-cap:launch] PASS  setFrameCap(240) re-caps  target 240 got 239.68 (-0.13 %, tol 1 %)
+[frame-cap:launch] 5/5 checks passed, exit 0
+[5744:1121/033624.354:WARNING:components\discardable_memory\service\discardable_shared_memory_manager.cc:466] Some MojoDiscardableSharedMemoryManagerImpls are still alive. They will be leaked.
+# exit 0  2026-11-21T03:36:24
