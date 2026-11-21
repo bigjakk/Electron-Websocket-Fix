@@ -1,0 +1,11 @@
+﻿# 2026-11-21T04:37:24  C:\electron\src\out\Testing\electron.exe keyup-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\checks\c10-keyup-off.json
+
+[16872:1121/043725.139:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[keyup-test] sendInputEvent: page saw [keydown KeyA, keyup KeyA]; before-input-event saw [keyDown KeyA, keyDown KeyP, keyUp KeyA]
+[keyup-test] PASS  sendInputEvent: page receives keyup A after a prevented key  page: keydown KeyA, keyup KeyA
+[keyup-test] PASS  sendInputEvent: prevented key never reaches the page  page: keydown KeyA, keyup KeyA
+[keyup-test] CDP: page saw [keydown KeyA, keyup KeyA]; before-input-event saw [keyDown KeyA, keyDown KeyP, keyUp KeyA]
+[keyup-test] PASS  CDP: page receives keyup A after a prevented key  page: keydown KeyA, keyup KeyA
+[keyup-test] PASS  CDP: prevented key never reaches the page  page: keydown KeyA, keyup KeyA
+[keyup-test] PASS  control: unprevented keys all arrive  page: keydown KeyA, keydown KeyS, keyup KeyS, keyup KeyA
+# exit 0  2026-11-21T04:37:28

@@ -1,0 +1,262 @@
+﻿# 2026-11-21T04:39:29  C:\electron\src\out\Testing\electron.exe webgl-fast-api-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\checks\c21-webgl-fast-allflags.json "--js-flags=--allow-natives-syntax --cppheap-max-incremental-sweep-duration-ms=1" --enable-features=KccNoPointerLockEscCooldown,KccPinRawPointerLock,KccRawInputKeepWheelMotion,KccRawInputFastPath,KccLeanLockedMouseMove,KccSkipUnobservedInputEmits,KccSkipCanvasPerfSampling,KccLabelTexturesOnce,KccCacheVsyncInterval,KccMacFineGpuBackpressure,KccAudioParamCoalesce,KccHrtfPannerKRateAngles,KccX11AllowUnredirect,KccX11RawMouse,KccFrameCapPreciseRelease,KccFrameCapLateLatch
+
+[13636:1121/043930.791:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[13636:1121/043931.304:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.309:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.314:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.319:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.321:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.324:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.325:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.328:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.330:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.335:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.339:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.344:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.345:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.350:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.353:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.360:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.361:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.366:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.368:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.372:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.377:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.381:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.382:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.387:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.391:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.392:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.393:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.398:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.403:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.408:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.409:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.413:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.417:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.419:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.422:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.426:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.431:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.433:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.434:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.436:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.440:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.445:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.446:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.450:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.453:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.454:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.457:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.459:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.467:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.472:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.473:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.475:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.477:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.482:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.486:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.491:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.495:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.496:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.500:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.504:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.506:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.509:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.515:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.518:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.523:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.527:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.528:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.531:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.536:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.540:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.544:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.549:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.553:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.556:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.557:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.558:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.559:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.563:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.571:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.575:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.579:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.581:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.584:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.586:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.590:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.594:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.599:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.599:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.603:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.605:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.607:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.611:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.617:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.620:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.625:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.628:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.630:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.635:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.635:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.639:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.640:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.644:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.649:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.653:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.657:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.659:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.662:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.663:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.670:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.674:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.676:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.678:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.680:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.684:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.688:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.692:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.696:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.697:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.699:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.702:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.706:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.711:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.715:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.718:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.720:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.723:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.724:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.728:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.732:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.737:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.737:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.740:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.742:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.746:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.747:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.750:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.754:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.759:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.764:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.766:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.768:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.771:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.774:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.775:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.780:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.784:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.788:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.790:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.792:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.793:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.795:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.798:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.803:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.807:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.814:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.815:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.817:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.820:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.825:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.829:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.834:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.835:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.839:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.843:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.844:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.849:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.854:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.857:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.859:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.866:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.868:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.873:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.877:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.877:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.882:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.887:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.890:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.891:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.896:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.898:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.901:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.905:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.910:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.914:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.918:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.919:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.923:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.926:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.928:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.932:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.936:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.938:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.939:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.941:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.946:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.950:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.953:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.954:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.957:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043931.959:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.962:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.968:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.972:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.977:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.980:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043931.983:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.988:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043931.992:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043931.997:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.000:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043932.002:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.007:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.009:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043932.014:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.016:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043932.024:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043932.024:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.029:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.034:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.038:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.039:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043932.042:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043932.045:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.047:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043932.050:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.054:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.059:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.063:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.066:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043932.066:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043932.067:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.075:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.079:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.083:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.085:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043932.088:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.089:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043932.092:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043932.093:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.097:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.102:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.105:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043932.107:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.111:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.115:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.118:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043932.124:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.125:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043932.128:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.133:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.136:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawElementsInstanced: Invalid enum provided.
+[13636:1121/043932.138:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.142:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.145:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_ENUM: glDrawArraysInstanced: Invalid draw mode.
+[13636:1121/043932.145:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Offset must be a multiple of the passed in datatype.
+[13636:1121/043932.148:ERROR:gpu\command_buffer\service\gl_utils.cc:427] [.WebGL-0x4840044d800] GL_INVALID_OPERATION: glDrawElementsInstanced: Must have element array buffer bound.
+[13636:1121/043932.152:ERROR:gpu\command_buffer\service\logger.cc:48] Too many GL errors, not reporting any more for this context. use --disable-gl-error-limit to see all errors.
+[webgl-fast-api] {"renderer":"ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)","iterations":20000,"loopMs":12015.89999999851,"errHash":"2ac24dc","errTotal":11205,"errCounts":{"1280":5060,"1281":957,"1282":5188},"pixHash":"ebb47edf","nonBlackPixels":490,"optStatusBeforeLoop":41,"optStatusAfterLoop":41,"turbofannedBeforeLoop":true,"turbofannedAfterLoop":true}
+# exit 0  2026-11-21T04:39:44

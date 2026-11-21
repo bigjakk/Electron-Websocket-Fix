@@ -1,0 +1,5 @@
+﻿# 2026-11-21T04:29:31  C:\electron\src\out\Testing\electron.exe page-check.js --kcc-page=canvas-texture.html --kcc-query=s=8 --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\checks\c20-c30-c31-off.json --kcc-trace=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\checks\c20-c30-c31-off-trace.json --kcc-trace-categories=blink,gpu
+
+[1696:1121/042932.375:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[page-check:canvas-texture.html] {"frames":651,"seconds":8.00619999999553,"fps":81.31198321305531,"glError":0,"renderer":"ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)"}
+# exit 0  2026-11-21T04:29:41

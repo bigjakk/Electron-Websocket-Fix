@@ -1,0 +1,159 @@
+{
+  "suite": "cpu",
+  "cap": 144,
+  "busy": 0,
+  "mode": "2d",
+  "windowMs": 10000,
+  "enableFeatures": "KccFrameCapPreciseRelease",
+  "featuresVia": "command line",
+  "versions": {
+    "electron": "45.4.1",
+    "chrome": "156.0.8078.100",
+    "v8": "15.6.75.57-electron.d384e85dffdbe2dd"
+  },
+  "measurements": [
+    {
+      "label": "main",
+      "fps": 144.00927415721657,
+      "frames": 1441,
+      "elapsedMs": 10006.30000000447,
+      "meanMs": 6.943997224152998,
+      "sdMs": 0.2363417937482264,
+      "p01Ms": 6.399999998509884,
+      "p50Ms": 7,
+      "p99Ms": 7.5,
+      "maxMs": 8.300000004470348,
+      "name": "cpu suite, cap 144"
+    }
+  ],
+  "checks": [
+    {
+      "name": "cpu suite: cap 144 holds",
+      "pass": true,
+      "detail": "target 144 got 144.01 (0.01 %, tol 1 %)"
+    },
+    {
+      "name": "cpu suite: VizCompositorThread found",
+      "pass": true,
+      "detail": "20.0 % of a core"
+    }
+  ],
+  "events": [],
+  "started": "2026-11-21T12:53:12.020Z",
+  "gpuFeatureStatus": {
+    "2d_canvas": "disabled_software",
+    "direct_rendering_display_compositor": "disabled_off_ok",
+    "gpu_compositing": "disabled_software",
+    "multiple_raster_threads": "enabled_on",
+    "opengl": "disabled_off",
+    "rasterization": "disabled_software",
+    "raw_draw": "disabled_off_ok",
+    "skia_graphite": "disabled_off",
+    "trees_in_viz": "disabled_off",
+    "video_decode": "disabled_software",
+    "video_encode": "disabled_software",
+    "webgl": "disabled_off",
+    "webgpu": "disabled_off",
+    "webnn": "disabled_off"
+  },
+  "pageRenderer": "2d",
+  "gpuDevices": [
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    }
+  ],
+  "cpu": {
+    "wallS": 11.511168,
+    "processPctOfCore": 25.925909516740614,
+    "threads": [
+      {
+        "tid": 15464,
+        "name": "VizCompositorThread",
+        "cpuS": 2.296875,
+        "pctOfCore": 19.953448685659005
+      },
+      {
+        "tid": 14412,
+        "name": "Chrome_ChildIOThread",
+        "cpuS": 0.4375,
+        "pctOfCore": 3.800656892506477
+      },
+      {
+        "tid": 15868,
+        "name": "",
+        "cpuS": 0.140625,
+        "pctOfCore": 1.2216397154485106
+      },
+      {
+        "tid": 4712,
+        "name": "",
+        "cpuS": 0.046875,
+        "pctOfCore": 0.40721323848283686
+      },
+      {
+        "tid": 7928,
+        "name": "",
+        "cpuS": 0.046875,
+        "pctOfCore": 0.40721323848283686
+      },
+      {
+        "tid": 15024,
+        "name": "CrGpuMain",
+        "cpuS": 0,
+        "pctOfCore": 0
+      },
+      {
+        "tid": 376,
+        "name": "PerfettoTrace",
+        "cpuS": 0,
+        "pctOfCore": 0
+      },
+      {
+        "tid": 10024,
+        "name": "GpuWatchdog",
+        "cpuS": 0,
+        "pctOfCore": 0
+      },
+      {
+        "tid": 5792,
+        "name": "ThreadPoolServiceThread",
+        "cpuS": 0,
+        "pctOfCore": 0
+      },
+      {
+        "tid": 14940,
+        "name": "ThreadPoolForegroundWorker",
+        "cpuS": 0,
+        "pctOfCore": 0
+      },
+      {
+        "tid": 14224,
+        "name": "ThreadPoolPresentationWorker",
+        "cpuS": 0,
+        "pctOfCore": 0
+      },
+      {
+        "tid": 7440,
+        "name": "ThreadPoolAudioWorker",
+        "cpuS": 0,
+        "pctOfCore": 0
+      }
+    ]
+  },
+  "vizCompositorPctOfCore": 19.953448685659005,
+  "finished": "2026-11-21T12:53:29.491Z",
+  "exitCode": 0,
+  "failed": []
+}

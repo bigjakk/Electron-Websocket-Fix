@@ -1,0 +1,22 @@
+﻿synthetic checks  2026-11-21T04:52:13
+exe: C:\electron\src\out\Testing\electron.exe
+checks: raw,c60
+
+       raw off: exit 0; raw-move (200,120) in 4 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,112) in 6 moves, coalesced max 16, predicted max 10, wheel dY 0
+       raw c12: exit 0; raw-move (200,120) in 4 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (200,120) in 4 moves, coalesced max 16, predicted max 10, wheel dY 0
+       raw c13: exit 0; raw-move (200,120) in 5 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (200,0) in 14 moves, coalesced max 4, predicted max 2, wheel dY -4000; after-plain-request (187,112) in 5 moves, coalesced max 15, predicted max 10, wheel dY 0
+       raw c14: exit 0; raw-move (200,120) in 4 moves, coalesced max 15, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,112) in 5 moves, coalesced max 15, predicted max 10, wheel dY 0
+       raw c15: exit 0; raw-move (200,120) in 5 moves, coalesced max 1, predicted max 0, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -3900; after-plain-request (352,112) in 6 moves, coalesced max 15, predicted max 10, wheel dY 0
+       raw all: exit 0; raw-move (200,120) in 4 moves, coalesced max 1, predicted max 0, wheel dY 0; raw-wheel (200,0) in 15 moves, coalesced max 1, predicted max 0, wheel dY -4000; after-plain-request (200,120) in 4 moves, coalesced max 1, predicted max 0, wheel dY 0
+c12    PASS  after requestPointerLock() without options on a raw lock: switch off (352,112) (downgraded to OS-accelerated movement), on (200,120) (must stay raw: 200,120)
+c13    PASS  motion in 40 packets that also carry a wheel tick: switch off (0,0), on (200,0) (must be 200,0); wheel deltaY off -4000, on -4000 (must match)
+c14    PASS  same results as switch off: raw-move (200,120), raw-wheel motion (0,0) vs off (0,0), wheel deltaY -4000 vs off -4000
+c15    PASS  raw pointermoves: switch off coalesced up to 16, predicted up to 10; on coalesced up to 1, predicted up to 0 (must be 1 and 0); movement (200,120), coalesced entries sum to 200 (must be 200,120 and 200)
+raw    PASS  every switch on: raw-move (200,120) coalesced max 1; raw-wheel (200,0) wheel -4000; after-plain-request (200,120)
+       c60 off-1: exit 0, cap 144 measured 144.02 fps, VizCompositorThread 76.8 % of a core, GPU process 80.5 %
+       c60 on-1: exit 0, cap 144 measured 144.01 fps, VizCompositorThread 20.0 % of a core, GPU process 25.9 %
+       c60 off-2: exit 0, cap 144 measured 144.01 fps, VizCompositorThread 99.7 % of a core, GPU process 114.2 %
+       c60 on-2: exit 0, cap 144 measured 144.01 fps, VizCompositorThread 11.3 % of a core, GPU process 14.8 %
+c60    PASS  VizCompositorThread at a 144 cap (2d page): off 88.2 %, on 15.6 % of a core (mean of 2 runs each; must at least halve); the cap held in every run: True
+
+SYNTHETIC CHECKS: PASS

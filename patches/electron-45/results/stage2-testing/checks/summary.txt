@@ -1,0 +1,52 @@
+﻿synthetic checks  2026-11-21T04:37:24
+exe: C:\electron\src\out\Testing\electron.exe
+checks: c10,c11,raw,e10,c21,v01,c20,c40,c41,c60,c61
+
+c10    PASS  flags off: exit 0; page saw [keydown KeyA, keyup KeyA] via sendInputEvent, [keydown KeyA, keyup KeyA] via CDP
+c10    PASS  flags on: exit 0; page saw [keydown KeyA, keyup KeyA] via sendInputEvent, [keydown KeyA, keyup KeyA] via CDP
+e10    PASS  KccSkipUnobservedInputEmits off: exit 0, 10/10 checks
+e10    PASS  KccSkipUnobservedInputEmits on: exit 0, 10/10 checks
+c11    PASS  KccNoPointerLockEscCooldown off: exit 0; re-lock 43 ms after Esc: rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock.; 5/5 checks
+c11    PASS  KccNoPointerLockEscCooldown on: exit 0; re-lock 44 ms after Esc: locked; 5/5 checks
+       raw off: exit 0; raw-move (200,120) in 4 moves, coalesced max 15, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -3900; after-plain-request (352,112) in 5 moves, coalesced max 15, predicted max 10, wheel dY 0
+       raw c12: exit 0; raw-move (200,120) in 4 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (200,120) in 4 moves, coalesced max 15, predicted max 10, wheel dY 0
+       raw c13: exit 0; raw-move (200,120) in 4 moves, coalesced max 15, predicted max 10, wheel dY 0; raw-wheel (200,0) in 15 moves, coalesced max 4, predicted max 2, wheel dY -4000; after-plain-request (187,113) in 5 moves, coalesced max 15, predicted max 10, wheel dY 0
+       raw c14: exit 0; raw-move (200,120) in 5 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,112) in 5 moves, coalesced max 16, predicted max 10, wheel dY 0
+       raw c15: exit 0; raw-move (200,120) in 4 moves, coalesced max 1, predicted max 0, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,112) in 5 moves, coalesced max 16, predicted max 10, wheel dY 0
+       raw all: exit 0; raw-move (200,120) in 4 moves, coalesced max 1, predicted max 0, wheel dY 0; raw-wheel (200,0) in 14 moves, coalesced max 1, predicted max 0, wheel dY -4000; after-plain-request (200,120) in 4 moves, coalesced max 1, predicted max 0, wheel dY 0
+c12    PASS  after requestPointerLock() without options on a raw lock: switch off (352,112) (downgraded to OS-accelerated movement), on (200,120) (must stay raw: 200,120)
+c13    FAIL  motion in 40 packets that also carry a wheel tick: switch off (0,0), on (200,0) (must be 200,0); wheel deltaY off -3900, on -4000 (must match)
+c14    FAIL  same results as switch off: raw-move (200,120), raw-wheel motion (0,0) vs off (0,0), wheel deltaY -4000 vs off -3900
+c15    PASS  raw pointermoves: switch off coalesced up to 15, predicted up to 10; on coalesced up to 1, predicted up to 0 (must be 1 and 0); movement (200,120), coalesced entries sum to 200 (must be 200,120 and 200)
+raw    FAIL  every switch on: raw-move (200,120) coalesced max 1; raw-wheel (200,0) wheel -4000; after-plain-request (200,120)
+c21    PASS  fast: err 2ac24dc pix ebb47edf errors 11205 {"1280":5060,"1281":957,"1282":5188} loop 12282 ms turbofan True/True; no-fast: err 2ac24dc pix ebb47edf loop 17258 ms; all flags: err 2ac24dc pix ebb47edf; renderer ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)
+v01    PASS  flag listed by --v8-options: --cppheap-max-incremental-sweep-duration-ms (maximum duration in ms of a single incremental sweeping task of CppHeap on the mutator thread (values below 1 are treated as 1)) type: int  default: --cppheap-max-incremental-sweep-duration-ms=5 --memory-balancer (use membalancer, a new heap limit balancing algorithm)
+v01    PASS  no flag (stock 5 ms): exit 0; slices {"CppGC.SweepInTask":{"count":16,"values":{"5":16},"maxSliceMs":6.108,"p50SliceMs":5.101},"CppGC.SweepInLowPriorityTask":{"count":8,"values":{"5":8},"maxSliceMs":5.605,"p50SliceMs":5.128}}
+v01    PASS  --cppheap-max-incremental-sweep-duration-ms=1: exit 0; slices {"CppGC.SweepInTask":{"count":2,"values":{"1":2},"maxSliceMs":1.116,"p50SliceMs":1.116},"CppGC.SweepInLowPriorityTask":{"count":83,"values":{"1":83},"maxSliceMs":2.178,"p50SliceMs":1.145}}
+v01    PASS  --cppheap-max-incremental-sweep-duration-ms=2: exit 0; slices {"CppGC.SweepInTask":{"count":2,"values":{"2":2},"maxSliceMs":2.189,"p50SliceMs":2.189},"CppGC.SweepInLowPriorityTask":{"count":55,"values":{"2":55},"maxSliceMs":3.248,"p50SliceMs":2.148}}
+       c20/c30/c31 flags off: exit 0, 647 frames (80.8 fps), glError 0, RecordMetrics 7, GetVSyncIntervalIfAvailable 0, GetVSyncParameters 649, gpu_compositing disabled_software
+       c20/c30/c31 flags on: exit 0, 468 frames (58.4 fps), glError 0, RecordMetrics 0, GetVSyncIntervalIfAvailable 0, GetVSyncParameters 471, gpu_compositing disabled_software
+c20    PASS  RecordMetrics slices: off 7, on 0 (must be > 0 and 0)
+c30    PASS  texture-rebind page ran without crash or DCHECK, glError 0, 468 frames with KccLabelTexturesOnce (no counter for the skipped labels in a trace)
+c31    N/A   GetVSyncIntervalIfAvailable never ran (off 0, on 0): DCompPresenter is not used on this machine, so KccCacheVsyncInterval was not exercised; the build ran with it on.
+       c40 flags off: exit 0: never-started t=0.000 13.38->176.78 ms (13.21x); after-run-1 t=0.453 13.80->171.50 ms (12.43x); after-run-2 t=0.580 13.90->172.16 ms (12.39x); after-run-3 t=0.621 13.82->179.10 ms (12.96x)
+       c40 flags on: exit 0: never-started t=0.000 2.62->2.38 ms (0.91x); after-run-1 t=0.453 2.96->2.80 ms (0.95x); after-run-2 t=0.551 4.98->2.50 ms (0.50x); after-run-3 t=0.580 2.54->2.58 ms (1.02x)
+c40    PASS  with the switch every scenario stays flat (growth <= 1.5x): True; stock grew > 3x in 4 of 4 scenarios
+       c41 off-1: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+       c41 off-2: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+       c41 on-1: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+       c41 on-2: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+c41    PASS  4 renders (off x2, on x2): 1 distinct buffer(s); identical sample for sample: True
+       c60 off-1: exit 0, cap 144 measured 144.01 fps, VizCompositorThread 99.7 % of a core, GPU process 100.7 % | log: [frame-cap:cpu]   GpuWatchdog [6908]: 0.0 %
+       c60 on-1: exit 0, cap 144 measured 144.01 fps, VizCompositorThread 33.0 % of a core, GPU process 38.9 %
+       c60 off-2: exit 0, cap 144 measured 144.01 fps, VizCompositorThread 91.9 % of a core, GPU process 106.9 %
+       c60 on-2: exit 0, cap 144 measured 144.00 fps, VizCompositorThread 30.6 % of a core, GPU process 44.4 %
+c60    FAIL  VizCompositorThread at a 144 cap (2d page): off 95.8 %, on 31.8 % of a core (mean of 2 runs each; must at least halve); the cap held in every run: True
+       c61 busy 0 ms, KccFrameCapLateLatch off (2d page): exit 0, 144.01 fps; BeginImplFrame->DrawAndSwap p10/p50/p90 10.04/11.05/11.34 ms; render (BeginImplFrame->submit) p50 6.82 ms; submit->display draw p50 4.21 ms; main frame start->display draw p50 6.56 ms
+       c61 busy 0 ms, KccFrameCapLateLatch on (2d page): exit 0, 144.02 fps; BeginImplFrame->DrawAndSwap p10/p50/p90 10.46/10.99/11.25 ms; render (BeginImplFrame->submit) p50 6.81 ms; submit->display draw p50 4.16 ms; main frame start->display draw p50 6.56 ms
+       c61 busy 3 ms, KccFrameCapLateLatch off (2d page): exit 0, 143.96 fps; BeginImplFrame->DrawAndSwap p10/p50/p90 11.34/12.90/13.08 ms; render (BeginImplFrame->submit) p50 6.84 ms; submit->display draw p50 6.06 ms; main frame start->display draw p50 13.47 ms
+       c61 busy 3 ms, KccFrameCapLateLatch on (2d page): exit 0, 144.18 fps; BeginImplFrame->DrawAndSwap p10/p50/p90 6.14/11.41/12.65 ms; render (BeginImplFrame->submit) p50 6.54 ms; submit->display draw p50 4.73 ms; main frame start->display draw p50 12.69 ms
+c61    FAIL  busy 0 ms, 144 cap (P 6.94 ms): BeginImplFrame->DrawAndSwap p50 off 11.05 ms (about P: False), on 10.99 ms vs render 6.81 ms (about render time: False); input age (main frame start->draw) p50 6.56 -> 6.56 ms
+c61    FAIL  busy 3 ms, 144 cap (P 6.94 ms): BeginImplFrame->DrawAndSwap p50 off 12.90 ms (about P: False), on 11.41 ms vs render 6.54 ms (about render time: False); input age (main frame start->draw) p50 13.47 -> 12.69 ms
+
+SYNTHETIC CHECKS: SOME FAILED (see above)

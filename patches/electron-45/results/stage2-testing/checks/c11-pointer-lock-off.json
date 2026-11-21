@@ -1,0 +1,77 @@
+{
+  "versions": "45.4.1",
+  "switchOn": false,
+  "steps": [
+    {
+      "atMs": 4,
+      "what": "request with gesture",
+      "result": "locked"
+    },
+    {
+      "atMs": 49,
+      "what": "Esc",
+      "result": "unlocked after 41 ms"
+    },
+    {
+      "atMs": 51,
+      "what": "request with gesture 41 ms after Esc",
+      "result": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+    },
+    {
+      "atMs": 1525,
+      "what": "request with gesture 1514 ms after Esc",
+      "result": "locked"
+    },
+    {
+      "atMs": 1571,
+      "what": "Esc",
+      "result": "unlocked after 44 ms"
+    },
+    {
+      "atMs": 7075,
+      "what": "request WITHOUT gesture 5546 ms after Esc",
+      "result": "rejected NotAllowedError: A user gesture is required to request Pointer Lock."
+    }
+  ],
+  "checks": [
+    {
+      "name": "lock with a user gesture",
+      "pass": true,
+      "detail": "locked"
+    },
+    {
+      "name": "Esc releases the lock",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "switch off: re-lock inside the cooldown is refused (kUserEscapeCooldown)",
+      "pass": true,
+      "detail": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+    },
+    {
+      "name": "control: re-lock 1.5 s after Esc succeeds",
+      "pass": true,
+      "detail": "locked"
+    },
+    {
+      "name": "control: a request without a user gesture is refused",
+      "pass": true,
+      "detail": "rejected NotAllowedError: A user gesture is required to request Pointer Lock."
+    }
+  ],
+  "events": [],
+  "relockAfterEsc": {
+    "msAfterEsc": 43,
+    "result": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+  },
+  "pageEvents": [
+    "change locked @945.8",
+    "change unlocked @949.3",
+    "error @992.0",
+    "change locked @2465.8",
+    "change unlocked @2468.2",
+    "error @8015.5"
+  ],
+  "exitCode": 0
+}

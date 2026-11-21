@@ -1,0 +1,116 @@
+{
+  "suite": "latency",
+  "cap": 144,
+  "busy": 0,
+  "mode": "2d",
+  "windowMs": 10000,
+  "enableFeatures": "",
+  "featuresVia": "command line",
+  "versions": {
+    "electron": "45.4.1",
+    "chrome": "156.0.8078.100",
+    "v8": "15.6.75.57-electron.d384e85dffdbe2dd"
+  },
+  "measurements": [
+    {
+      "label": "main",
+      "fps": 144.01237957364984,
+      "frames": 577,
+      "elapsedMs": 4006.60000000149,
+      "meanMs": 6.943847487004316,
+      "sdMs": 0.10482847747723376,
+      "p01Ms": 6.600000001490116,
+      "p50Ms": 6.9000000059604645,
+      "p99Ms": 7.200000002980232,
+      "maxMs": 7.4000000059604645,
+      "name": "latency window, cap 144"
+    }
+  ],
+  "checks": [
+    {
+      "name": "latency suite: cap 144 holds",
+      "pass": true,
+      "detail": "target 144 got 144.01 (0.01 %, tol 1 %)"
+    },
+    {
+      "name": "latency suite: trace has renderer and display draws",
+      "pass": true,
+      "detail": "paired 579 renderer draws with display draws"
+    }
+  ],
+  "events": [],
+  "started": "2026-11-21T12:46:57.846Z",
+  "gpuFeatureStatus": {
+    "2d_canvas": "disabled_software",
+    "direct_rendering_display_compositor": "disabled_off_ok",
+    "gpu_compositing": "disabled_software",
+    "multiple_raster_threads": "enabled_on",
+    "opengl": "disabled_off",
+    "rasterization": "disabled_software",
+    "raw_draw": "disabled_off_ok",
+    "skia_graphite": "disabled_off",
+    "trees_in_viz": "disabled_off",
+    "video_decode": "disabled_software",
+    "video_encode": "disabled_software",
+    "webgl": "disabled_off",
+    "webgpu": "disabled_off",
+    "webnn": "disabled_off"
+  },
+  "pageRenderer": "2d",
+  "gpuDevices": [
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    }
+  ],
+  "latency": {
+    "cap": 144,
+    "periodMs": 6.944444444444445,
+    "renderer": 1160,
+    "gpu": 8912,
+    "counts": {
+      "beginImplFrame": 579,
+      "beginMainFrame": 579,
+      "rendererDraws": 579,
+      "displayDraws": 579,
+      "paired": 579
+    },
+    "submitToDisplayDrawMs": {
+      "p10": 3.827800005674362,
+      "p50": 4.246200002729893,
+      "p90": 4.464200004935265
+    },
+    "beginImplFrameToSubmitMs": {
+      "p50": 6.814999997615814,
+      "p90": 7.165000006556511
+    },
+    "beginImplFrameToDisplayDrawMs": {
+      "p10": 10.649500004947186,
+      "p50": 11.079199999570847,
+      "p90": 11.309999994933605
+    },
+    "beginMainFrameToDisplayDrawMs": {
+      "p10": 6.517099998891354,
+      "p50": 6.567400000989437,
+      "p90": 6.610599994659424
+    },
+    "mainFrameMs": {
+      "p50": 1.2929999977350235
+    }
+  },
+  "traceFile": "C:\\Users\\bigjakk\\AppData\\Local\\Temp/claude/ee77249afe5a7ae1/1e564cae-baa6-42b6-9310-7ef613d3b70d/scratchpad/c61/lat-off-trace.json",
+  "finished": "2026-11-21T12:47:08.327Z",
+  "exitCode": 0,
+  "failed": []
+}

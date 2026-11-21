@@ -1,0 +1,16 @@
+﻿# 2026-11-21T04:38:07  C:\electron\src\out\Testing\electron.exe pointer-lock-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\checks\c11-pointer-lock-on.json --enable-features=KccNoPointerLockEscCooldown
+
+[16804:1121/043808.152:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[pointer-lock-test] 5 ms  request with gesture: locked
+[pointer-lock-test] PASS  lock with a user gesture  locked
+[pointer-lock-test] 50 ms  Esc: unlocked after 41 ms
+[pointer-lock-test] PASS  Esc releases the lock  
+[pointer-lock-test] 53 ms  request with gesture 41 ms after Esc: locked
+[pointer-lock-test] PASS  switch on: re-lock inside the cooldown succeeds  locked
+[pointer-lock-test] 96 ms  Esc: unlocked after 41 ms
+[pointer-lock-test] 1561 ms  request with gesture 1502 ms after Esc: locked
+[pointer-lock-test] PASS  control: re-lock 1.5 s after Esc succeeds  locked
+[pointer-lock-test] 1598 ms  Esc: unlocked after 35 ms
+[pointer-lock-test] 7122 ms  request WITHOUT gesture 5546 ms after Esc: rejected NotAllowedError: A user gesture is required to request Pointer Lock.
+[pointer-lock-test] PASS  control: a request without a user gesture is refused  rejected NotAllowedError: A user gesture is required to request Pointer Lock.
+# exit 0  2026-11-21T04:38:16

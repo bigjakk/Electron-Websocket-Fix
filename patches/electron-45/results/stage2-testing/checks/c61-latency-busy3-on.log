@@ -1,0 +1,10 @@
+﻿# 2026-11-21T04:42:57  C:\electron\src\out\Testing\electron.exe frame-cap-test.js --kcc-suite=latency --kcc-cap=144 --kcc-busy=3 --kcc-mode=2d --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\checks\c61-latency-busy3-on.json --enable-features=KccFrameCapLateLatch
+
+[4484:1121/044257.967:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[frame-cap:latency] page renderer 2d; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:latency] measure latency window, cap 144: 144.18 fps (577 frames / 4002 ms; interval mean 6.936 sd 1.907 p50 6.800 p99 19.900 max 24.90 ms)
+[frame-cap:latency] latency: {"cap":144,"periodMs":6.944444444444445,"renderer":12020,"gpu":4484,"counts":{"beginImplFrame":590,"beginMainFrame":580,"rendererDraws":581,"displayDraws":581,"paired":580},"submitToDisplayDrawMs":{"p10":0.6282000094652176,"p50":4.731499999761581,"p90":5.860300004482269},"beginImplFrameToSubmitMs":{"p50":6.538999997079372,"p90":8.046999998390675},"beginImplFrameToDisplayDrawMs":{"p10":6.136500000953674,"p50":11.410599999129772,"p90":12.650799997150898},"beginMainFrameToDisplayDrawMs":{"p10":7.918000005185604,"p50":12.68920000642538,"p90":13.369999997317791},"mainFrameMs":{"p50":5.643999993801117}}
+[frame-cap:latency] PASS  latency suite: cap 144 holds  target 144 got 144.18 (0.12 %, tol 1 %)
+[frame-cap:latency] PASS  latency suite: trace has renderer and display draws  paired 580 renderer draws with display draws
+[frame-cap:latency] 2/2 checks passed, exit 0
+# exit 0  2026-11-21T04:43:08

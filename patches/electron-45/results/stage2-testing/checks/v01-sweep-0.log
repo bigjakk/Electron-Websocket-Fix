@@ -1,0 +1,7 @@
+﻿# 2026-11-21T04:39:45  C:\electron\src\out\Testing\electron.exe v8-sweep-flag-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\checks\v01-sweep-0.json --kcc-trace=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\checks\v01-sweep-0-trace.json --kcc-expect-ms=5
+
+[4328:1121/043945.533:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[v8-sweep] page churn rounds 60; slices {"CppGC.SweepInTask":{"count":16,"values":{"5":16},"maxSliceMs":6.108,"p50SliceMs":5.101},"CppGC.SweepInLowPriorityTask":{"count":8,"values":{"5":8},"maxSliceMs":5.605,"p50SliceMs":5.128}}
+[v8-sweep] PASS  incremental sweep slices were traced  24 slices
+[v8-sweep] PASS  every slice carries max_duration_ms = 5  values seen: {"5":16} {"5":8}
+# exit 0  2026-11-21T04:39:57

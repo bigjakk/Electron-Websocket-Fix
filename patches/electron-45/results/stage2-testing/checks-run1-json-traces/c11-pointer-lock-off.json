@@ -1,0 +1,77 @@
+{
+  "versions": "45.4.1",
+  "switchOn": false,
+  "steps": [
+    {
+      "atMs": 4,
+      "what": "request with gesture",
+      "result": "locked"
+    },
+    {
+      "atMs": 48,
+      "what": "Esc",
+      "result": "unlocked after 41 ms"
+    },
+    {
+      "atMs": 50,
+      "what": "request with gesture 41 ms after Esc",
+      "result": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+    },
+    {
+      "atMs": 1514,
+      "what": "request with gesture 1503 ms after Esc",
+      "result": "locked"
+    },
+    {
+      "atMs": 1559,
+      "what": "Esc",
+      "result": "unlocked after 43 ms"
+    },
+    {
+      "atMs": 7071,
+      "what": "request WITHOUT gesture 5553 ms after Esc",
+      "result": "rejected NotAllowedError: A user gesture is required to request Pointer Lock."
+    }
+  ],
+  "checks": [
+    {
+      "name": "lock with a user gesture",
+      "pass": true,
+      "detail": "locked"
+    },
+    {
+      "name": "Esc releases the lock",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "switch off: re-lock inside the cooldown is refused (kUserEscapeCooldown)",
+      "pass": true,
+      "detail": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+    },
+    {
+      "name": "control: re-lock 1.5 s after Esc succeeds",
+      "pass": true,
+      "detail": "locked"
+    },
+    {
+      "name": "control: a request without a user gesture is refused",
+      "pass": true,
+      "detail": "rejected NotAllowedError: A user gesture is required to request Pointer Lock."
+    }
+  ],
+  "events": [],
+  "relockAfterEsc": {
+    "msAfterEsc": 43,
+    "result": "rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock."
+  },
+  "pageEvents": [
+    "change locked @948.0",
+    "change unlocked @951.1",
+    "error @993.5",
+    "change locked @2456.8",
+    "change unlocked @2459.5",
+    "error @8014.3"
+  ],
+  "exitCode": 0
+}

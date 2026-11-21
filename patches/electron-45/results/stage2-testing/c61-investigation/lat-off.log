@@ -1,0 +1,10 @@
+
+[8912:1121/044658.093:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[1160:1121/044658.166:ERROR:gpu\ipc\client\command_buffer_proxy_impl.cc:277] ContextResult::kTransientFailure: Failed to send GpuControl.CreateCommandBuffer.
+[1160:1121/044658.166:ERROR:services\viz\public\cpp\gpu\context_provider_command_buffer.cc:263] GpuChannelHost failed to create command buffer.
+[frame-cap:latency] page renderer 2d; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:latency] measure latency window, cap 144: 144.01 fps (577 frames / 4007 ms; interval mean 6.944 sd 0.105 p50 6.900 p99 7.200 max 7.40 ms)
+[frame-cap:latency] latency: {"cap":144,"periodMs":6.944444444444445,"renderer":1160,"gpu":8912,"counts":{"beginImplFrame":579,"beginMainFrame":579,"rendererDraws":579,"displayDraws":579,"paired":579},"submitToDisplayDrawMs":{"p10":3.827800005674362,"p50":4.246200002729893,"p90":4.464200004935265},"beginImplFrameToSubmitMs":{"p50":6.814999997615814,"p90":7.165000006556511},"beginImplFrameToDisplayDrawMs":{"p10":10.649500004947186,"p50":11.079199999570847,"p90":11.309999994933605},"beginMainFrameToDisplayDrawMs":{"p10":6.517099998891354,"p50":6.567400000989437,"p90":6.610599994659424},"mainFrameMs":{"p50":1.2929999977350235}}
+[frame-cap:latency] PASS  latency suite: cap 144 holds  target 144 got 144.01 (0.01 %, tol 1 %)
+[frame-cap:latency] PASS  latency suite: trace has renderer and display draws  paired 579 renderer draws with display draws
+[frame-cap:latency] 2/2 checks passed, exit 0

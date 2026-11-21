@@ -1,0 +1,10 @@
+{
+  "jsFlags": "",
+  "expectMs": 5,
+  "checks": [],
+  "events": [],
+  "page": {
+    "rounds": 60
+  },
+  "exitCode": 2
+}

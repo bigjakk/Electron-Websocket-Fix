@@ -1,0 +1,26 @@
+﻿synthetic checks  2026-11-21T04:26:32
+exe: C:\electron\src\out\Testing\electron.exe
+checks: c10,c11,raw,e10,c21,v01,c20,c40,c41,c60,c61
+
+c10    PASS  flags off: exit 0; page saw [keydown KeyA, keyup KeyA] via sendInputEvent, [keydown KeyA, keyup KeyA] via CDP
+c10    PASS  flags on: exit 0; page saw [keydown KeyA, keyup KeyA] via sendInputEvent, [keydown KeyA, keyup KeyA] via CDP
+e10    PASS  KccSkipUnobservedInputEmits off: exit 0, 10/10 checks
+e10    PASS  KccSkipUnobservedInputEmits on: exit 0, 10/10 checks
+c11    PASS  KccNoPointerLockEscCooldown off: exit 0; re-lock 43 ms after Esc: rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock.; 5/5 checks
+c11    PASS  KccNoPointerLockEscCooldown on: exit 0; re-lock 44 ms after Esc: locked; 5/5 checks
+       raw off: exit 0; raw-move (200,120) in 5 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,112) in 5 moves, coalesced max 15, predicted max 10, wheel dY 0
+       raw c12: exit 0; raw-move (200,120) in 4 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (200,120) in 5 moves, coalesced max 16, predicted max 10, wheel dY 0
+       raw c13: exit 0; raw-move (200,120) in 5 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (200,0) in 15 moves, coalesced max 4, predicted max 2, wheel dY -4000; after-plain-request (187,112) in 5 moves, coalesced max 14, predicted max 10, wheel dY 0
+       raw c14: exit 0; raw-move (200,120) in 5 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,112) in 6 moves, coalesced max 15, predicted max 10, wheel dY 0
+       raw c15: exit 0; raw-move (200,120) in 4 moves, coalesced max 1, predicted max 0, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,112) in 5 moves, coalesced max 16, predicted max 10, wheel dY 0
+       raw all: exit 0; raw-move (200,120) in 5 moves, coalesced max 1, predicted max 0, wheel dY 0; raw-wheel (200,0) in 14 moves, coalesced max 1, predicted max 0, wheel dY -4000; after-plain-request (200,120) in 4 moves, coalesced max 1, predicted max 0, wheel dY 0
+c12    PASS  after requestPointerLock() without options on a raw lock: switch off (352,112) (downgraded to OS-accelerated movement), on (200,120) (must stay raw: 200,120)
+c13    PASS  motion in 40 packets that also carry a wheel tick: switch off (0,0), on (200,0) (must be 200,0); wheel deltaY off -4000, on -4000 (must match)
+c14    PASS  same results as switch off: raw-move (200,120), raw-wheel motion (0,0) vs off (0,0), wheel deltaY -4000 vs off -4000
+c15    PASS  raw pointermoves: switch off coalesced up to 16, predicted up to 10; on coalesced up to 1, predicted up to 0 (must be 1 and 0); movement (200,120), coalesced entries sum to 200 (must be 200,120 and 200)
+raw    PASS  every switch on: raw-move (200,120) coalesced max 1; raw-wheel (200,0) wheel -4000; after-plain-request (200,120)
+c21    PASS  fast: err 2ac24dc pix ebb47edf errors 11205 {"1280":5060,"1281":957,"1282":5188} loop 12508 ms turbofan True/True; no-fast: err 2ac24dc pix ebb47edf loop 12521 ms; all flags: err 2ac24dc pix ebb47edf; renderer ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)
+v01    PASS  flag listed by --v8-options: --cppheap-max-incremental-sweep-duration-ms (maximum duration in ms of a single incremental sweeping task of CppHeap on the mutator thread (values below 1 are treated as 1)) type: int  default: --cppheap-max-incremental-sweep-duration-ms=5 --memory-balancer (use membalancer, a new heap limit balancing algorithm)
+v01    FAIL  no flag (stock 5 ms): exit 2; slices  | log: [v8-sweep] HARNESS ERROR: SyntaxError: Unexpected token '/', "
+v01    FAIL  --cppheap-max-incremental-sweep-duration-ms=1: exit 2; slices  | log: [v8-sweep] HARNESS ERROR: SyntaxError: Unexpected token '/', "
+v01    FAIL  --cppheap-max-incremental-sweep-duration-ms=2: exit 2; slices  | log: [v8-sweep] HARNESS ERROR: SyntaxError: Unexpected token '/', "

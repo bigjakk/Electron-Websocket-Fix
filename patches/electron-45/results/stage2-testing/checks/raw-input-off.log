@@ -1,0 +1,8 @@
+﻿# 2026-11-21T04:38:16  C:\electron\src\out\Testing\electron.exe raw-input-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\checks\raw-input-off.json
+
+[484:1121/043816.967:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[raw-input-test] raw lock: locked
+[raw-input-test] raw-move: {"plan":"40,5,3,0,2000","before":null,"inject":{"err":null,"out":"OK 40 packets in 80 ms","stderr":""},"stats":{"mousemoves":4,"mx":200,"my":120,"pointermoves":4,"px":200,"py":120,"coalescedSumX":200,"coalescedHist":{"2":1,"8":1,"15":2},"predictedHist":{"0":1,"10":3},"maxCoalesced":15,"maxPredicted":10,"wheels":0,"wheelDeltaY":0,"unlockedMoves":0},"stillLocked":true}
+[raw-input-test] raw-wheel: {"plan":"40,5,0,120,10000","before":null,"inject":{"err":null,"out":"OK 40 packets in 411 ms","stderr":""},"stats":{"mousemoves":0,"mx":0,"my":0,"pointermoves":0,"px":0,"py":0,"coalescedSumX":0,"coalescedHist":{},"predictedHist":{},"maxCoalesced":0,"maxPredicted":0,"wheels":16,"wheelDeltaY":-3900,"unlockedMoves":0},"stillLocked":true}
+[raw-input-test] after-plain-request: {"plan":"40,5,3,0,2000","before":"locked","inject":{"err":null,"out":"OK 40 packets in 80 ms","stderr":""},"stats":{"mousemoves":5,"mx":352,"my":112,"pointermoves":5,"px":352,"py":112,"coalescedSumX":352,"coalescedHist":{"2":2,"9":1,"13":1,"15":1},"predictedHist":{"0":1,"10":4},"maxCoalesced":15,"maxPredicted":10,"wheels":0,"wheelDeltaY":0,"unlockedMoves":0},"stillLocked":true}
+# exit 0  2026-11-21T04:38:22

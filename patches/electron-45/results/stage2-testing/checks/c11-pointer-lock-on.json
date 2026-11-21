@@ -1,0 +1,83 @@
+{
+  "versions": "45.4.1",
+  "switchOn": true,
+  "steps": [
+    {
+      "atMs": 5,
+      "what": "request with gesture",
+      "result": "locked"
+    },
+    {
+      "atMs": 50,
+      "what": "Esc",
+      "result": "unlocked after 41 ms"
+    },
+    {
+      "atMs": 53,
+      "what": "request with gesture 41 ms after Esc",
+      "result": "locked"
+    },
+    {
+      "atMs": 96,
+      "what": "Esc",
+      "result": "unlocked after 41 ms"
+    },
+    {
+      "atMs": 1561,
+      "what": "request with gesture 1502 ms after Esc",
+      "result": "locked"
+    },
+    {
+      "atMs": 1598,
+      "what": "Esc",
+      "result": "unlocked after 35 ms"
+    },
+    {
+      "atMs": 7122,
+      "what": "request WITHOUT gesture 5546 ms after Esc",
+      "result": "rejected NotAllowedError: A user gesture is required to request Pointer Lock."
+    }
+  ],
+  "checks": [
+    {
+      "name": "lock with a user gesture",
+      "pass": true,
+      "detail": "locked"
+    },
+    {
+      "name": "Esc releases the lock",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "switch on: re-lock inside the cooldown succeeds",
+      "pass": true,
+      "detail": "locked"
+    },
+    {
+      "name": "control: re-lock 1.5 s after Esc succeeds",
+      "pass": true,
+      "detail": "locked"
+    },
+    {
+      "name": "control: a request without a user gesture is refused",
+      "pass": true,
+      "detail": "rejected NotAllowedError: A user gesture is required to request Pointer Lock."
+    }
+  ],
+  "events": [],
+  "relockAfterEsc": {
+    "msAfterEsc": 44,
+    "result": "locked"
+  },
+  "pageEvents": [
+    "change locked @955.1",
+    "change unlocked @958.7",
+    "change locked @1002.1",
+    "change unlocked @1004.1",
+    "change locked @2509.5",
+    "change unlocked @2512.2",
+    "error @8071.1"
+  ],
+  "exitCode": 0
+}

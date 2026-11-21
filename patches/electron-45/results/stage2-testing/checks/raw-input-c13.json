@@ -1,0 +1,113 @@
+{
+  "versions": "45.4.1",
+  "enableFeatures": "KccRawInputKeepWheelMotion",
+  "phases": {
+    "raw-move": {
+      "plan": "40,5,3,0,2000",
+      "before": null,
+      "inject": {
+        "err": null,
+        "out": "OK 40 packets in 80 ms",
+        "stderr": ""
+      },
+      "stats": {
+        "mousemoves": 4,
+        "mx": 200,
+        "my": 120,
+        "pointermoves": 4,
+        "px": 200,
+        "py": 120,
+        "coalescedSumX": 200,
+        "coalescedHist": {
+          "2": 1,
+          "9": 1,
+          "14": 1,
+          "15": 1
+        },
+        "predictedHist": {
+          "0": 1,
+          "10": 3
+        },
+        "maxCoalesced": 15,
+        "maxPredicted": 10,
+        "wheels": 0,
+        "wheelDeltaY": 0,
+        "unlockedMoves": 0
+      },
+      "stillLocked": true
+    },
+    "raw-wheel": {
+      "plan": "40,5,0,120,10000",
+      "before": null,
+      "inject": {
+        "err": null,
+        "out": "OK 40 packets in 400 ms",
+        "stderr": ""
+      },
+      "stats": {
+        "mousemoves": 15,
+        "mx": 200,
+        "my": 0,
+        "pointermoves": 15,
+        "px": 200,
+        "py": 0,
+        "coalescedSumX": 200,
+        "coalescedHist": {
+          "1": 2,
+          "2": 3,
+          "3": 8,
+          "4": 2
+        },
+        "predictedHist": {
+          "0": 2,
+          "2": 13
+        },
+        "maxCoalesced": 4,
+        "maxPredicted": 2,
+        "wheels": 15,
+        "wheelDeltaY": -4000,
+        "unlockedMoves": 0
+      },
+      "stillLocked": true
+    },
+    "after-plain-request": {
+      "plan": "40,5,3,0,2000",
+      "before": "locked",
+      "inject": {
+        "err": null,
+        "out": "OK 40 packets in 80 ms",
+        "stderr": ""
+      },
+      "stats": {
+        "mousemoves": 5,
+        "mx": 187,
+        "my": 113,
+        "pointermoves": 5,
+        "px": 187,
+        "py": 113,
+        "coalescedSumX": 187,
+        "coalescedHist": {
+          "1": 1,
+          "5": 1,
+          "7": 1,
+          "10": 1,
+          "15": 1
+        },
+        "predictedHist": {
+          "0": 1,
+          "10": 4
+        },
+        "maxCoalesced": 15,
+        "maxPredicted": 10,
+        "wheels": 0,
+        "wheelDeltaY": 0,
+        "unlockedMoves": 0
+      },
+      "stillLocked": true
+    }
+  },
+  "problems": [],
+  "events": [],
+  "lock": "locked",
+  "exitCode": 0
+}

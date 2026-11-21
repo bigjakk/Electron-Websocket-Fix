@@ -1,0 +1,10 @@
+﻿# 2026-11-21T04:28:48  C:\electron\src\out\Testing\electron.exe v8-sweep-flag-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\checks\v01-sweep-0.json --kcc-trace=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\checks\v01-sweep-0-trace.json --kcc-expect-ms=5
+
+[15744:1121/042849.209:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[v8-sweep] HARNESS ERROR: SyntaxError: Unexpected token '/', "
+/2&
+
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\projects\Electron-Websocket-Fix\test\v8-sweep-flag-test.js:38:24
+# exit 2  2026-11-21T04:29:01
