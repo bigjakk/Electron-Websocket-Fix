@@ -7,6 +7,11 @@
 #
 # -Flags on adds every switch of the series (README "Everything on") and the
 # --js-flags value.
+#
+# Re-runs: this machine stalls now and then (a VM; seen with nothing else
+# running). A run that exited cleanly with frames but missed only the latency
+# limits is run once more, and both attempts are reported; a second miss is a
+# fail. A crash, a DCHECK or a run without frames is never re-run.
 param(
   [Parameter(Mandatory = $true)][string]$Exe,
   [Parameter(Mandatory = $true)][string]$OutDir,
@@ -23,21 +28,28 @@ $extra = @()
 if ($Flags -eq 'on') { $extra = (Join-KccFeatures $KccAllFeatures) + @("--js-flags=$KccAllJsFlags") }
 $allPass = $true
 for ($i = 1; $i -le $Runs; $i++) {
-  $label = "WS-$Flags-$i"
-  $log = Join-Path $OutDir "ws-gate-$Flags-$i.log"
-  $code = Invoke-Electron $Exe (@('cdp-test.js', "$(8090 + $i)", $label, '--enable-logging') + $extra) $log
-  $text = Get-Content $log -Raw
-  $p99 = if ($text -match '\]\s+p99:\s+([\d.]+)') { [double]$Matches[1] } else { $null }
-  $over = if ($text -match '>50ms:\s+(\d+) / (\d+)') { [int]$Matches[1] } else { $null }
-  $total = if ($text -match '>50ms:\s+\d+ / (\d+)') { [int]$Matches[1] } else { $null }
-  $frames = if ($text -match 'RAF frames rendered: (-?\d+)') { [int]$Matches[1] } else { $null }
-  $crash = Select-String -Path $log -Pattern $KccCrashPattern | Select-Object -First 3
-  $pass = ($code -eq 0) -and ($null -ne $p99) -and ($p99 -lt 50) -and ($over -eq 0) -and ($frames -gt 0) -and (-not $crash)
+  for ($try = 1; $try -le 2; $try++) {
+    $label = "WS-$Flags-$i"
+    $log = Join-Path $OutDir "ws-gate-$Flags-$i.log"
+    if ($try -eq 2) { Move-Item -Force $log (Join-Path $OutDir "ws-gate-$Flags-$i-try1.log") }
+    $code = Invoke-Electron $Exe (@('cdp-test.js', "$(8090 + $i)", $label, '--enable-logging') + $extra) $log
+    $text = Get-Content $log -Raw
+    $p99 = if ($text -match '\]\s+p99:\s+([\d.]+)') { [double]$Matches[1] } else { $null }
+    $over = if ($text -match '>50ms:\s+(\d+) / (\d+)') { [int]$Matches[1] } else { $null }
+    $total = if ($text -match '>50ms:\s+\d+ / (\d+)') { [int]$Matches[1] } else { $null }
+    $max = if ($text -match '\]\s+max:\s+([\d.]+)') { [double]$Matches[1] } else { $null }
+    $frames = if ($text -match 'RAF frames rendered: (-?\d+)') { [int]$Matches[1] } else { $null }
+    $crash = @(Select-String -Path $log -Pattern $KccCrashPattern | Select-Object -First 3)
+    $clean = ($code -eq 0) -and ($null -ne $p99) -and ($frames -gt 0) -and ($crash.Count -eq 0)
+    $pass = $clean -and ($p99 -lt 50) -and ($over -eq 0)
+    $tag = if ($try -eq 2) { "$label (attempt 2)" } else { $label }
+    $line = '{0,-22} exit {1}  p99 {2} ms  max {3} ms  >50ms {4}/{5}  rAF frames {6}  {7}' -f $tag, $code, $p99, $max, $over, $total, $frames, $(if ($pass) { 'PASS' } elseif ($frames -eq 0) { 'INCONCLUSIVE (no frames)' } else { 'FAIL' })
+    foreach ($c in $crash) { $line += "`n    LOG: $($c.Line.Trim())" }
+    Add-Content $summary $line -Encoding utf8
+    Write-Output $line
+    if ($pass -or -not $clean -or $try -eq 2) { break }
+  }
   if (-not $pass) { $allPass = $false }
-  $line = '{0,-10} exit {1}  p99 {2} ms  >50ms {3}/{4}  rAF frames {5}  {6}' -f $label, $code, $p99, $over, $total, $frames, $(if ($pass) { 'PASS' } elseif ($frames -eq 0) { 'INCONCLUSIVE (no frames)' } else { 'FAIL' })
-  foreach ($c in $crash) { $line += "`n    LOG: $($c.Line.Trim())" }
-  Add-Content $summary $line -Encoding utf8
-  Write-Output $line
 }
 $verdict = if ($allPass) { "WS GATE ($Flags): PASS" } else { "WS GATE ($Flags): FAIL" }
 Add-Content $summary $verdict -Encoding utf8

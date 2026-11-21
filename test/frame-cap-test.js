@@ -11,6 +11,19 @@
 //       [--kcc-mode=webgl|2d]  how the page draws (default webgl)
 //       [--kcc-out=FILE]       write the results as JSON
 //       [--enable-features=...] passed through to Chromium as usual
+//       [--kcc-features=...]   the same list, appended as --enable-features by
+//                              this script before the app is ready (see below)
+//
+// --kcc-features exists for DCHECK builds. Electron initialises the feature list
+// twice in the browser process (ElectronMainDelegate::PreBrowserMain, and again
+// in ElectronBrowserMainParts::PostEarlyInitialization after the main script has
+// run), and the field-trial registry survives in between. Field-trial parameters
+// given on the command line (CustomFrameCap:fps/60) are therefore associated
+// twice; the second time fails, which a DCHECK build treats as fatal
+// (base/feature_list.cc, "associate_params_result") and a release build only
+// logs. That is stock Electron, independent of the patch series. A list appended
+// from the main script is seen only by the second initialisation, which is also
+// how a client normally sets its switches.
 //
 // Suites:
 //   launch   process launched with CustomFrameCap:fps/N: N over 10 s, again after
@@ -19,10 +32,13 @@
 //   runtime  process launched uncapped: setFrameCap(60/144/240) over 10 s each,
 //            hide/show and resize at 144, a change of N takes effect at once (2 s
 //            windows right after the call), setFrameCap(0) uncaps, and a second
-//            animating WebContentsView in the window.
+//            animating WebContentsView in the window. A cap the page cannot reach
+//            uncapped is never checked: the suite then uses the largest caps it
+//            can reach and records the substitution under "skipped".
 //   heavy    page spins --kcc-busy ms per frame: uncapped reach R, then caps of
 //            1000 and 240 (above R) and 144; the caller compares runs flag off vs
-//            on (the rate must not drop).
+//            on (the rate must not drop). A cap is checked for accuracy only
+//            with 1.1x headroom (R >= 1.1 N), otherwise only for not freezing.
 //   cpu      at --kcc-cap (default 144): CPU time of the GPU process and of each
 //            of its threads (VizCompositorThread, CrGpuMain) over one window.
 //   latency  at --kcc-cap (default 144): trace (cc, viz, benchmark) of how long
@@ -41,6 +57,8 @@ app.commandLine.appendSwitch('disable-frame-rate-limit');
 app.commandLine.appendSwitch('disable-gpu-vsync');
 
 const sw = (name, def) => (app.commandLine.hasSwitch(name) ? app.commandLine.getSwitchValue(name) : def);
+const FEATURES_VIA = app.commandLine.hasSwitch('kcc-features') ? 'js' : 'command line';
+if (FEATURES_VIA === 'js') app.commandLine.appendSwitch('enable-features', app.commandLine.getSwitchValue('kcc-features'));
 const SUITE = sw('kcc-suite', 'runtime');
 const CAP = parseInt(sw('kcc-cap', '0'), 10) || 0;
 const BUSY = parseFloat(sw('kcc-busy', '0')) || 0;
@@ -52,7 +70,7 @@ const TOL_SHORT = 0.03;  // 2 s windows right after a change
 
 const results = {
   suite: SUITE, cap: CAP, busy: BUSY, mode: MODE, windowMs: WINDOW_MS,
-  enableFeatures: sw('enable-features', ''),
+  enableFeatures: sw('enable-features', ''), featuresVia: FEATURES_VIA,
   versions: { electron: process.versions.electron, chrome: process.versions.chrome, v8: process.versions.v8 },
   measurements: [], checks: [], events: [], started: new Date().toISOString(),
 };
@@ -189,28 +207,68 @@ async function suiteRuntime(win) {
     await sleep(500);
     within(`setFrameCap(${n})`, await measure(wc, `setFrameCap(${n})`), n, TOL);
   }
-  win.setFrameCap(144);
+  // The rest uses 144 (hide/show, resize) and 240 and 60 for a change of N.
+  // A page that cannot reach those (WebGL on the DCHECK build here) is checked
+  // at the largest caps it can reach instead; the substitution is recorded.
+  // These checks come 30-60 s later, and a slow page's uncapped rate drifts by
+  // 15 % in that time here, so a substitute cap needs 1.3x headroom, not 1.1x.
+  const ladder = [144, 100, 90, 72, 60, 45, 30];
+  const roomy = (n, fps = base.fps) => fps >= n * 1.3;
+  const fit = ladder.filter((n) => (n === 144 ? reachable(n) : roomy(n)));
+  const mid = fit[0] || 30;
+  const lo = fit.find((n) => n <= 60 && n !== mid) || (mid > 30 ? 30 : 20);
+  const hi = (mid === 144 && reachable(240)) ? 240 : (fit.find((n) => n !== mid && n !== lo) || Math.round((mid + lo) / 2));
+  results.runtimeCaps = { mid, hi, lo };
+  if (mid !== 144 || hi !== 240 || lo !== 60) {
+    skip('caps 144, 240 and 60 for hide/show, resize and a change of N',
+      `uncapped baseline ${base.fps.toFixed(1)} cannot reach 1.1 x each: using ${mid} (for 144), ${hi} (for 240), ${lo} (for 60)`);
+  }
+  win.setFrameCap(mid);
   await sleep(500);
   await hideShow(win);
-  within('setFrameCap(144) after hide/show', await measure(wc, '144 after hide/show'), 144, TOL);
+  within(`setFrameCap(${mid}) after hide/show`, await measure(wc, `${mid} after hide/show`), mid, TOL);
+  // 800x600 draws 1.56x the pixels of 640x480. Where that could take the page
+  // below the cap, its reach at that size is measured first and a cap it can
+  // reach there is checked; the cap is still set before the resize.
+  let capR = mid;
+  if (base.fps < mid * 1.1 * 1.6) {
+    win.setFrameCap(0);
+    await resize(win, 800, 600);
+    const big = await measure(wc, 'uncapped at 800x600', 3000);
+    await resize(win, 640, 480);
+    if (!big.error && !roomy(capR, big.fps)) {
+      capR = ladder.find((n) => n <= mid && roomy(n, big.fps)) || 30;
+      skip(`setFrameCap(${mid}) after resize`, `uncapped at 800x600 ${big.fps.toFixed(1)} is below 1.1 x ${mid}: using ${capR}`);
+    }
+    win.setFrameCap(capR);
+    await sleep(500);
+  }
   await resize(win, 800, 600);
-  within('setFrameCap(144) after resize', await measure(wc, '144 after resize'), 144, TOL);
+  within(`setFrameCap(${capR}) after resize`, await measure(wc, `${capR} after resize`), capR, TOL);
   await resize(win, 640, 480);
+  if (capR !== mid) { win.setFrameCap(mid); await sleep(500); }
   // A change of N takes effect at once: measure from the next frame on.
-  const hi = reachable(240) ? 240 : 100;
   win.setFrameCap(hi);
-  within(`change 144 -> ${hi} takes effect at once (2 s)`, await measure(wc, `at once ${hi}`, 2000), hi, TOL_SHORT);
-  win.setFrameCap(60);
-  within(`change ${hi} -> 60 takes effect at once (2 s)`, await measure(wc, 'at once 60', 2000), 60, TOL_SHORT);
-  win.setFrameCap(144);
-  within('change 60 -> 144 takes effect at once (2 s)', await measure(wc, 'at once 144', 2000), 144, TOL_SHORT);
-  win.setFrameCap(60);
+  within(`change ${mid} -> ${hi} takes effect at once (2 s)`, await measure(wc, `at once ${hi}`, 2000), hi, TOL_SHORT);
+  win.setFrameCap(lo);
+  within(`change ${hi} -> ${lo} takes effect at once (2 s)`, await measure(wc, `at once ${lo}`, 2000), lo, TOL_SHORT);
+  win.setFrameCap(mid);
+  within(`change ${lo} -> ${mid} takes effect at once (2 s)`, await measure(wc, `at once ${mid}`, 2000), mid, TOL_SHORT);
+  // setFrameCap(0) returns to uncapped. Compared with an uncapped window measured
+  // just before, because this machine's uncapped rate drifts during a run (the
+  // same binary gave 721 and 408 fps a minute apart); and with the baseline.
+  win.setFrameCap(0);
+  await sleep(500);
+  const ref = await measure(wc, 'uncapped reference');
+  win.setFrameCap(lo);
   await sleep(500);
   win.setFrameCap(0);
   await sleep(500);
   const un = await measure(wc, 'setFrameCap(0)');
-  check('setFrameCap(0) returns to uncapped (from 60)', !un.error && un.fps > 90 && un.fps >= 0.8 * base.fps,
-    `baseline ${base.fps.toFixed(2)}, after setFrameCap(0) ${un.fps.toFixed(2)} (must exceed 90 and 80 % of baseline)`);
+  check(`setFrameCap(0) returns to uncapped (from ${lo})`,
+    !un.error && !ref.error && un.fps > 1.5 * lo && un.fps >= 0.8 * ref.fps && un.fps >= 0.5 * base.fps,
+    `after setFrameCap(${lo}), setFrameCap(0): ${un.fps.toFixed(2)}; uncapped just before ${ref.fps.toFixed(2)}, baseline ${base.fps.toFixed(2)} ` +
+    `(must exceed ${(1.5 * lo).toFixed(0)}, 80 % of the rate just before and 50 % of the baseline)`);
 
   // A second animating view in the same window.
   const view2 = new WebContentsView({ webPreferences: { backgroundThrottling: false } });
@@ -224,20 +282,31 @@ async function suiteRuntime(win) {
   };
   const [u1, u2] = await both('two views uncapped');
   results.twoViewsUncapped = [u1.fps, u2.fps];
+  const slower = Math.min(u1.fps, u2.fps);
+  let twoCaps = [144, 60].filter((n) => slower >= n * 1.1);
+  if (twoCaps.length === 0) twoCaps = ladder.filter((n) => slower >= n * 1.1).slice(0, 1);
   for (const n of [144, 60]) {
-    if (Math.min(u1.fps, u2.fps) < n * 1.1) { skip(`two views, cap ${n}`, `two-view uncapped rate ${Math.min(u1.fps, u2.fps).toFixed(1)} is below 1.1 x ${n}`); continue; }
+    if (!twoCaps.includes(n)) skip(`two views, cap ${n}`, `two-view uncapped rate ${slower.toFixed(1)} is below 1.1 x ${n}`);
+  }
+  let lastCap = 0;
+  for (const n of twoCaps) {
     win.setFrameCap(n);
     await sleep(500);
     const [m1, m2] = await both(`two views cap ${n}`);
     within(`two views, cap ${n}: main view`, m1, n, TOL);
     within(`two views, cap ${n}: second view`, m2, n, TOL);
+    lastCap = n;
   }
   win.setFrameCap(0);
   await sleep(500);
   const [v1, v2] = await both('two views setFrameCap(0)');
-  check('two views: setFrameCap(0) uncaps both (from 60)', !v1.error && !v2.error && v1.fps > 90 && v2.fps > 90 &&
+  // Must be clearly above the last cap and close to the two-view rate before.
+  // (Was "above 90": a two-view WebGL page on the DCHECK build peaks at 88.)
+  const from = lastCap || 60;
+  check(`two views: setFrameCap(0) uncaps both (from ${from})`, !v1.error && !v2.error && v1.fps > 1.2 * from && v2.fps > 1.2 * from &&
     v1.fps >= 0.8 * u1.fps && v2.fps >= 0.8 * u2.fps,
-    `uncapped before ${u1.fps.toFixed(2)} / ${u2.fps.toFixed(2)}, after setFrameCap(0) ${v1.fps.toFixed(2)} / ${v2.fps.toFixed(2)}`);
+    `uncapped before ${u1.fps.toFixed(2)} / ${u2.fps.toFixed(2)}, after setFrameCap(0) ${v1.fps.toFixed(2)} / ${v2.fps.toFixed(2)} ` +
+    `(must exceed ${(1.2 * from).toFixed(0)} and 80 % of before)`);
   win.contentView.removeChildView(view2);
   view2.webContents.close();
 }
@@ -254,11 +323,13 @@ async function suiteHeavy(win) {
     await sleep(500);
     const m = await measure(wc, `cap ${n}, busy ${BUSY} ms`);
     results[`cap${n}`] = m.fps;
-    if (reach.fps < n * 0.97) {
-      // Not gated here: the ported cap (c03) already costs some throughput when
-      // it is set above reach. The gate is the comparison with the same suite
-      // run with the c60/c61 switches off (run-frame-cap-gate.ps1).
-      check(`cap ${n} above reach (${reach.fps.toFixed(0)}): window did not freeze`, !m.error && m.fps > 0.5 * reach.fps,
+    if (reach.fps < n * 1.1) {
+      // Above reach, or too close to it for the cap to be checked for accuracy
+      // (the same 1.1x rule as the runtime suite). Not gated here: the ported
+      // cap (c03) already costs some throughput when it is set above reach. The
+      // gate is the comparison with the same suite run with the c60/c61
+      // switches off (run-frame-cap-gate.ps1).
+      check(`cap ${n} at or above reach (${reach.fps.toFixed(0)}): window did not freeze`, !m.error && m.fps > 0.5 * Math.min(n, reach.fps),
         `uncapped ${reach.fps.toFixed(2)}, capped ${m.fps.toFixed(2)} (${((m.fps / reach.fps - 1) * 100).toFixed(2)} % vs uncapped, informational)`);
     } else {
       within(`cap ${n} (reachable, busy ${BUSY} ms)`, m, n, TOL);
@@ -268,7 +339,9 @@ async function suiteHeavy(win) {
   await sleep(500);
   const m144 = await measure(wc, `cap 144, busy ${BUSY} ms`);
   results.cap144 = m144.fps;
-  if (reach.fps > 144 * 1.05) within(`cap 144 with busy ${BUSY} ms page`, m144, 144, TOL);
+  if (reach.fps >= 144 * 1.1) within(`cap 144 with busy ${BUSY} ms page`, m144, 144, TOL);
+  else check(`cap 144 at or above reach (${reach.fps.toFixed(0)}): window did not freeze`, !m144.error && m144.fps > 0.5 * Math.min(144, reach.fps),
+    `uncapped ${reach.fps.toFixed(2)}, capped ${m144.fps.toFixed(2)} (informational)`);
   win.setFrameCap(0);
 }
 

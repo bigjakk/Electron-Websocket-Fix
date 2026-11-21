@@ -1,14 +1,22 @@
 # Everything Stage 2 / Stage 3 of the KCC Electron 45 build brief runs on one
-# binary, in the order the brief gives: both release gates with the switches
-# off, both again with every switch on, the frame-cap gate with the frame-cap
-# switches alone and together, then the synthetic checks.
+# binary: both release gates with the switches off and with every switch on,
+# the frame-cap gate with the frame-cap switches alone and together, then the
+# synthetic checks.
 #
 #   run-stage.ps1 -Exe <electron.exe> -OutDir <dir> [-Part gates|cap-switches|checks|all]
+#                 [-FeaturesVia commandline|js] [-CapPageMode webgl|2d]
 #
-#   gates         gpu-status.json; WS gate off; frame-cap gate "off";
-#                 WS gate on; frame-cap gate "all"                   (~35 min)
-#   cap-switches  frame-cap gate "precise", "latch", "both"          (~45 min)
+#   gates         gpu-status.json; WS gate off; WS gate on; frame-cap gate
+#                 "off" and "all" (heavy runs interleaved)             (~45 min)
+#   cap-switches  frame-cap gate "precise", "latch", "both" (heavy runs
+#                 interleaved with "off")                             (~60 min)
 #   checks        run-checks.ps1 (every check)                       (~25 min)
+#
+# -FeaturesVia js: the frame-cap gate passes its --enable-features list through
+#   the main script (needed on a DCHECK build; see frame-cap-test.js).
+# -CapPageMode: page of the c60 / c61 checks and of the frame-cap gate's heavy
+#   suite (2d where the WebGL page cannot reach 144 or its rate is too noisy to
+#   compare, as on the DCHECK build here).
 #
 # The parts exist because a run has to stay on the interactive desktop (a
 # locked or disconnected session stops rAF) and each part fits in one sitting.
@@ -16,20 +24,24 @@
 param(
   [Parameter(Mandatory = $true)][string]$Exe,
   [Parameter(Mandatory = $true)][string]$OutDir,
-  [ValidateSet('gates', 'cap-switches', 'checks', 'all')][string]$Part = 'all'
+  [ValidateSet('gates', 'cap-switches', 'checks', 'all')][string]$Part = 'all',
+  [ValidateSet('commandline', 'js')][string]$FeaturesVia = 'commandline',
+  [ValidateSet('webgl', '2d')][string]$CapPageMode = 'webgl'
 )
 $ErrorActionPreference = 'Stop'
 New-Item -ItemType Directory -Force $OutDir | Out-Null
 $stage = Join-Path $OutDir 'stage-summary.txt'
 function Note([string]$s) { Add-Content $stage $s -Encoding utf8; Write-Output $s }
+# Verdict lines: one per gate run or check, its failures, skips and re-runs,
+# the heavy-suite comparison, and the final verdict of each driver.
+$verdictPattern = '^(WS GATE|FRAME-CAP GATE|SYNTHETIC CHECKS)|^\S+\s+(PASS|FAIL|N/A|INFO)\s|^\S+( \(attempt \d\))?\s+exit -?\d+|^\s+(FAIL|SKIP|LOG:|FROZE)|^heavy suite|^\s+\S+\s+reach\s|\s(ok|DROP)$'
 function Sub([string]$script, [string[]]$a) {
   $out = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot $script) @a 2>&1 | ForEach-Object { "$_" }
   $out | ForEach-Object { Write-Output $_ }
-  # The verdict lines: one per gate run or check, failures, and the final one.
-  $out | Where-Object { $_ -match '^(WS GATE|FRAME-CAP GATE|SYNTHETIC CHECKS)|^\S+\s+(PASS|FAIL|N/A|INFO)\s|^\S+\s+exit -?\d+|^\s+(FAIL|LOG:)|DROP$' } | ForEach-Object { Note "  $_" }
+  $out | Where-Object { $_ -match $verdictPattern } | ForEach-Object { Note "  $_" }
 }
 $session = (quser 2>$null | Select-String '^\s*>' | ForEach-Object { ($_.Line -replace '\s{2,}', '|').Trim() }) -join ' '
-Note "== $Part  $(Get-Date -Format s)  exe $Exe  session: $session"
+Note "== $Part  $(Get-Date -Format s)  exe $Exe  features via $FeaturesVia, c60/c61 page $CapPageMode  session: $session"
 
 if ($Part -in 'gates', 'all') {
   Push-Location $PSScriptRoot
@@ -37,16 +49,15 @@ if ($Part -in 'gates', 'all') {
   Pop-Location
   $g = Get-Content "$OutDir\gpu-status.json" -Raw | ConvertFrom-Json
   Note "  versions: electron $($g.versions.electron), chrome $($g.versions.chrome), v8 $($g.versions.v8), node $($g.versions.node)"
-  Note "  gpu_compositing $($g.gpuFeatureStatus.gpu_compositing), webgl2 $($g.gpuFeatureStatus.webgl2); WebGL2 renderer: $($g.webgl.webgl2.renderer)"
+  Note "  gpu_compositing $($g.gpuFeatureStatus.gpu_compositing), webgl $($g.gpuFeatureStatus.webgl); WebGL2 renderer: $($g.webgl.webgl2.renderer)"
   Sub 'run-ws-gate.ps1' @('-Exe', $Exe, '-OutDir', $OutDir, '-Flags', 'off')
-  Sub 'run-frame-cap-gate.ps1' @('-Exe', $Exe, '-OutDir', $OutDir, '-Variants', 'off')
   Sub 'run-ws-gate.ps1' @('-Exe', $Exe, '-OutDir', $OutDir, '-Flags', 'on')
-  Sub 'run-frame-cap-gate.ps1' @('-Exe', $Exe, '-OutDir', $OutDir, '-Variants', 'all')
+  Sub 'run-frame-cap-gate.ps1' @('-Exe', $Exe, '-OutDir', $OutDir, '-Variants', 'off,all', '-FeaturesVia', $FeaturesVia, '-HeavyMode', $CapPageMode)
 }
 if ($Part -in 'cap-switches', 'all') {
-  Sub 'run-frame-cap-gate.ps1' @('-Exe', $Exe, '-OutDir', $OutDir, '-Variants', 'precise,latch,both')
+  Sub 'run-frame-cap-gate.ps1' @('-Exe', $Exe, '-OutDir', $OutDir, '-Variants', 'precise,latch,both', '-FeaturesVia', $FeaturesVia, '-HeavyMode', $CapPageMode)
 }
 if ($Part -in 'checks', 'all') {
-  Sub 'run-checks.ps1' @('-Exe', $Exe, '-OutDir', (Join-Path $OutDir 'checks'))
+  Sub 'run-checks.ps1' @('-Exe', $Exe, '-OutDir', (Join-Path $OutDir 'checks'), '-CapPageMode', $CapPageMode)
 }
 Note "== $Part done  $(Get-Date -Format s)"

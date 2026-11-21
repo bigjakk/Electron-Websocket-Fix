@@ -6,10 +6,16 @@
 #
 # Writes one log / JSON per run into -OutDir and a summary.txt. A check that
 # cannot be exercised on this machine says so instead of passing.
+#
+# -CapPageMode sets how the page draws in the c60 and c61 runs (webgl, the
+# game's path, by default). The 144 cap must bind for either check to mean
+# anything: on the DCHECK build the WebGL page peaks near 110 fps here, so the
+# stage driver passes 2d there.
 param(
   [Parameter(Mandatory = $true)][string]$Exe,
   [Parameter(Mandatory = $true)][string]$OutDir,
-  [string[]]$Only = @('c10', 'c11', 'raw', 'e10', 'c21', 'v01', 'c20', 'c40', 'c41', 'c60', 'c61')
+  [string[]]$Only = @('c10', 'c11', 'raw', 'e10', 'c21', 'v01', 'c20', 'c40', 'c41', 'c60', 'c61'),
+  [ValidateSet('webgl', '2d')][string]$CapPageMode = 'webgl'
 )
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\kcc-flags.ps1"
@@ -207,7 +213,7 @@ if ($Only -contains 'c60') {
   foreach ($run in 'off-1', 'on-1', 'off-2', 'on-2') {
     $name = "c60-cpu-$run"
     $f = if ($run -like 'on*') { Join-KccFeatures @('KccFrameCapPreciseRelease') } else { @() }
-    $r = Run $name (@('frame-cap-test.js', '--kcc-suite=cpu', '--kcc-cap=144', "--kcc-out=$OutDir\$name.json") + $f)
+    $r = Run $name (@('frame-cap-test.js', '--kcc-suite=cpu', '--kcc-cap=144', "--kcc-mode=$CapPageMode", "--kcc-out=$OutDir\$name.json") + $f)
     $viz = $r.res.vizCompositorPctOfCore
     $proc = $r.res.cpu.processPctOfCore
     $fps = ($r.res.measurements | Select-Object -First 1).fps
@@ -216,8 +222,11 @@ if ($Only -contains 'c60') {
   }
   $off = ($rows | Where-Object { $_.run -like 'off*' } | Measure-Object viz -Average).Average
   $on = ($rows | Where-Object { $_.run -like 'on*' } | Measure-Object viz -Average).Average
-  $ok = (@($rows | Where-Object { -not (Clean $_.r) }).Count -eq 0)
-  Verdict 'c60' $ok ("VizCompositorThread at a 144 cap: off {0:N1} %, on {1:N1} % of a core (mean of 2 runs each); the cap held in every run: {2}" -f $off, $on, (@($rows | Where-Object { [math]::Abs($_.fps - 144) / 144 -gt 0.01 }).Count -eq 0))
+  $held = (@($rows | Where-Object { [math]::Abs($_.fps - 144) / 144 -gt 0.01 }).Count -eq 0)
+  # The claim: the viz thread sleeps through the hold instead of spinning, so
+  # with the switch it must use at most half of what it uses without.
+  $ok = (@($rows | Where-Object { -not (Clean $_.r) }).Count -eq 0) -and $held -and ($on -le 0.5 * $off)
+  Verdict 'c60' $ok ("VizCompositorThread at a 144 cap ({0} page): off {1:N1} %, on {2:N1} % of a core (mean of 2 runs each; must at least halve); the cap held in every run: {3}" -f $CapPageMode, $off, $on, $held)
 }
 
 # ---- c61: input age under a cap (trace) ----------------------------------------
@@ -227,18 +236,28 @@ if ($Only -contains 'c61') {
     foreach ($mode in 'off', 'on') {
       $name = "c61-latency-busy$busy-$mode"
       $f = if ($mode -eq 'on') { Join-KccFeatures @('KccFrameCapLateLatch') } else { @() }
-      $r = Run $name (@('frame-cap-test.js', '--kcc-suite=latency', '--kcc-cap=144', "--kcc-busy=$busy", '--kcc-mode=webgl', "--kcc-out=$OutDir\$name.json") + $f)
+      $r = Run $name (@('frame-cap-test.js', '--kcc-suite=latency', '--kcc-cap=144', "--kcc-busy=$busy", "--kcc-mode=$CapPageMode", "--kcc-out=$OutDir\$name.json") + $f)
       $l = $r.res.latency
       $lat["$busy|$mode"] = $l
       $fps = ($r.res.measurements | Select-Object -First 1).fps
-      Say ("       c61 busy {0} ms, KccFrameCapLateLatch {1}: exit {2}, {3:N2} fps; submit->display draw p50 {4:N2} ms; main frame start->display draw p10/p50/p90 {5:N2}/{6:N2}/{7:N2} ms; main frame {8:N2} ms$(CrashNote $r)" -f `
-        $busy, $mode, $r.code, $fps, $l.submitToDisplayDrawMs.p50, $l.beginMainFrameToDisplayDrawMs.p10, $l.beginMainFrameToDisplayDrawMs.p50, $l.beginMainFrameToDisplayDrawMs.p90, $l.mainFrameMs.p50)
+      Say ("       c61 busy {0} ms, KccFrameCapLateLatch {1} ({2} page): exit {3}, {4:N2} fps; BeginImplFrame->DrawAndSwap p10/p50/p90 {5:N2}/{6:N2}/{7:N2} ms; render (BeginImplFrame->submit) p50 {8:N2} ms; submit->display draw p50 {9:N2} ms; main frame start->display draw p50 {10:N2} ms$(CrashNote $r)" -f `
+        $busy, $mode, $CapPageMode, $r.code, $fps, $l.beginImplFrameToDisplayDrawMs.p10, $l.beginImplFrameToDisplayDrawMs.p50, $l.beginImplFrameToDisplayDrawMs.p90,
+        $l.beginImplFrameToSubmitMs.p50, $l.submitToDisplayDrawMs.p50, $l.beginMainFrameToDisplayDrawMs.p50)
       if (-not (Clean $r)) { $script:allPass = $false }
     }
   }
+  # The brief: BeginImplFrame -> DrawAndSwap about one cap period with the
+  # switch off and about the render time with it on. "About": within 30 % of
+  # the period.
+  $P = 1000 / 144
   foreach ($busy in 0, 3) {
-    $off = $lat["$busy|off"].beginMainFrameToDisplayDrawMs.p50; $on = $lat["$busy|on"].beginMainFrameToDisplayDrawMs.p50
-    Say ("c61    INFO  busy {0} ms at a 144 cap (period 6.94 ms): input age at display draw p50 {1:N2} ms off -> {2:N2} ms on ({3:+0.00;-0.00} ms)" -f $busy, $off, $on, ($on - $off))
+    $o = $lat["$busy|off"]; $n = $lat["$busy|on"]
+    if (-not $o -or -not $n) { Verdict 'c61' $false "busy $busy ms: no latency result"; continue }
+    $off = $o.beginImplFrameToDisplayDrawMs.p50; $on = $n.beginImplFrameToDisplayDrawMs.p50; $rend = $n.beginImplFrameToSubmitMs.p50
+    $okOff = [math]::Abs($off - $P) -le 0.3 * $P
+    $okOn = $on -le $rend + 0.3 * $P
+    Verdict 'c61' ($okOff -and $okOn) ("busy {0} ms, 144 cap (P {1:N2} ms): BeginImplFrame->DrawAndSwap p50 off {2:N2} ms (about P: {3}), on {4:N2} ms vs render {5:N2} ms (about render time: {6}); input age (main frame start->draw) p50 {7:N2} -> {8:N2} ms" -f `
+      $busy, $P, $off, $okOff, $on, $rend, $okOn, $o.beginMainFrameToDisplayDrawMs.p50, $n.beginMainFrameToDisplayDrawMs.p50)
   }
 }
 
