@@ -1,0 +1,39 @@
+﻿# 2026-11-21T02:47:04  C:\electron\src\out\Testing\electron.exe cdp-test.js 8095 WS-off-5 --enable-logging
+
+[WS-off-5] Server on port 8095
+[7372:1121/024705.174:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[1592:1121/024705.355:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: http://localhost:8095/ (0)
+[WS-off-5] CDP debugger attached
+[WS-off-5] WS client connected
+[WS-off-5] Starting 12s stress test — CDP Input.dispatchMouseEvent...
+\n[WS-off-5] ============ RESULTS ============
+[WS-off-5] CDP events sent: 19021
+[WS-off-5] Mouse events received by renderer: 6850
+[WS-off-5] RAF frames rendered: 3206
+[WS-off-5] WS samples collected: 689
+[WS-off-5]
+[WS-off-5] WS inter-message latency (ms):
+[WS-off-5]   min:  5.5
+[WS-off-5]   avg:  20.4
+[WS-off-5]   p50:  18.8
+[WS-off-5]   p75:  21.3
+[WS-off-5]   p90:  30.2
+[WS-off-5]   p95:  31.4
+[WS-off-5]   p99:  34.3
+[WS-off-5]   max:  51.3
+[WS-off-5]
+[WS-off-5] Threshold violations:
+[WS-off-5]   >50ms:  1 / 689 (0.1%)
+[WS-off-5]   >100ms: 0 / 689 (0.0%)
+[WS-off-5]   >200ms: 0 / 689 (0.0%)
+[WS-off-5]   >500ms: 0 / 689 (0.0%)
+[WS-off-5] ==================================
+[1592:1121/024722.458:WARNING:components\discardable_memory\service\discardable_shared_memory_manager.cc:466] Some MojoDiscardableSharedMemoryManagerImpls are still alive. They will be leaked.
+# exit 0  2026-11-21T02:47:22

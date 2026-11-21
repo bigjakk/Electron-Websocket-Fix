@@ -1,0 +1,52 @@
+﻿frame-cap gate  2026-11-21T02:49:59
+exe: C:\electron\src\out\Testing\electron.exe
+variants: off,all  heavy suite: 2d page, busy 5, 3 ms, 3 runs each  features via: js
+
+off-launch-60                  exit 0  checks 5/5
+off-launch-144                 exit 0  checks 5/5
+off-launch-240                 exit 0  checks 5/5
+off-runtime-2d                 exit 0  checks 14/14  (uncapped baseline 721.5 fps, page 2d)
+off-runtime-webgl              exit 0  checks 10/10  (uncapped baseline 114.8 fps, page webgl2)
+    SKIP setFrameCap(144): uncapped baseline 114.8 is below 1.1 x 144
+    SKIP setFrameCap(240): uncapped baseline 114.8 is below 1.1 x 240
+    SKIP caps 144, 240 and 60 for hide/show, resize and a change of N: uncapped baseline 114.8 cannot reach 1.1 x each: using 72 (for 144), 45 (for 240), 60 (for 60)
+    SKIP setFrameCap(72) after resize: uncapped at 800x600 73.7 is below 1.1 x 72: using 45
+    SKIP two views, cap 144: two-view uncapped rate 88.9 is below 1.1 x 144
+all-launch-60                  exit 0  checks 5/5
+all-launch-144                 exit 0  checks 5/5
+all-launch-240                 exit 0  checks 5/5
+all-runtime-2d                 exit 0  checks 14/14  (uncapped baseline 504.1 fps, page 2d)
+all-runtime-webgl              exit 0  checks 10/10  (uncapped baseline 97.6 fps, page webgl2)
+    SKIP setFrameCap(144): uncapped baseline 97.6 is below 1.1 x 144
+    SKIP setFrameCap(240): uncapped baseline 97.6 is below 1.1 x 240
+    SKIP caps 144, 240 and 60 for hide/show, resize and a change of N: uncapped baseline 97.6 cannot reach 1.1 x each: using 72 (for 144), 45 (for 240), 60 (for 60)
+    SKIP setFrameCap(72) after resize: uncapped at 800x600 65.6 is below 1.1 x 72: using 45
+    SKIP two views, cap 144: two-view uncapped rate 107.5 is below 1.1 x 144
+off-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 157.9, cap1000 156.9, cap240 120.3, cap144 117.2)
+all-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 157.0, cap1000 158.2, cap240 157.2, cap144 143.3)
+off-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 157.5, cap1000 125.5, cap240 117.0, cap144 117.4)
+all-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 116.0, cap1000 116.8, cap240 117.1, cap144 116.7)
+off-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 149.7, cap1000 156.5, cap240 154.3, cap144 144.0)
+all-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 156.3, cap1000 144.3, cap240 117.3, cap144 115.2)
+off-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 171.7, cap1000 173.1, cap240 173.5, cap144 144)
+all-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 178.3, cap1000 234.6, cap240 236.5, cap144 144.0)
+off-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 233.1, cap1000 229.4, cap240 203.0, cap144 144.0)
+all-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 234.9, cap1000 233.4, cap240 230.3, cap144 144.0)
+off-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 234.5, cap1000 184.8, cap240 173.7, cap144 144.0)
+all-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 234.3, cap1000 232.2, cap240 226.3, cap144 144.0)
+
+heavy suite, busy 5 ms, medians of 3 (each run in brackets):
+  off      reach  157.5 [157.9 / 157.5 / 149.7]  cap1000  156.5 [156.9 / 125.5 / 156.5]  cap240  120.3 [120.3 / 117.0 / 154.3]  cap144  117.4 [117.2 / 117.4 / 144.0]
+  all      reach  156.3 [157.0 / 116.0 / 156.3]  cap1000  144.3 [158.2 / 116.8 / 144.3]  cap240  117.3 [157.2 / 117.1 / 117.3]  cap144  116.7 [143.3 / 116.7 / 115.2]
+  all|5        cap1000  median   144.3 vs off   156.5  (-7.8 %)  DROP
+  all|5        cap240   median   117.3 vs off   120.3  (-2.5 %)  ok
+  all|5        cap144   median   116.7 vs off   117.4  (-0.7 %)  ok
+
+heavy suite, busy 3 ms, medians of 3 (each run in brackets):
+  off      reach  233.1 [171.7 / 233.1 / 234.5]  cap1000  184.8 [173.1 / 229.4 / 184.8]  cap240  173.7 [173.5 / 203.0 / 173.7]  cap144  144.0 [144 / 144.0 / 144.0]
+  all      reach  234.3 [178.3 / 234.9 / 234.3]  cap1000  233.4 [234.6 / 233.4 / 232.2]  cap240  230.3 [236.5 / 230.3 / 226.3]  cap144  144.0 [144.0 / 144.0 / 144.0]
+  all|3        cap1000  median   233.4 vs off   184.8  (+26.2 %)  ok
+  all|3        cap240   median   230.3 vs off   173.7  (+32.5 %)  ok
+  all|3        cap144   median   144.0 vs off   144.0  (+0.0 %)  ok
+
+FRAME-CAP GATE: FAIL

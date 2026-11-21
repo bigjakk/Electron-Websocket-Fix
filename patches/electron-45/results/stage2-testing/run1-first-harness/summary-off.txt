@@ -1,0 +1,32 @@
+﻿frame-cap gate  2026-11-21T02:02:02
+exe: C:\electron\src\out\Testing\electron.exe
+variants: off  heavy-suite busy: 5, 3 ms
+
+off-launch-60          exit -2147483645  NO RESULT FILE
+    LOG: [15820:1121/020203.010:FATAL:base\feature_list.cc:439] DCHECK failed: associate_params_result. The field trial parameters part of the --enable-features list is invalid. Make sure you %-encode the following characters in param values: %:/.,
+    LOG: electron!logging::NotReachedNoreturnError::NotReachedNoreturnError [0x7ff7bf3b7f57+677]
+off-launch-144         exit -2147483645  NO RESULT FILE
+    LOG: [14464:1121/020207.849:FATAL:base\feature_list.cc:439] DCHECK failed: associate_params_result. The field trial parameters part of the --enable-features list is invalid. Make sure you %-encode the following characters in param values: %:/.,
+    LOG: electron!logging::NotReachedNoreturnError::NotReachedNoreturnError [0x7ff7bf3b7f57+677]
+off-launch-240         exit -2147483645  NO RESULT FILE
+    LOG: [14396:1121/020213.249:FATAL:base\feature_list.cc:439] DCHECK failed: associate_params_result. The field trial parameters part of the --enable-features list is invalid. Make sure you %-encode the following characters in param values: %:/.,
+    LOG: electron!logging::NotReachedNoreturnError::NotReachedNoreturnError [0x7ff7bf3b7f57+677]
+off-runtime-2d         exit 1  checks 13/14
+    FAIL setFrameCap(0) returns to uncapped (from 60): baseline 721.11, after setFrameCap(0) 408.33 (must exceed 90 and 80 % of baseline)  (uncapped baseline 721.1 fps, page 2d, gpu_compositing disabled_software)
+off-runtime-webgl      exit 1  checks 5/10
+    FAIL setFrameCap(144) after hide/show: target 144 got 96.68 (-32.86 %, tol 1 %)
+    FAIL setFrameCap(144) after resize: target 144 got 65.57 (-54.46 %, tol 1 %)
+    FAIL change 144 -> 100 takes effect at once (2 s): target 100 got 95.95 (-4.05 %, tol 3 %)
+    FAIL change 60 -> 144 takes effect at once (2 s): target 144 got 92.72 (-35.61 %, tol 3 %)
+    FAIL two views: setFrameCap(0) uncaps both (from 60): uncapped before 88.57 / 88.47, after setFrameCap(0) 86.57 / 86.59
+    SKIP setFrameCap(144): uncapped baseline 103.8 is below 1.1 x 144
+    SKIP setFrameCap(240): uncapped baseline 103.8 is below 1.1 x 240
+    SKIP two views, cap 144: two-view uncapped rate 88.5 is below 1.1 x 144  (uncapped baseline 103.8 fps, page webgl2, gpu_compositing disabled_software)
+off-heavy-5            exit 0  checks 2/2  (busy 5 ms page reaches 85.9 fps uncapped; cap1000 100.1, cap240 99.9, cap144 109.7)
+off-heavy-3            exit 0  checks 2/2  (busy 3 ms page reaches 116.0 fps uncapped; cap1000 102.0, cap240 100.5, cap144 92.1)
+
+heavy suite, busy 5 ms, variant off: reach 85.9, cap1000 100.1, cap240 99.9, cap144 109.7
+
+heavy suite, busy 3 ms, variant off: reach 116.0, cap1000 102.0, cap240 100.5, cap144 92.1
+
+FRAME-CAP GATE: FAIL

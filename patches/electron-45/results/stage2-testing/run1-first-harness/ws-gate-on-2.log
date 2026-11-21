@@ -1,0 +1,39 @@
+﻿# 2026-11-21T02:08:03  C:\electron\src\out\Testing\electron.exe cdp-test.js 8092 WS-on-2 --enable-logging --enable-features=KccNoPointerLockEscCooldown,KccPinRawPointerLock,KccRawInputKeepWheelMotion,KccRawInputFastPath,KccLeanLockedMouseMove,KccSkipUnobservedInputEmits,KccSkipCanvasPerfSampling,KccLabelTexturesOnce,KccCacheVsyncInterval,KccMacFineGpuBackpressure,KccAudioParamCoalesce,KccHrtfPannerKRateAngles,KccX11AllowUnredirect,KccX11RawMouse,KccFrameCapPreciseRelease,KccFrameCapLateLatch--js-flags=--cppheap-max-incremental-sweep-duration-ms=1
+
+[WS-on-2] Server on port 8092
+[15108:1121/020803.986:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[6316:1121/020804.215:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: http://localhost:8092/ (0)
+[WS-on-2] CDP debugger attached
+[WS-on-2] WS client connected
+[WS-on-2] Starting 12s stress test — CDP Input.dispatchMouseEvent...
+\n[WS-on-2] ============ RESULTS ============
+[WS-on-2] CDP events sent: 24141
+[WS-on-2] Mouse events received by renderer: 7116
+[WS-on-2] RAF frames rendered: 2829
+[WS-on-2] WS samples collected: 720
+[WS-on-2]
+[WS-on-2] WS inter-message latency (ms):
+[WS-on-2]   min:  8.7
+[WS-on-2]   avg:  19.5
+[WS-on-2]   p50:  18.2
+[WS-on-2]   p75:  20.3
+[WS-on-2]   p90:  25.4
+[WS-on-2]   p95:  30.8
+[WS-on-2]   p99:  32.6
+[WS-on-2]   max:  41.1
+[WS-on-2]
+[WS-on-2] Threshold violations:
+[WS-on-2]   >50ms:  0 / 720 (0.0%)
+[WS-on-2]   >100ms: 0 / 720 (0.0%)
+[WS-on-2]   >200ms: 0 / 720 (0.0%)
+[WS-on-2]   >500ms: 0 / 720 (0.0%)
+[WS-on-2] ==================================
+[6316:1121/020821.319:WARNING:components\discardable_memory\service\discardable_shared_memory_manager.cc:466] Some MojoDiscardableSharedMemoryManagerImpls are still alive. They will be leaked.
+# exit 0  2026-11-21T02:08:21

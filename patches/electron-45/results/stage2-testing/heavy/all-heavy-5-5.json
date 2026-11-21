@@ -1,0 +1,128 @@
+{
+  "suite": "heavy",
+  "cap": 0,
+  "busy": 5,
+  "mode": "2d",
+  "windowMs": 10000,
+  "enableFeatures": "KccNoPointerLockEscCooldown,KccPinRawPointerLock,KccRawInputKeepWheelMotion,KccRawInputFastPath,KccLeanLockedMouseMove,KccSkipUnobservedInputEmits,KccSkipCanvasPerfSampling,KccLabelTexturesOnce,KccCacheVsyncInterval,KccMacFineGpuBackpressure,KccAudioParamCoalesce,KccHrtfPannerKRateAngles,KccX11AllowUnredirect,KccX11RawMouse,KccFrameCapPreciseRelease,KccFrameCapLateLatch",
+  "featuresVia": "js",
+  "versions": {
+    "electron": "45.4.1",
+    "chrome": "156.0.8078.100",
+    "v8": "15.6.75.57-electron.d384e85dffdbe2dd"
+  },
+  "measurements": [
+    {
+      "label": "main",
+      "fps": 156.984301569843,
+      "frames": 1570,
+      "elapsedMs": 10001,
+      "meanMs": 6.3700636942675155,
+      "sdMs": 0.3465875443154305,
+      "p01Ms": 6.0999999940395355,
+      "p50Ms": 6.299999997019768,
+      "p99Ms": 7.700000002980232,
+      "maxMs": 8.899999998509884,
+      "name": "uncapped, busy 5 ms"
+    },
+    {
+      "label": "main",
+      "fps": 157.5842415758424,
+      "frames": 1576,
+      "elapsedMs": 10001,
+      "meanMs": 6.345812182741117,
+      "sdMs": 0.29944148562670014,
+      "p01Ms": 6.0999999940395355,
+      "p50Ms": 6.299999997019768,
+      "p99Ms": 7.700000002980232,
+      "maxMs": 9,
+      "name": "cap 1000, busy 5 ms"
+    },
+    {
+      "label": "main",
+      "fps": 132.83092791744335,
+      "frames": 1329,
+      "elapsedMs": 10005.20000000298,
+      "meanMs": 7.528367193380722,
+      "sdMs": 1.7602116460719783,
+      "p01Ms": 6.0999999940395355,
+      "p50Ms": 6.899999998509884,
+      "p99Ms": 12.899999998509884,
+      "maxMs": 26.700000002980232,
+      "name": "cap 240, busy 5 ms"
+    },
+    {
+      "label": "main",
+      "fps": 117.34367503601769,
+      "frames": 1174,
+      "elapsedMs": 10004.79999999702,
+      "meanMs": 8.521976149912282,
+      "sdMs": 1.843971949680881,
+      "p01Ms": 6.600000001490116,
+      "p50Ms": 8.200000002980232,
+      "p99Ms": 18.299999997019768,
+      "maxMs": 31.69999999552965,
+      "name": "cap 144, busy 5 ms"
+    }
+  ],
+  "checks": [
+    {
+      "name": "cap 1000 at or above reach (157): window did not freeze",
+      "pass": true,
+      "detail": "uncapped 156.98, capped 157.58 (0.38 % vs uncapped, informational)"
+    },
+    {
+      "name": "cap 240 at or above reach (157): window did not freeze",
+      "pass": true,
+      "detail": "uncapped 156.98, capped 132.83 (-15.39 % vs uncapped, informational)"
+    },
+    {
+      "name": "cap 144 at or above reach (157): window did not freeze",
+      "pass": true,
+      "detail": "uncapped 156.98, capped 117.34 (informational)"
+    }
+  ],
+  "events": [],
+  "started": "2026-11-21T11:24:26.621Z",
+  "gpuFeatureStatus": {
+    "2d_canvas": "disabled_software",
+    "direct_rendering_display_compositor": "disabled_off_ok",
+    "gpu_compositing": "disabled_software",
+    "multiple_raster_threads": "enabled_on",
+    "opengl": "disabled_off",
+    "rasterization": "disabled_software",
+    "raw_draw": "disabled_off_ok",
+    "skia_graphite": "disabled_off",
+    "trees_in_viz": "disabled_off",
+    "video_decode": "disabled_software",
+    "video_encode": "disabled_software",
+    "webgl": "disabled_off",
+    "webgpu": "disabled_off",
+    "webnn": "disabled_off"
+  },
+  "pageRenderer": "2d",
+  "gpuDevices": [
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    }
+  ],
+  "reach": 156.984301569843,
+  "cap1000": 157.5842415758424,
+  "cap240": 132.83092791744335,
+  "cap144": 117.34367503601769,
+  "finished": "2026-11-21T11:25:12.011Z",
+  "exitCode": 0,
+  "failed": []
+}

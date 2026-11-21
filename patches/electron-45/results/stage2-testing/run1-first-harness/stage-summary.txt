@@ -1,0 +1,52 @@
+﻿== gates  2026-11-21T02:01:23  exe C:\electron\src\out\Testing\electron.exe  session: >bigjakk|rdp-tcp#1|2|Active|6:53|11/20/2026 12:16 PM
+  versions: electron 45.4.1, chrome 156.0.8078.100, v8 15.6.75.57-electron.d384e85dffdbe2dd, node 24.22.3
+  gpu_compositing disabled_software, webgl2 ; WebGL2 renderer: ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)
+  WS-off-1   exit 0  p99 35.2 ms  >50ms 0/664  rAF frames 2915  PASS
+  WS-off-2   exit 0  p99 36.9 ms  >50ms 1/680  rAF frames 3028  FAIL
+  WS GATE (off): FAIL
+  off-launch-60          exit -2147483645  NO RESULT FILE
+      LOG: [15820:1121/020203.010:FATAL:base\feature_list.cc:439] DCHECK failed: associate_params_result. The field trial parameters part of the --enable-features list is invalid. Make sure you %-encode the following characters in param values: %:/.,
+      LOG: electron!logging::NotReachedNoreturnError::NotReachedNoreturnError [0x7ff7bf3b7f57+677]
+  off-launch-144         exit -2147483645  NO RESULT FILE
+      LOG: [14464:1121/020207.849:FATAL:base\feature_list.cc:439] DCHECK failed: associate_params_result. The field trial parameters part of the --enable-features list is invalid. Make sure you %-encode the following characters in param values: %:/.,
+      LOG: electron!logging::NotReachedNoreturnError::NotReachedNoreturnError [0x7ff7bf3b7f57+677]
+  off-launch-240         exit -2147483645  NO RESULT FILE
+      LOG: [14396:1121/020213.249:FATAL:base\feature_list.cc:439] DCHECK failed: associate_params_result. The field trial parameters part of the --enable-features list is invalid. Make sure you %-encode the following characters in param values: %:/.,
+      LOG: electron!logging::NotReachedNoreturnError::NotReachedNoreturnError [0x7ff7bf3b7f57+677]
+  off-runtime-2d         exit 1  checks 13/14
+      FAIL setFrameCap(0) returns to uncapped (from 60): baseline 721.11, after setFrameCap(0) 408.33 (must exceed 90 and 80 % of baseline)  (uncapped baseline 721.1 fps, page 2d, gpu_compositing disabled_software)
+  off-runtime-webgl      exit 1  checks 5/10
+      FAIL setFrameCap(144) after hide/show: target 144 got 96.68 (-32.86 %, tol 1 %)
+      FAIL setFrameCap(144) after resize: target 144 got 65.57 (-54.46 %, tol 1 %)
+      FAIL change 144 -> 100 takes effect at once (2 s): target 100 got 95.95 (-4.05 %, tol 3 %)
+      FAIL change 60 -> 144 takes effect at once (2 s): target 144 got 92.72 (-35.61 %, tol 3 %)
+      FAIL two views: setFrameCap(0) uncaps both (from 60): uncapped before 88.57 / 88.47, after setFrameCap(0) 86.57 / 86.59
+  off-heavy-5            exit 0  checks 2/2  (busy 5 ms page reaches 85.9 fps uncapped; cap1000 100.1, cap240 99.9, cap144 109.7)
+  off-heavy-3            exit 0  checks 2/2  (busy 3 ms page reaches 116.0 fps uncapped; cap1000 102.0, cap240 100.5, cap144 92.1)
+  FRAME-CAP GATE: FAIL
+  WS-on-1    exit 0  p99 32.9 ms  >50ms 0/745  rAF frames 2848  PASS
+  WS-on-2    exit 0  p99 32.6 ms  >50ms 0/720  rAF frames 2829  PASS
+  WS GATE (on): PASS
+  all-launch-60          exit -2147483645  NO RESULT FILE
+      LOG: [7356:1121/020822.502:FATAL:base\feature_list.cc:439] DCHECK failed: associate_params_result. The field trial parameters part of the --enable-features list is invalid. Make sure you %-encode the following characters in param values: %:/.,
+      LOG: electron!logging::NotReachedNoreturnError::NotReachedNoreturnError [0x7ff7bf3b7f57+677]
+  all-launch-144         exit -2147483645  NO RESULT FILE
+      LOG: [5812:1121/020826.871:FATAL:base\feature_list.cc:439] DCHECK failed: associate_params_result. The field trial parameters part of the --enable-features list is invalid. Make sure you %-encode the following characters in param values: %:/.,
+      LOG: electron!logging::NotReachedNoreturnError::NotReachedNoreturnError [0x7ff7bf3b7f57+677]
+  all-launch-240         exit -2147483645  NO RESULT FILE
+      LOG: [372:1121/020831.196:FATAL:base\feature_list.cc:439] DCHECK failed: associate_params_result. The field trial parameters part of the --enable-features list is invalid. Make sure you %-encode the following characters in param values: %:/.,
+      LOG: electron!logging::NotReachedNoreturnError::NotReachedNoreturnError [0x7ff7bf3b7f57+677]
+  all-runtime-2d         exit 1  checks 12/14
+      FAIL setFrameCap(240): target 240 got 237.60 (-1.00 %, tol 1 %)
+      FAIL setFrameCap(0) returns to uncapped (from 60): baseline 728.93, after setFrameCap(0) 500.44 (must exceed 90 and 80 % of baseline)  (uncapped baseline 728.9 fps, page 2d, gpu_compositing disabled_software)
+  all-runtime-webgl      exit 1  checks 6/10
+      FAIL setFrameCap(144) after hide/show: target 144 got 108.36 (-24.75 %, tol 1 %)
+      FAIL setFrameCap(144) after resize: target 144 got 61.63 (-57.20 %, tol 1 %)
+      FAIL change 60 -> 144 takes effect at once (2 s): target 144 got 91.80 (-36.25 %, tol 3 %)
+      FAIL two views: setFrameCap(0) uncaps both (from 60): uncapped before 89.38 / 89.43, after setFrameCap(0) 89.42 / 89.42
+  all-heavy-5            exit 0  checks 2/2  (busy 5 ms page reaches 84.3 fps uncapped; cap1000 100.9, cap240 96.0, cap144 106.6)
+  all-heavy-3            exit 0  checks 2/2  (busy 3 ms page reaches 117.5 fps uncapped; cap1000 101.2, cap240 91.4, cap144 89.6)
+    all|5        cap240       96.0 vs off     99.9  (-3.9 %)  DROP
+    all|3        cap240       91.4 vs off    100.5  (-9.1 %)  DROP
+  FRAME-CAP GATE: FAIL
+== gates done  2026-11-21T02:14:29

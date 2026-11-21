@@ -1,0 +1,6 @@
+﻿WS starvation gate  flags on  2026-11-21T02:07:45
+exe: C:\electron\src\out\Testing\electron.exe
+
+WS-on-1    exit 0  p99 32.9 ms  >50ms 0/745  rAF frames 2848  PASS
+WS-on-2    exit 0  p99 32.6 ms  >50ms 0/720  rAF frames 2829  PASS
+WS GATE (on): PASS

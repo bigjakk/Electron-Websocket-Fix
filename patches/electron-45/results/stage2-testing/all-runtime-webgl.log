@@ -1,0 +1,56 @@
+﻿# 2026-11-21T03:02:36  C:\electron\src\out\Testing\electron.exe frame-cap-test.js --kcc-suite=runtime --kcc-mode=webgl --kcc-features=KccNoPointerLockEscCooldown,KccPinRawPointerLock,KccRawInputKeepWheelMotion,KccRawInputFastPath,KccLeanLockedMouseMove,KccSkipUnobservedInputEmits,KccSkipCanvasPerfSampling,KccLabelTexturesOnce,KccCacheVsyncInterval,KccMacFineGpuBackpressure,KccAudioParamCoalesce,KccHrtfPannerKRateAngles,KccX11AllowUnredirect,KccX11RawMouse,KccFrameCapPreciseRelease,KccFrameCapLateLatch --js-flags=--cppheap-max-incremental-sweep-duration-ms=1 --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\all-runtime-webgl.json --enable-logging
+
+[12452:1121/030237.668:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[16616:1121/030237.977:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file:///C:/projects/Electron-Websocket-Fix/test/frame-cap.html?busy=0&label=main&mode=webgl (0)
+[frame-cap:runtime] page renderer webgl2; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:runtime] measure uncapped baseline: 97.55 fps (976 frames / 10005 ms; interval mean 10.251 sd 2.272 p50 9.800 p99 18.600 max 26.40 ms)
+[frame-cap:runtime] measure setFrameCap(60): 59.99 fps (601 frames / 10018 ms; interval mean 16.669 sd 1.435 p50 16.800 p99 20.400 max 22.20 ms)
+[frame-cap:runtime] PASS  setFrameCap(60)  target 60 got 59.99 (-0.01 %, tol 1 %)
+[frame-cap:runtime] SKIP  setFrameCap(144)  uncapped baseline 97.6 is below 1.1 x 144
+[frame-cap:runtime] SKIP  setFrameCap(240)  uncapped baseline 97.6 is below 1.1 x 240
+[frame-cap:runtime] SKIP  caps 144, 240 and 60 for hide/show, resize and a change of N  uncapped baseline 97.6 cannot reach 1.1 x each: using 72 (for 144), 45 (for 240), 60 (for 60)
+[frame-cap:runtime] measure 72 after hide/show: 72.00 fps (720 frames / 10000 ms; interval mean 13.889 sd 1.460 p50 13.900 p99 19.000 max 23.60 ms)
+[frame-cap:runtime] PASS  setFrameCap(72) after hide/show  target 72 got 72.00 (-0.00 %, tol 1 %)
+[frame-cap:runtime] measure uncapped at 800x600: 65.57 fps (197 frames / 3005 ms; interval mean 15.251 sd 2.647 p50 14.800 p99 25.900 max 27.70 ms)
+[frame-cap:runtime] SKIP  setFrameCap(72) after resize  uncapped at 800x600 65.6 is below 1.1 x 72: using 45
+[frame-cap:runtime] measure 45 after resize: 45.01 fps (451 frames / 10021 ms; interval mean 22.219 sd 1.264 p50 22.200 p99 25.800 max 27.90 ms)
+[frame-cap:runtime] PASS  setFrameCap(45) after resize  target 45 got 45.01 (0.01 %, tol 1 %)
+[frame-cap:runtime] measure at once 45: 45.00 fps (91 frames / 2022 ms; interval mean 22.222 sd 1.204 p50 22.400 p99 25.100 max 25.10 ms)
+[frame-cap:runtime] PASS  change 72 -> 45 takes effect at once (2 s)  target 45 got 45.00 (0.00 %, tol 3 %)
+[frame-cap:runtime] measure at once 60: 59.88 fps (120 frames / 2004 ms; interval mean 16.701 sd 1.569 p50 16.800 p99 22.300 max 22.30 ms)
+[frame-cap:runtime] PASS  change 45 -> 60 takes effect at once (2 s)  target 60 got 59.88 (-0.20 %, tol 3 %)
+[frame-cap:runtime] measure at once 72: 72.08 fps (145 frames / 2012 ms; interval mean 13.873 sd 1.228 p50 14.000 p99 17.300 max 18.10 ms)
+[frame-cap:runtime] PASS  change 60 -> 72 takes effect at once (2 s)  target 72 got 72.08 (0.11 %, tol 3 %)
+[frame-cap:runtime] measure uncapped reference: 98.68 fps (987 frames / 10002 ms; interval mean 10.134 sd 2.136 p50 9.800 p99 18.000 max 28.00 ms)
+[frame-cap:runtime] measure setFrameCap(0): 105.33 fps (1054 frames / 10007 ms; interval mean 9.494 sd 1.737 p50 9.200 p99 16.700 max 19.60 ms)
+[frame-cap:runtime] PASS  setFrameCap(0) returns to uncapped (from 60)  after setFrameCap(60), setFrameCap(0): 105.33; uncapped just before 98.68, baseline 97.55 (must exceed 90, 80 % of the rate just before and 50 % of the baseline)
+[16616:1121/030400.009:WARNING:ui\aura\window.cc:1509] StackChildLayerRelativeTo called with unmanaged layer(s). child=WebContentsViewAura child_managed=0 target=WebContentsViewAura target_managed=0
+[16616:1121/030400.010:WARNING:ui\aura\window.cc:1509] StackChildLayerRelativeTo called with unmanaged layer(s). child=WebContentsViewAura child_managed=0 target=WebContentsViewAura target_managed=0
+[16616:1121/030400.310:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file:///C:/projects/Electron-Websocket-Fix/test/frame-cap.html?label=second&mode=webgl (0)
+[frame-cap:runtime] measure two views uncapped main: 107.52 fps (1076 frames / 10007 ms; interval mean 9.300 sd 1.081 p50 9.000 p99 15.000 max 16.30 ms)
+[frame-cap:runtime] measure two views uncapped second: 107.52 fps (1076 frames / 10007 ms; interval mean 9.300 sd 1.082 p50 9.000 p99 15.100 max 16.40 ms)
+[frame-cap:runtime] SKIP  two views, cap 144  two-view uncapped rate 107.5 is below 1.1 x 144
+[frame-cap:runtime] measure two views cap 60 main: 60.01 fps (601 frames / 10016 ms; interval mean 16.665 sd 0.339 p50 16.700 p99 17.300 max 18.40 ms)
+[frame-cap:runtime] measure two views cap 60 second: 60.00 fps (601 frames / 10016 ms; interval mean 16.666 sd 0.282 p50 16.700 p99 17.200 max 18.20 ms)
+[frame-cap:runtime] PASS  two views, cap 60: main view  target 60 got 60.01 (0.01 %, tol 1 %)
+[frame-cap:runtime] PASS  two views, cap 60: second view  target 60 got 60.00 (0.01 %, tol 1 %)
+[frame-cap:runtime] measure two views setFrameCap(0) main: 108.34 fps (1084 frames / 10005 ms; interval mean 9.230 sd 1.039 p50 8.900 p99 13.900 max 16.00 ms)
+[frame-cap:runtime] measure two views setFrameCap(0) second: 108.34 fps (1084 frames / 10005 ms; interval mean 9.230 sd 1.047 p50 8.900 p99 13.900 max 16.00 ms)
+[frame-cap:runtime] PASS  two views: setFrameCap(0) uncaps both (from 60)  uncapped before 107.52 / 107.52, after setFrameCap(0) 108.34 / 108.34 (must exceed 72 and 80 % of before)
+[frame-cap:runtime] 10/10 checks passed, exit 0
+[16616:1121/030433.271:WARNING:components\discardable_memory\service\discardable_shared_memory_manager.cc:466] Some MojoDiscardableSharedMemoryManagerImpls are still alive. They will be leaked.
+# exit 0  2026-11-21T03:04:33

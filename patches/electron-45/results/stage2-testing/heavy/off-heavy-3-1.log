@@ -1,0 +1,22 @@
+﻿# 2026-11-21T03:25:12  C:\electron\src\out\Testing\electron.exe frame-cap-test.js --kcc-suite=heavy --kcc-busy=3 --kcc-mode=2d --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\heavy\off-heavy-3-1.json --enable-logging
+
+[15552:1121/032512.979:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[11832:1121/032513.182:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file:///C:/projects/Electron-Websocket-Fix/test/frame-cap.html?busy=3&label=main&mode=2d (0)
+[frame-cap:heavy] page renderer 2d; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:heavy] measure uncapped, busy 3 ms: 235.36 fps (2354 frames / 10002 ms; interval mean 4.249 sd 0.264 p50 4.200 p99 5.900 max 7.50 ms)
+[frame-cap:heavy] measure cap 1000, busy 3 ms: 232.95 fps (2330 frames / 10002 ms; interval mean 4.293 sd 0.312 p50 4.200 p99 5.800 max 7.20 ms)
+[frame-cap:heavy] PASS  cap 1000 at or above reach (235): window did not freeze  uncapped 235.36, capped 232.95 (-1.02 % vs uncapped, informational)
+[frame-cap:heavy] measure cap 240, busy 3 ms: 232.98 fps (2330 frames / 10001 ms; interval mean 4.292 sd 0.305 p50 4.200 p99 5.800 max 6.40 ms)
+[frame-cap:heavy] PASS  cap 240 at or above reach (235): window did not freeze  uncapped 235.36, capped 232.98 (-1.01 % vs uncapped, informational)
+[frame-cap:heavy] measure cap 144, busy 3 ms: 144.01 fps (1441 frames / 10006 ms; interval mean 6.944 sd 0.238 p50 6.900 p99 7.200 max 13.90 ms)
+[frame-cap:heavy] PASS  cap 144 with busy 3 ms page  target 144 got 144.01 (0.01 %, tol 1 %)
+[frame-cap:heavy] 3/3 checks passed, exit 0
+[11832:1121/032558.160:WARNING:components\discardable_memory\service\discardable_shared_memory_manager.cc:466] Some MojoDiscardableSharedMemoryManagerImpls are still alive. They will be leaked.
+# exit 0  2026-11-21T03:25:58

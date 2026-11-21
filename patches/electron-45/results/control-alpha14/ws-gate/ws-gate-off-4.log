@@ -1,0 +1,37 @@
+﻿# 2026-11-21T02:43:48  C:\electron\src\out\Release\electron.exe cdp-test.js 8094 WS-off-4 --enable-logging
+
+[WS-off-4] Server on port 8094
+[7992:1121/024349.229:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: http://localhost:8094/ (0)
+[WS-off-4] CDP debugger attached
+[WS-off-4] WS client connected
+[WS-off-4] Starting 12s stress test — CDP Input.dispatchMouseEvent...
+\n[WS-off-4] ============ RESULTS ============
+[WS-off-4] CDP events sent: 60461
+[WS-off-4] Mouse events received by renderer: 23000
+[WS-off-4] RAF frames rendered: 3588
+[WS-off-4] WS samples collected: 743
+[WS-off-4]
+[WS-off-4] WS inter-message latency (ms):
+[WS-off-4]   min:  11.7
+[WS-off-4]   avg:  18.9
+[WS-off-4]   p50:  17.1
+[WS-off-4]   p75:  17.9
+[WS-off-4]   p90:  30.4
+[WS-off-4]   p95:  31.3
+[WS-off-4]   p99:  32.2
+[WS-off-4]   max:  34.0
+[WS-off-4]
+[WS-off-4] Threshold violations:
+[WS-off-4]   >50ms:  0 / 743 (0.0%)
+[WS-off-4]   >100ms: 0 / 743 (0.0%)
+[WS-off-4]   >200ms: 0 / 743 (0.0%)
+[WS-off-4]   >500ms: 0 / 743 (0.0%)
+[WS-off-4] ==================================
+# exit 0  2026-11-21T02:44:06

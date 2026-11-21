@@ -1,0 +1,22 @@
+﻿# 2026-11-21T03:05:19  C:\electron\src\out\Testing\electron.exe frame-cap-test.js --kcc-suite=heavy --kcc-busy=5 --kcc-mode=2d --kcc-features=KccNoPointerLockEscCooldown,KccPinRawPointerLock,KccRawInputKeepWheelMotion,KccRawInputFastPath,KccLeanLockedMouseMove,KccSkipUnobservedInputEmits,KccSkipCanvasPerfSampling,KccLabelTexturesOnce,KccCacheVsyncInterval,KccMacFineGpuBackpressure,KccAudioParamCoalesce,KccHrtfPannerKRateAngles,KccX11AllowUnredirect,KccX11RawMouse,KccFrameCapPreciseRelease,KccFrameCapLateLatch --js-flags=--cppheap-max-incremental-sweep-duration-ms=1 --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\all-heavy-5-1.json --enable-logging
+
+[1960:1121/030519.955:ERROR:ui\gl\direct_composition_support.cc:255] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[13728:1121/030520.103:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file:///C:/projects/Electron-Websocket-Fix/test/frame-cap.html?busy=5&label=main&mode=2d (0)
+[frame-cap:heavy] page renderer 2d; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:heavy] measure uncapped, busy 5 ms: 157.04 fps (1571 frames / 10004 ms; interval mean 6.368 sd 0.330 p50 6.300 p99 7.700 max 10.10 ms)
+[frame-cap:heavy] measure cap 1000, busy 5 ms: 158.23 fps (1583 frames / 10005 ms; interval mean 6.320 sd 0.264 p50 6.300 p99 7.700 max 9.20 ms)
+[frame-cap:heavy] PASS  cap 1000 at or above reach (157): window did not freeze  uncapped 157.04, capped 158.23 (0.76 % vs uncapped, informational)
+[frame-cap:heavy] measure cap 240, busy 5 ms: 157.24 fps (1573 frames / 10004 ms; interval mean 6.360 sd 0.293 p50 6.300 p99 7.700 max 8.10 ms)
+[frame-cap:heavy] PASS  cap 240 at or above reach (157): window did not freeze  uncapped 157.04, capped 157.24 (0.13 % vs uncapped, informational)
+[frame-cap:heavy] measure cap 144, busy 5 ms: 143.26 fps (1433 frames / 10003 ms; interval mean 6.981 sd 1.294 p50 6.900 p99 8.000 max 54.00 ms)
+[frame-cap:heavy] PASS  cap 144 at or above reach (157): window did not freeze  uncapped 157.04, capped 143.26 (informational)
+[frame-cap:heavy] 3/3 checks passed, exit 0
+[13728:1121/030605.101:WARNING:components\discardable_memory\service\discardable_shared_memory_manager.cc:466] Some MojoDiscardableSharedMemoryManagerImpls are still alive. They will be leaked.
+# exit 0  2026-11-21T03:06:05

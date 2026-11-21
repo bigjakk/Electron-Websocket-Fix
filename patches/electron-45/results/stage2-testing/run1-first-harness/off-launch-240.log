@@ -1,0 +1,34 @@
+﻿# 2026-11-21T02:02:12  C:\electron\src\out\Testing\electron.exe frame-cap-test.js --kcc-suite=launch --kcc-cap=240 --kcc-mode=2d --enable-features=CustomFrameCap:fps/240 --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage2-testing\off-launch-240.json --enable-logging
+
+[14396:1121/020213.249:ERROR:base\metrics\field_trial_param_associator.cc:37] You can't override the existing params for field trial: StudyCustomFrameCap.GroupCustomFrameCap
+[14396:1121/020213.249:ERROR:base\metrics\field_trial_params.cc:159] Failed to associate field trial params for group "GroupCustomFrameCap" in trial "StudyCustomFrameCap"
+[14396:1121/020213.249:FATAL:base\feature_list.cc:439] DCHECK failed: associate_params_result. The field trial parameters part of the --enable-features list is invalid. Make sure you %-encode the following characters in param values: %:/.,
+	electron!base::debug::CollectStackTrace [0x7ff7bf2b8135+15]
+	electron!base::debug::StackTrace::StackTrace [0x7ff7bf2c8e73+73]
+	electron!logging::LogMessage::Flush [0x7ff7bf392269+b9]
+	electron!logging::LogMessage::~LogMessage [0x7ff7bf392139+19]
+	electron!logging::NotReachedNoreturnError::NotReachedNoreturnError [0x7ff7bf3b7f57+677]
+	electron!logging::CheckError::~CheckError [0x7ff7bf3b76bc+2c]
+	electron!base::FeatureList::InitFromCommandLine [0x7ff7bf3a63ab+127b]
+	electron!base::FeatureList::InitInstance [0x7ff7bf3a99a7+167]
+	electron!base::FeatureList::InitInstance [0x7ff7bf3a980e+2e]
+	electron!electron::InitializeFeatureList [0x7ff7b711651e+e7e]
+	electron!electron::ElectronBrowserMainParts::PostEarlyInitialization [0x7ff7b71073d5+805]
+	electron!content::BrowserMainLoop::EarlyInitialization [0x7ff7bce10edb+38b]
+	electron!content::BrowserMainRunnerImpl::Initialize [0x7ff7bce17503+363]
+	electron!content::BrowserMain [0x7ff7bce0f9f3+93]
+	electron!content::RunBrowserProcessMain [0x7ff7b79b97a0+110]
+	electron!content::ContentMainRunnerImpl::RunBrowser [0x7ff7b79bca9f+6df]
+	electron!content::ContentMainRunnerImpl::Run [0x7ff7b79bc31b+92b]
+	electron!content::RunContentProcess [0x7ff7b79b8d3a+58a]
+	electron!content::ContentMain [0x7ff7b79b8fcb+7b]
+	electron!wWinMain [0x7ff7b6f1184c+3bc]
+	electron!__scrt_common_main_seh [0x7ff7c9e38f32+106] (D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:288)
+	KERNEL32!BaseThreadInitThunk [0x7ffb8b76cd87+17]
+	ntdll!RtlUserThreadStart [0x7ffb8ce4caec+2c]
+Crash keys:
+  "chrome-trace-id" = "4557345812847728001"
+  "platform" = "win32"
+  "process_type" = "browser"
+
+# exit -2147483645  2026-11-21T02:02:21
