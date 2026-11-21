@@ -8,8 +8,10 @@
 #
 #   gates         gpu-status.json; WS gate off; WS gate on; frame-cap gate
 #                 "off" and "all" (heavy runs interleaved)             (~45 min)
-#   cap-switches  frame-cap gate "precise", "latch", "both" (heavy runs
-#                 interleaved with "off")                             (~60 min)
+#   cap-switches  frame-cap gate "precise" (heavy runs interleaved with
+#                 "off")                                              (~25 min)
+#                 (The Stage 2 build also had "latch" and "both": c61,
+#                 KccFrameCapLateLatch, was dropped afterwards.)
 #   checks        run-checks.ps1 (every check)                       (~25 min)
 #
 # -FeaturesVia js: the frame-cap gate passes its --enable-features list through
@@ -55,7 +57,7 @@ if ($Part -in 'gates', 'all') {
   Sub 'run-frame-cap-gate.ps1' @('-Exe', $Exe, '-OutDir', $OutDir, '-Variants', 'off,all', '-FeaturesVia', $FeaturesVia, '-HeavyMode', $CapPageMode)
 }
 if ($Part -in 'cap-switches', 'all') {
-  Sub 'run-frame-cap-gate.ps1' @('-Exe', $Exe, '-OutDir', $OutDir, '-Variants', 'precise,latch,both', '-FeaturesVia', $FeaturesVia, '-HeavyMode', $CapPageMode)
+  Sub 'run-frame-cap-gate.ps1' @('-Exe', $Exe, '-OutDir', $OutDir, '-Variants', 'precise', '-FeaturesVia', $FeaturesVia, '-HeavyMode', $CapPageMode)
 }
 if ($Part -in 'checks', 'all') {
   Sub 'run-checks.ps1' @('-Exe', $Exe, '-OutDir', (Join-Path $OutDir 'checks'), '-CapPageMode', $CapPageMode)

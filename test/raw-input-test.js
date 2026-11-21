@@ -63,10 +63,22 @@ app.whenReady().then(async () => {
 
     async function phase(name, plan, before) {
       await wc.executeJavaScript('kccReset()');
+      await sleep(200);
       const pre = before ? await before() : null;
       const inj = await inject(plan);
+      // Wait until the counters have not changed for 300 ms (400 ms at least,
+      // 3 s at most). A fixed 400 ms once came out one wheel notch short
+      // (-3900 instead of -4000) in one of this VM's slow stretches. A notch
+      // is also lost now and then by configurations that do not touch the
+      // wheel path at all (stock included), so a lone -3900 is not a patch effect.
       await sleep(400);
-      const stats = await wc.executeJavaScript('kccStats()');
+      let stats = await wc.executeJavaScript('kccStats()');
+      for (let i = 0, still = 0; i < 26 && still < 3; i++) {
+        await sleep(100);
+        const next = await wc.executeJavaScript('kccStats()');
+        still = JSON.stringify(next) === JSON.stringify(stats) ? still + 1 : 0;
+        stats = next;
+      }
       const stillLocked = await isLocked();
       results.phases[name] = { plan, before: pre, inject: inj, stats, stillLocked };
       log(`${name}: ${JSON.stringify(results.phases[name])}`);

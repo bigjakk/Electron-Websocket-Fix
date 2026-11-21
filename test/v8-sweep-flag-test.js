@@ -14,6 +14,7 @@
 const { app, BrowserWindow, contentTracing } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { readTraceEvents } = require('./perfetto-trace');  // Electron 45: protobuf traces
 
 const sw = (n, d) => (app.commandLine.hasSwitch(n) ? app.commandLine.getSwitchValue(n) : d);
 const OUT = sw('kcc-out', '');
@@ -35,8 +36,7 @@ app.whenReady().then(async () => {
     const page = await win.webContents.executeJavaScript('kccDone');
     results.page = page;
     const file = await contentTracing.stopRecording(TRACE);
-    const trace = JSON.parse(fs.readFileSync(file, 'utf8'));
-    const events = Array.isArray(trace) ? trace : trace.traceEvents;
+    const events = readTraceEvents(file);
     const byName = {};
     for (const e of events) {
       if (e.name !== 'CppGC.SweepInTask' && e.name !== 'CppGC.SweepInLowPriorityTask') continue;

@@ -22,8 +22,9 @@
 # Variants:
 #   off      no KCC switch
 #   precise  KccFrameCapPreciseRelease
-#   latch    KccFrameCapLateLatch
-#   both     KccFrameCapPreciseRelease + KccFrameCapLateLatch
+#   latch    KccFrameCapLateLatch (c61; dropped from the series, only in the
+#            Stage 2 build)
+#   both     KccFrameCapPreciseRelease + KccFrameCapLateLatch (likewise)
 #   all      every switch of the series (README "Everything on") + --js-flags
 # Never combined with CustomMaxPendingFrames:count/2 (a documented conflict).
 #

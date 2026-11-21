@@ -8,8 +8,10 @@ $KccAllFeatures = @(
   'KccRawInputFastPath', 'KccLeanLockedMouseMove', 'KccSkipUnobservedInputEmits',
   'KccSkipCanvasPerfSampling', 'KccLabelTexturesOnce', 'KccCacheVsyncInterval',
   'KccMacFineGpuBackpressure', 'KccAudioParamCoalesce', 'KccHrtfPannerKRateAngles',
-  'KccX11AllowUnredirect', 'KccX11RawMouse', 'KccFrameCapPreciseRelease', 'KccFrameCapLateLatch'
+  'KccX11AllowUnredirect', 'KccX11RawMouse', 'KccFrameCapPreciseRelease'
 )
+# KccFrameCapLateLatch (c61) was dropped from the series on 2026-11-21 (see
+# patches/electron-45/RESULTS.md); Stage 2 tested it on the 23-patch build.
 $KccAllJsFlags = '--cppheap-max-incremental-sweep-duration-ms=1'
 
 function Join-KccFeatures([string[]]$features) {
@@ -51,5 +53,8 @@ function Invoke-Electron([string]$exe, [string[]]$argv, [string]$log) {
   return $code
 }
 
-# DCHECK / CHECK failures and crashes that a log can show.
-$KccCrashPattern = 'Check failed|DCHECK failed|NOTREACHED|FATAL:|child-process-gone|render-process-gone|HARNESS ERROR|WATCHDOG'
+# DCHECK / CHECK failures and crashes that a log can show. Case-sensitive
+# ((?-i); Select-String ignores case by default): "WATCHDOG" is what the test
+# scripts log when they time out, and must not match Chromium's GpuWatchdog
+# thread in the cpu suite's thread list.
+$KccCrashPattern = '(?-i)Check failed|DCHECK failed|NOTREACHED|FATAL:|child-process-gone|render-process-gone|HARNESS ERROR|\bWATCHDOG\b'

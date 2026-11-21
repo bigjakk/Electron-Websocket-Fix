@@ -52,6 +52,7 @@ const { app, BrowserWindow, WebContentsView, contentTracing } = require('electro
 const path = require('path');
 const fs = require('fs');
 const { execFileSync } = require('child_process');
+const { readTraceEvents } = require('./perfetto-trace');  // Electron 45: protobuf traces
 
 app.commandLine.appendSwitch('disable-frame-rate-limit');
 app.commandLine.appendSwitch('disable-gpu-vsync');
@@ -363,8 +364,7 @@ async function suiteLatency(win) {
   await contentTracing.startRecording({ included_categories: ['cc', 'viz', 'benchmark'], excluded_categories: ['*'] });
   const m = await measure(wc, `latency window, cap ${cap}`, 4000);
   const file = await contentTracing.stopRecording(tracePath);
-  const t = JSON.parse(fs.readFileSync(file, 'utf8'));
-  const ev = Array.isArray(t) ? t : t.traceEvents;
+  const ev = readTraceEvents(file);
   const rpid = wc.getOSProcessId();
   const gpu = app.getAppMetrics().find((x) => x.type === 'GPU');
   const gpid = gpu ? gpu.pid : -1;

@@ -5,6 +5,10 @@
 //       [--kcc-query=a=1&b=2] [--kcc-raw-out=FILE] [--kcc-timeout-s=N]
 //       [--kcc-trace=FILE --kcc-trace-categories=a,b]  (records a trace meanwhile)
 //
+// With --kcc-trace the JSON also gets traceCounts: how many slices / instants
+// of each event name the trace holds (read with perfetto-trace.js, since
+// Electron 45 writes Perfetto protobuf traces).
+//
 // --kcc-raw-out: if the result has rawBase64, it is decoded into this file and
 // removed from the JSON. Exit code: 0 the page ran, 1 it reported an error or a
 // process died, 2 harness error.
@@ -12,6 +16,7 @@
 const { app, BrowserWindow, contentTracing } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { readTraceEvents } = require('./perfetto-trace');
 
 app.commandLine.appendSwitch('disable-frame-rate-limit');
 app.commandLine.appendSwitch('disable-gpu-vsync');
@@ -39,7 +44,12 @@ app.whenReady().then(async () => {
     const query = Object.fromEntries(new URLSearchParams(QUERY));
     await win.loadFile(path.join(__dirname, PAGE), { query });
     const r = await win.webContents.executeJavaScript('kccResult');
-    if (TRACE) results.traceFile = await contentTracing.stopRecording(TRACE);
+    if (TRACE) {
+      results.traceFile = await contentTracing.stopRecording(TRACE);
+      const counts = {};
+      for (const e of readTraceEvents(results.traceFile)) counts[e.name] = (counts[e.name] || 0) + 1;
+      results.traceCounts = counts;
+    }
     results.gpuFeatureStatus = app.getGPUFeatureStatus();
     if (r && r.rawBase64 !== undefined) {
       if (RAW) fs.writeFileSync(RAW, Buffer.from(r.rawBase64, 'base64'));

@@ -1,20 +1,23 @@
 # Synthetic checks for the drafted patches of the KCC Electron 45 series.
 # Each check runs the same binary with the patch's switch off and on.
 #
-#   run-checks.ps1 -Exe <electron.exe> -OutDir <dir> [-Only c10,c11,raw,e10,c21,v01,c20,c40,c41,c60,c61]
-#   ("raw" covers c12, c13, c14 and c15; "c20" also reports c30 and c31)
+#   run-checks.ps1 -Exe <electron.exe> -OutDir <dir> [-Only c10,c11,raw,e10,c21,v01,c20,c40,c41,c60,lat]
+#   ("raw" covers c12, c13, c14 and c15; "c20" also reports c30 and c31;
+#    "lat" is informational: input age under a 144 cap, no switch. It is what
+#    the c61 check measured before c61 was dropped; "c61" still runs that check
+#    against a build that has KccFrameCapLateLatch.)
 #
 # Writes one log / JSON per run into -OutDir and a summary.txt. A check that
 # cannot be exercised on this machine says so instead of passing.
 #
-# -CapPageMode sets how the page draws in the c60 and c61 runs (webgl, the
-# game's path, by default). The 144 cap must bind for either check to mean
-# anything: on the DCHECK build the WebGL page peaks near 110 fps here, so the
-# stage driver passes 2d there.
+# -CapPageMode sets how the page draws in the c60, c61 and lat runs (webgl, the
+# game's path, by default). The 144 cap must bind for them to mean anything: on
+# the DCHECK build the WebGL page peaks near 110 fps here, so the stage driver
+# passes 2d there.
 param(
   [Parameter(Mandatory = $true)][string]$Exe,
   [Parameter(Mandatory = $true)][string]$OutDir,
-  [string[]]$Only = @('c10', 'c11', 'raw', 'e10', 'c21', 'v01', 'c20', 'c40', 'c41', 'c60', 'c61'),
+  [string[]]$Only = @('c10', 'c11', 'raw', 'e10', 'c21', 'v01', 'c20', 'c40', 'c41', 'c60', 'lat'),
   [ValidateSet('webgl', '2d')][string]$CapPageMode = 'webgl'
 )
 $ErrorActionPreference = 'Stop'
@@ -156,11 +159,13 @@ if ($Only -contains 'c20') {
     $f = if ($mode -eq 'on') { Join-KccFeatures @('KccSkipCanvasPerfSampling', 'KccLabelTexturesOnce', 'KccCacheVsyncInterval') } else { @() }
     $trace = "$OutDir\$name-trace.json"
     $r = Run $name (@('page-check.js', '--kcc-page=canvas-texture.html', '--kcc-query=s=8', "--kcc-out=$OutDir\$name.json", "--kcc-trace=$trace", '--kcc-trace-categories=blink,gpu') + $f)
-    $t = Get-Content $trace -Raw | ConvertFrom-Json
-    $ev = if ($t.traceEvents) { $t.traceEvents } else { $t }
-    $rm = @($ev | Where-Object { $_.name -eq 'CanvasPerformanceMonitor::RecordMetrics' }).Count
-    $vi = @($ev | Where-Object { $_.name -eq 'WinVSyncProvider::GetVSyncIntervalIfAvailable' }).Count
-    $vp = @($ev | Where-Object { $_.name -eq 'WinVSyncProvider::GetVSyncParameters' }).Count
+    # Slice counts by name, from the trace (page-check.js decodes it; Electron 45
+    # writes Perfetto protobuf, which PowerShell cannot read).
+    $tc = if ($r.res) { $r.res.traceCounts } else { $null }
+    $count = { param($n) if ($tc -and $null -ne $tc.$n) { [int]$tc.$n } else { 0 } }
+    $rm = & $count 'CanvasPerformanceMonitor::RecordMetrics'
+    $vi = & $count 'WinVSyncProvider::GetVSyncIntervalIfAvailable'
+    $vp = & $count 'WinVSyncProvider::GetVSyncParameters'
     Remove-Item $trace -ErrorAction SilentlyContinue
     $res[$mode] = [pscustomobject]@{ r = $r; rm = $rm; vi = $vi; vp = $vp; frames = $r.res.result.frames; fps = $r.res.result.fps; glError = $r.res.result.glError }
     Say ("       c20/c30/c31 flags $mode`: exit $($r.code), {0} frames ({1:N1} fps), glError {2}, RecordMetrics {3}, GetVSyncIntervalIfAvailable {4}, GetVSyncParameters {5}, gpu_compositing {6}$(CrashNote $r)" -f $res[$mode].frames, $res[$mode].fps, $res[$mode].glError, $rm, $vi, $vp, $r.res.gpuFeatureStatus.gpu_compositing)
@@ -230,6 +235,8 @@ if ($Only -contains 'c60') {
 }
 
 # ---- c61: input age under a cap (trace) ----------------------------------------
+# c61 (KccFrameCapLateLatch) was dropped after this check on the Stage 2 build;
+# kept for a build that still has it. Not in the default list.
 if ($Only -contains 'c61') {
   $lat = @{}
   foreach ($busy in 0, 3) {
@@ -258,6 +265,23 @@ if ($Only -contains 'c61') {
     $okOn = $on -le $rend + 0.3 * $P
     Verdict 'c61' ($okOff -and $okOn) ("busy {0} ms, 144 cap (P {1:N2} ms): BeginImplFrame->DrawAndSwap p50 off {2:N2} ms (about P: {3}), on {4:N2} ms vs render {5:N2} ms (about render time: {6}); input age (main frame start->draw) p50 {7:N2} -> {8:N2} ms" -f `
       $busy, $P, $off, $okOff, $on, $rend, $okOn, $o.beginMainFrameToDisplayDrawMs.p50, $n.beginMainFrameToDisplayDrawMs.p50)
+  }
+}
+
+# ---- lat: input age under a cap, no switch (informational) ---------------------
+# What c61 set out to shorten. The stock order holds each finished frame in viz
+# until the next ack release, so the content of a presented frame was started
+# about one cap period (or two) before it reached the screen.
+if ($Only -contains 'lat') {
+  foreach ($busy in 0, 3) {
+    $name = "lat-busy$busy"
+    $r = Run $name @('frame-cap-test.js', '--kcc-suite=latency', '--kcc-cap=144', "--kcc-busy=$busy", "--kcc-mode=$CapPageMode", "--kcc-out=$OutDir\$name.json")
+    $l = $r.res.latency
+    $fps = ($r.res.measurements | Select-Object -First 1).fps
+    if (-not (Clean $r)) { $script:allPass = $false }
+    Say ("lat    INFO  busy {0} ms, 144 cap (P 6.94 ms, {1} page): exit {2}, {3:N2} fps; main frame start->DrawAndSwap p10/p50/p90 {4:N2}/{5:N2}/{6:N2} ms; BeginImplFrame->DrawAndSwap p50 {7:N2} ms; submit->display draw p50 {8:N2} ms$(CrashNote $r)" -f `
+      $busy, $CapPageMode, $r.code, $fps, $l.beginMainFrameToDisplayDrawMs.p10, $l.beginMainFrameToDisplayDrawMs.p50, $l.beginMainFrameToDisplayDrawMs.p90,
+      $l.beginImplFrameToDisplayDrawMs.p50, $l.submitToDisplayDrawMs.p50)
   }
 }
 
