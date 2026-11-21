@@ -40,7 +40,12 @@ patches/electron-45/apply.sh <src> --reverse          # undo
 `--group` and `--not-group` take comma-separated lists. `--check` tests against the committed
 tree (HEAD), so checking a subset only passes when the patches it stacks on are already
 committed: on a pristine tree `--check --not-group ported` reports c60 and c61 as rejects,
-because they sit on c03. Order matters inside the series:
+because they sit on c03. In a tree that already has the series committed, check against the
+pristine base instead with `--check --base FILE`. FILE lists one `<checkout> <commit>` per
+line, as in [`results/stage0/base-commits.txt`](results/stage0/base-commits.txt). The diffs are
+then stacked on those commits, and the script also reports whether base plus diffs is exactly
+the tree at HEAD, i.e. whether the diffs here are the code that was built. Order matters
+inside the series:
 `03` → `60` → `61` stack on the same files, as do `10` → `12`, `13` → `14` and `50` → `51`.
 Each diff starts with a long description (stock behaviour, what changes, risks, how to A/B);
 read it before touching the patch.
@@ -211,6 +216,11 @@ Recorded because the next milestone bump will hit the same places.
 - Baseline: Chromium `156.0.8078.100` with all 301 of Electron v45.4.1's Chromium patches and
   all 37 of its V8 patches applied (so the diffs match what a synced tree contains).
 - `apply.sh --check` passes for all 23 patches in order on that baseline.
-- `apply.sh --commit` followed by `refresh.sh` reproduces every diff byte for byte.
+- `apply.sh --commit` followed by `refresh.sh` reproduces every diff byte for byte. This was
+  **not** true as first written: git abbreviates blob ids to a length that depends on the size
+  of the repository, so every `index` line changed between the sparse checkout the drafts were
+  written in and a full one. `refresh.sh` now writes full ids (`--full-index`); the diffs were
+  rewritten once that way (content unchanged), and a second refresh reports nothing changed.
 - The three ported Chromium diffs round-trip byte-identical to the reviewed port.
-- Nothing has been compiled. No draft has been run.
+- Build and run results (Windows, DCHECK and official builds, no GPU) are in
+  [RESULTS.md](RESULTS.md), with raw logs under [`results/`](results/).

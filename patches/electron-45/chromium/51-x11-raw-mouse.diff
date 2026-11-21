@@ -140,6 +140,19 @@ Known limits:
     fallback path above depends on the content layer re-centring.
   - Every raw event is dispatched on its own, as on Windows.  8 kHz mice
     will cost browser UI thread time; raw events are not coalesced here.
+  - Found in a desk-check on 2026-11-21, not fixed (it cannot be compiled
+    on the Windows build machine): SetRawMouseMotionEnabled(true) resets
+    raw_mouse_event_flags_ to 0, and only ordinary mouse events refresh it.
+    The server queues a motion's raw event before its core motion event, so
+    when the lock is taken from a mousedown and the mouse moves with the
+    button still held, the first move made from raw motion carries no
+    button or modifier flags: a kMouseMoved instead of kMouseDragged, and
+    the page sees buttons == 0 (and loses a held Shift/Ctrl) on that one
+    mousemove, until the next core event corrects it.  Possible fix: seed
+    the field on enable with XGetMaskAsEventFlags() &
+    kRawMouseMotionStateFlags (ui/base/x/x11_drag_drop_client.h; one
+    synchronous QueryPointer; covers Shift, Ctrl, Alt, Super and the left,
+    middle and right buttons).
 
 Not verified: nothing was compiled or run.  Type and field names were
 taken from ui/gfx/x/generated_protos/xinput.h, which is checked in and is
