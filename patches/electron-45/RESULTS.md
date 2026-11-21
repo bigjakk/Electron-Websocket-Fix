@@ -106,7 +106,8 @@ drivers run it with the switches off and on and write a log and a JSON file per 
 | Script | Purpose |
 |---|---|
 | `cdp-test.js`, `run-ws-gate.ps1` | WebSocket-starvation gate (BUILD-GUIDE.md "Verification") |
-| `frame-cap-test.js` + `frame-cap.html`, `run-frame-cap-gate.ps1` | Frame-cap gate: launch, runtime and heavy suites. Also the cpu (c60) and latency (c61) suites |
+| `frame-cap-test.js` + `frame-cap.html`, `run-frame-cap-gate.ps1` | Frame-cap gate: launch, runtime and heavy suites. Also the cpu (c60) and latency (c61, then input age) suites |
+| `perfetto-trace.js` | Reads the Perfetto protobuf traces Electron 45 writes (see 6 below) |
 | `run-checks.ps1` | Every synthetic check, off vs on |
 | `run-stage.ps1` | The Stage 2 / Stage 3 sequence on one binary, in parts that each fit in 2 h |
 | `gpu-status.js` | GPU feature status and WebGL renderer, recorded with every stage |
@@ -162,6 +163,24 @@ gave the wrong answer on this machine. The first run's results are kept in
    - c60: VizCompositorThread must at least halve.
    - c61: BeginImplFrame to DrawAndSwap must be within 30% of one cap period with the
      switch off, and within 0.3 periods of the render time with it on.
+6. **Electron 45 writes Perfetto protobuf traces.** `contentTracing` recordings switched
+   from JSON to the Perfetto protobuf format between v45.0.0-alpha.14 and v45.0.0
+   (electron/electron `7762d32d1c`, a breaking change in `docs/api/content-tracing.md`: "The
+   legacy JSON format is no longer supported"). The trace-based checks (v01, c20/c30/c31,
+   c61) had been written and dry-run against alpha.14's JSON, so on 45.4.1 they stopped at
+   `JSON.parse`. [`test/perfetto-trace.js`](../../test/perfetto-trace.js) now decodes the
+   TrackEvent packets into the legacy event shape, with field numbers taken from the
+   `.proto` files in this Chromium checkout; nothing was downloaded. It reads a JSON trace
+   too.
+
+   Checked on a real trace from this build:
+   - 70,126 events, three processes, an 8.4 s span for the 8 s page run, no negative
+     durations;
+   - c20's stock counts match the alpha.14 control: RecordMetrics about once per 100
+     frames, GetVSyncParameters about once per frame.
+
+   The first, interrupted checks run is kept in
+   [`results/stage2-testing/checks-run1-json-traces/`](results/stage2-testing/checks-run1-json-traces/).
 
 ## Release gates
 
@@ -173,7 +192,66 @@ _pending_
 
 ## Dropped
 
-_pending_
+### c61 `frame-cap-late-latch` (`KccFrameCapLateLatch`): premise false
+
+**What happened.** Dropped on 2026-11-21 after its synthetic check on the Stage 2 build:
+- the commit was reverted in `src` (`885c926e4b3c6`, which restores exactly the tree of c60's
+  commit);
+- the diff and its `series.txt` line were deleted;
+- refresh.sh then reported 0 changed for the remaining 22 diffs, and `apply.sh --check
+  --base` reported 22 ok with all three trees equal to HEAD.
+
+The Stage 2 results with the switch on are kept as the record: `latch-*` / `both-*` in
+[`results/stage2-testing/`](results/stage2-testing/) and `c61-*` in
+[`results/stage2-testing/checks/`](results/stage2-testing/checks/).
+
+**What c61 does.** Under a cap, viz withholds BeginFrames from a renderer's frame sink while
+the sink has an undrawn frame and while the GPU is busy. The renderer is then meant to start
+its frame at the swap-ack release, and the display to draw that frame as soon as it arrives:
+input r old instead of one cap period old.
+
+**Why it cannot work.** c61 acts only on `BackToBackBeginFrameSource`, i.e. with
+`--disable-frame-rate-limit`. In exactly that mode blink gives every renderer its own synthetic
+`BackToBackBeginFrameSource`:
+- `third_party/blink/renderer/platform/widget/widget_base.cc`: "In disable frame rate limit
+  mode, also let the renderer tick as fast as it can";
+- `AsyncLayerTreeFrameSink` then hands cc that source instead of viz's BeginFrames.
+
+So the renderer does not wait for viz's BeginFrame. It starts its next frame as soon as its
+previous frame is acked, and that ack comes when the display draws, at the release. The
+renderer's new frame then arrives while that draw's swap is pending ("Swap throttled") and
+waits for the next release, the stock one-frame queue the patch set out to remove. Making
+it work needs another mechanism, for example holding the renderer's frame ack until the ack
+release, or having renderers use viz BeginFrames while a cap is set. That is a redesign, not
+a contained fix.
+
+**What was measured.** Stage 2 build, 2D page, 144 cap, `--disable-frame-rate-limit
+--disable-gpu-vsync`, traces decoded with `test/perfetto-trace.js`:
+
+| | switch off | switch on |
+|---|---|---|
+| main-frame start to `Display::DrawAndSwap` (input age), idle page, p50 | 6.56 ms | 6.56 ms |
+| BeginImplFrame to DrawAndSwap, idle page, p50 | 11.05 ms | 10.99 ms |
+| same, 3 ms script per frame, p50 (p10) | 12.90 ms (11.34) | 11.41 ms (6.14) |
+| viz `SendBeginFrameDecision` for the renderer's sink | 579 x `SendFrameTiming` | 558 x `HoldUntilFrameAck`, 12 x `SendFrameTiming` |
+| renderer BeginImplFrames in the same run | 579 | 570 (from its own source) |
+| 240 cap, launch and runtime suites | 239.6-240.0 fps | 238.7-239.4 fps |
+
+The patch engaged, its hold fired on nearly every BeginFrame, and input age did not change.
+The premise about the stock code is right: a frame's input is about one cap period old (0.95
+periods) with an idle page, and about two periods (13.5 ms) with 3 ms of script per frame.
+
+In a trace with the switch on, the cycle per period is:
+1. The release; viz holds the renderer's BeginFrame (`HoldUntilFrameAck`).
+2. The display draws the renderer's queued frame, which is 6.4 ms old.
+3. The draw's ack unblocks the renderer's next main frame, about 0.3 ms later.
+4. The renderer submits 0.4 ms after that, its next BeginImplFrame comes from its own
+   `DelayBasedTimeSource`, and the new frame waits behind the pending swap.
+
+No crash, DCHECK or freeze came from c61. With it on, the frame-cap gate passed (launch
+60/144/240, runtime, second view, heavy suite best of 5 within -0.1..+1.9% of off), and the
+cap stayed within the 1% tolerance. In one extra latency run, though, the 144 cap read 141.5
+fps (-1.8%).
 
 ## What this machine could not check
 
@@ -183,7 +261,7 @@ _pending_
   build: their code sits in Mac- or X11-only files or under `BUILDFLAG(IS_MAC)`. They were
   desk-checked against this tree (identifiers, signatures, includes, deps; see
   [Per patch](#per-patch)), not compiled. The macOS and Linux halves of c12 and c15, and
-  the non-Windows paths of c60 and c61, were not compiled either. Each needs a build on
+  the non-Windows paths of c60, were not compiled either. Each needs a build on
   its own OS.
 - **No GPU.** Software compositing only (see [Machine](#machine-stage-0)):
   - c31 (`DCompPresenter`) never runs;

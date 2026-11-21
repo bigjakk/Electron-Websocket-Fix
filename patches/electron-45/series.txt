@@ -21,4 +21,3 @@ chromium 41-hrtf-panner-krate-angles.diff audio
 chromium 50-x11-allow-unredirect.diff linux
 chromium 51-x11-raw-mouse.diff linux
 chromium 60-frame-cap-precise-release.diff framecap
-chromium 61-frame-cap-late-latch.diff framecap
