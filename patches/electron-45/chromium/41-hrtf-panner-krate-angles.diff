@@ -79,6 +79,17 @@ Platforms: all (no platform-specific code).
 
 Not verified: compilation.
 
+Build and check status (2026-11-21)
+  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on).
+  - test/page-check.js + hrtf.html: four renders in OfflineAudioContexts
+    (switch off twice, on twice) are identical sample for sample (one
+    SHA-256).
+  - Not checked: the CPU saved per quantum (not measured).
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/third_party/blink/renderer/modules/webaudio/panner_handler.cc b/third_party/blink/renderer/modules/webaudio/panner_handler.cc
 index 1c46560af72fb8bc1f3a5f3948e0a47963b85eac..35b4b17dc76ecceb5c16582134e2d48fe200c85f 100644
 --- a/third_party/blink/renderer/modules/webaudio/panner_handler.cc

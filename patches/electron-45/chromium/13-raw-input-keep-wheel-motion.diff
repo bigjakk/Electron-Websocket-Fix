@@ -59,6 +59,17 @@ Not verified: nothing was compiled. The claim that real mice put motion and
 a wheel tick in one RAWMOUSE packet follows from the HID report layout and
 was not measured on hardware here.
 
+Build and check status (2026-11-21)
+  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on).
+  - test/raw-input-test.js: 40 SendInput packets that carry a wheel tick and
+    motion (5,0). Switch on: movement (200,0) reaches the page; off: (0,0)
+    (stock drops it). Wheel deltaY is -4000 both ways.
+  - Not checked: whether real mice put motion and wheel into one packet.
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/ui/views/win/hwnd_message_handler.cc b/ui/views/win/hwnd_message_handler.cc
 index 1b89cd94b56bb0f8fd4eadd14227a762bf3eaffb..b0eed3081bea1f23c23894b16825a1671af01ddb 100644
 --- a/ui/views/win/hwnd_message_handler.cc

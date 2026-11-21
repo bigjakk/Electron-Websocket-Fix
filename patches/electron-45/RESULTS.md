@@ -184,11 +184,121 @@ gave the wrong answer on this machine. The first run's results are kept in
 
 ## Release gates
 
+Both gates as the brief defines them, with every run's log in `results/`. "Switches on" means
+every switch of the series (README "Everything on") plus
+`--js-flags=--cppheap-max-incremental-sweep-duration-ms=1`. The frame-cap runs use
+`--disable-frame-rate-limit --disable-gpu-vsync`, and the cap is never combined with
+`CustomMaxPendingFrames:count/2`.
+
+### Stage 2: DCHECK build (23 patches, with c61)
+
+Results in [`results/stage2-testing/`](results/stage2-testing/) (`stage-summary.txt`,
+`summary-*.txt`, `ws-gate-*.txt`). GPU status: `gpu_compositing: disabled_software`; WebGL2
+on ANGLE D3D11 over WARP. Features were passed through the main script (`-FeaturesVia js`)
+because of the stock DCHECK described under [Test harness](#test-harness).
+
+**WebSocket gate** (`cdp-test.js`, 12 s of CDP mouse events at ~1,550/s, 2 runs per setting):
+
+| Switches | Run | p99 | max | > 50 ms | Result |
+|---|---|---|---|---|---|
+| off | 1 | 36.8 ms, re-run 34.1 | 70.7 ms, re-run 40.8 | 2/670, re-run 0/695 | pass on the re-run |
+| off | 2 | 36.4 ms, re-run 35.6 | 61.2 ms, re-run 45.1 | 1/684, re-run 0/648 | pass on the re-run |
+| on | 1 | 32.2 ms | 45.7 ms | 0/722 | pass |
+| on | 2 | 32.8 ms | 35.0 ms | 0/716 | pass |
+
+**The DCHECK build does not meet the strict criterion reliably.**
+- Every one of its 19 attempts had p99 31.9-38.8 ms, the patched signature. The brief gives
+  an unpatched build p99 near 100 ms with 5-9% of messages over 50 ms.
+- But 7 of its 15 attempts with the switches off had one or two messages (of ~690) at 50-71
+  ms. That counts the first run, the gate above and a 6-run repeat in
+  [`ws-repeat/`](results/stage2-testing/ws-repeat/), where one run failed both attempts.
+- With the switches on, 0 of 4 attempts had any.
+- The v45.0.0-alpha.14 Release control, which has ws-priority too, passed 6 of 6 on this
+  machine (p99 31.9-32.5 ms, max 33.0-37.5 ms;
+  [`control-alpha14/ws-gate/`](results/control-alpha14/ws-gate/)).
+
+So the overshoot is the DCHECK build's extra cost on this VM, and the Release gate below is
+the verdict.
+
+**Frame-cap gate**: every launch, runtime and second-view check passed for every switch
+setting. The table gives the measured rate over each 10 s window:
+
+| Switches | Launch cap 60 / 144 / 240 (at launch, after hide/show, after resize, re-cap) | setFrameCap 60 / 144 / 240 (2D page) | Uncapped (2D) |
+|---|---|---|---|
+| off | 60.0-60.1 / 144.0-144.2 / 239.6-240.0 | 60.0 / 144.0 / 240.0 | 722 |
+| all | 60.0 / 144.0 / 238.7-240.0 | 60.1 / 144.0 / 239.2 | 504 |
+| c60 | 60.0 / 144.0 / 239.6-240.1 | 60.0 / 144.0 / 240.0 | 498 |
+| c61 | 60.0-60.1 / 143.9-144.1 / 238.7-240.0 | 60.0 / 144.0 / 239.0 | 299 |
+| c60 + c61 | 59.9-60.0 / 143.4-144.0 / 238.7-240.0 | 60.0 / 144.0 / 239.6 | 473 |
+
+The uncapped rates differ with the VM's noise, not with the switches.
+
+The other checks passed for every setting (2D page):
+- hide/show and resize at 144: 144.0;
+- a change of N, measured over the 2 s right after the call: within 0.9%;
+- `setFrameCap(0)`: back to 98-111% of the uncapped rate measured just before;
+- a second animating view at 144 and 60: 143.7-144.0 and 60.0-60.1.
+
+The WebGL page reaches only 98-118 fps on this build, so its runtime suite was checked at the
+caps it can reach: 72/45/60, or 90/72/60, and 45 after a resize. All 10 of its checks passed
+for every setting.
+
+A cap above reach (heavy suite, 2D page with 5 or 3 ms of script per frame, best of 5 runs
+interleaved with the switches off):
+
+| Switches | busy 5 ms: cap 1000 / 240 / 144 vs off | busy 3 ms: cap 1000 / 240 / 144 vs off |
+|---|---|---|
+| all | +1.2 / +0.5 / +0.0 % | +1.3 / +0.8 / +0.0 % |
+| c60 | +0.5 / +1.2 / +0.1 % | +1.8 / +1.6 / +0.0 % |
+| c61 | +0.7 / +1.3 / +0.1 % | +1.9 / +1.7 / -0.1 % |
+| c60 + c61 | +0.1 / +0.6 / +0.1 % | +1.5 / +1.4 / +0.0 % |
+
+No switch loses rate (the limit is -3%). An observation outside the gate: with a cap above
+reach, the VM's slow stretches hit about 80% of the 10 s windows with the switches off. With
+c60 on they hit 35-50%, and with c61 alone 60%. That fits c60's premise: the stock cap keeps
+the viz thread spinning through every hold, which on a host-contended VM slows the rest.
+
+### Stage 3: Release build (22 patches, the dist.zip)
+
 _pending_
 
 ## Per patch
 
-_pending_
+"Compiled" is the Windows build of this machine: the DCHECK build in Stage 1, the official
+build in Stage 3. **No patch needed a change to compile** (no fixup commits). The checks are
+in [`test/`](../../test/) and run each binary with the patch's switch off and on. Stock
+behaviour comes from the v45.0.0-alpha.14 control
+([`results/control-alpha14/`](results/control-alpha14/)), which has only the ported patches.
+Stage 2 outcomes are on the DCHECK build; the Release outcomes are in the last column.
+
+| Patch | Compiled | Changed | Check (Stage 2, DCHECK) | Release | Not tested here |
+|---|---|---|---|---|---|
+| c01 `ws-priority` | yes | nothing | WS gate: p99 32-39 ms everywhere; strict pass on re-runs (see [Release gates](#release-gates)) | _pending_ | in-game network behaviour |
+| c02 `frame-pacing` | yes | nothing | frame-cap gate (uncapped and capped rates) | _pending_ | `CustomMaxPendingFrames:count/N` values |
+| c03 `frame-cap` | yes | nothing | frame-cap gate: launch and runtime caps 60/144/240, hide/show, resize, change of N, uncap, second view, all within 1%: **pass** | _pending_ | GPU swap chains, real vsync |
+| e01 `frame-cap-set-frame-cap` | yes | nothing | `win.setFrameCap` drives the runtime suites: **pass** | _pending_ | |
+| c10 `keyup-after-handled-keydown` | yes | nothing | keyup A reaches the page after a prevented key, via sendInputEvent and CDP: **pass** (stock: lost) | _pending_ | real keyboards, IME |
+| c11 `pointer-lock-esc-cooldown` | yes | nothing | re-lock ~44 ms after a scripted Esc: off refused (cooldown), on locked; controls pass: **pass** | _pending_ | a physical Esc key |
+| c12 `pin-raw-pointer-lock` | yes (Windows half) | nothing | option-less re-request on a raw lock: off (352,112) accelerated, on (200,120) raw: **pass** | _pending_ | whether the client triggers it; macOS |
+| c13 `raw-input-keep-wheel-motion` | yes | nothing | motion in wheel packets: off (0,0), on (200,0); wheel deltas equal: **pass** | _pending_ | real mice |
+| c14 `raw-input-fast-path` | yes | nothing | same page-visible results as off: **pass** | _pending_ | the cost it saves |
+| c15 `lean-locked-mouse-move` | yes (Windows half) | nothing | raw moves: coalesced 1 / predicted 0 (off: 16 / 10), sums unchanged: **pass** | _pending_ | the cost it saves; macOS |
+| e10 `skip-unobserved-input-emits` | yes (JS bundle rebuilt) | nothing | 10/10 emit checks off and on, preventDefault still works: **pass** | _pending_ | the cost it saves |
+| c20 `skip-canvas-perf-sampling` | yes | nothing | RecordMetrics slices off 7, on 0: **pass** | _pending_ | the spike it removes |
+| c21 `webgl-fast-api-calls` | yes (bindings rebuilt) | nothing | identical GL errors and pixels with fast calls, without, and with every switch: **pass** | _pending_ | speed on a GPU |
+| v01 `cppgc-sweep-slice` | yes | nothing | flag listed; slices carry max_duration_ms 5 / 1 / 2 as set, p50 5.10 / 1.15 / 2.15 ms: **pass** | _pending_ | effect on frame times |
+| c30 `label-textures-once` | yes | nothing | texture page runs with the switch, glError 0, no DCHECK: **pass** | _pending_ | the D3D11 cost (no GPU) |
+| c31 `cache-vsync-interval` | yes | nothing | **not exercised**: no DCompPresenter without a GPU (0 calls off and on); runs with the switch on | _pending_ | everything it does |
+| c32 `mac-gpu-backpressure-poll` | **no** (macOS only) | nothing | desk-checked against the tree: nothing would fail | n/a | everything |
+| c40 `audioparam-coalesce` | yes | nothing | batch time while suspended flat with the switch (0.50-1.02x), off 12-13x: **pass** | _pending_ | whether Krunker hits it |
+| c41 `hrtf-panner-krate-angles` | yes | nothing | 4 renders off/on identical sample for sample: **pass** | _pending_ | the cost it saves |
+| c50 `x11-allow-unredirect` | **no** (Linux only) | nothing | desk-checked: nothing would fail | n/a | everything |
+| c51 `x11-raw-mouse` | **no** (Linux only) | description only (a desk-check found a minor logic bug, recorded) | desk-checked: nothing would fail | n/a | everything |
+| c60 `frame-cap-precise-release` | yes | nothing | frame-cap gate with it on: **pass**; VizCompositorThread at a 144 cap 88% → 16% of a core: **pass** | _pending_ | GPU swap chains, real vsync |
+| c61 `frame-cap-late-latch` | yes | **dropped** | gate passed, but input age unchanged (6.56 → 6.56 ms): premise false, see [Dropped](#dropped) | not in the build | |
+
+Every drafted diff's description now ends with a "Build and check status" block saying the
+same. The "Not verified" notes written before the build are kept for the caveats they list.
 
 ## Dropped
 

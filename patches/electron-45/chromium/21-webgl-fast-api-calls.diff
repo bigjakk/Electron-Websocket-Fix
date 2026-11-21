@@ -144,6 +144,19 @@ Not verified: nothing was generated or compiled here. The fast path is
 taken only from TurboFan code, so the gain depends on the call sites being
 optimised and monomorphic.
 
+Build and check status (2026-11-21)
+  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on).
+    The generated bindings were rebuilt with it.
+  - test/webgl-fast-api-test.js: the same GL error sequence and pixel hash
+    with fast API calls, with --no-turbo-fast-api-calls and with every
+    switch on; the call loop was optimized by TurboFan.
+  - Not checked: speed (WebGL runs on WARP here, which says nothing about a
+    GPU).
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl b/third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl
 index 716699967bddb71b9a34b56c068d0d3d3d45286d..d3d48b0ec281d2bf8bbf2ccebddcd5a375cdc343 100644
 --- a/third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.idl

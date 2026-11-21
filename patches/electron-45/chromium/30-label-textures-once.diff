@@ -86,6 +86,17 @@ Not verified
 - crbug 1164111 could not be read; the purpose above is from the commit
   subject and from what ANGLE does with the label.
 
+Build and check status (2026-11-21)
+  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on).
+  - test/page-check.js + canvas-texture.html with the switch on: runs
+    without crash or DCHECK, glError 0.
+  - Not checked: how many labels are skipped (no trace counter for it) and
+    the D3D11 cost it removes (WARP here, no GPU).
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/gpu/command_buffer/service/gles2_cmd_decoder_passthrough_doers.cc b/gpu/command_buffer/service/gles2_cmd_decoder_passthrough_doers.cc
 index 982aa58bd32611f12f50e3c476c25fa02eb5ea25..546ca66ef6f0453c88809b17d889eb78bc7b051f 100644
 --- a/gpu/command_buffer/service/gles2_cmd_decoder_passthrough_doers.cc

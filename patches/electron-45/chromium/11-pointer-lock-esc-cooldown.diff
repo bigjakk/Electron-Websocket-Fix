@@ -73,6 +73,20 @@ that a requestPointerLock() without a user gesture still fails.
 Platforms: all (browser process, UI thread, platform-independent).
 Not compiled. base/feature_list.h is newly included in this file.
 
+Build and check status (2026-11-21)
+  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on).
+  - test/pointer-lock-test.js: lock with a gesture, Esc through
+    webContents.sendInputEvent (it reaches ExclusiveAccessManager like a
+    real key), re-lock ~44 ms later. Switch off: SecurityError (the 1.25 s
+    cooldown); on: locked. The controls pass both ways (a re-lock 1.5 s
+    after Esc works; one without a gesture 5.5 s later is refused with
+    NotAllowedError).
+  - Not checked: a physical Esc key, other sites.
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/chrome/browser/ui/exclusive_access/pointer_lock_controller.cc b/chrome/browser/ui/exclusive_access/pointer_lock_controller.cc
 index eebf155451f560b498b18bb13713fedb32194675..963113c3fb8a4a4159feb888dcd015de2c9610f5 100644
 --- a/chrome/browser/ui/exclusive_access/pointer_lock_controller.cc

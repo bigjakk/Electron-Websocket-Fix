@@ -109,6 +109,19 @@ and macOS (see above).
 Not verified: nothing was compiled or measured; the allocation counts above
 come from reading the code.
 
+Build and check status (2026-11-21)
+  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on).
+  - test/raw-input-test.js: raw pointermoves with the switch carry a
+    one-entry coalesced list and no predicted events (switch off: up to 16
+    and 10); movementX/Y still sum to (200,120), the coalesced entries to
+    200.
+  - Not checked: the allocation and CPU savings (not measured); the macOS
+    half (not compiled here).
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/third_party/blink/renderer/platform/widget/input/main_thread_event_queue.cc b/third_party/blink/renderer/platform/widget/input/main_thread_event_queue.cc
 index 7a59c1756266e5f9cae169b70581f3d36ead53a2..7da797f9250e33fa2ed7782b5b95f67273d5375e 100644
 --- a/third_party/blink/renderer/platform/widget/input/main_thread_event_queue.cc

@@ -130,6 +130,19 @@ Not verified: compilation; whether Krunker touches the listener params
 in any other way (a SetValue or ramp event left in a listener timeline
 disables coalescing for that param until it is pruned).
 
+Build and check status (2026-11-21)
+  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on).
+  - test/page-check.js + audioparam.html: with the switch the time to queue
+    a batch of setTargetAtTime events stays flat while the AudioContext is
+    suspended (0.50-1.02x over four scenarios); with it off it grows
+    12-13x.
+  - Not checked: whether Krunker hits this path; the rounding difference
+    against stock (by design not bit-identical).
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/third_party/blink/renderer/modules/webaudio/audio_param_handler.cc b/third_party/blink/renderer/modules/webaudio/audio_param_handler.cc
 index 2f4828436507e91b94e5466e4bb5e6407337f529..20991d915769d6e82bfd78da3fe81cfc86002d25 100644
 --- a/third_party/blink/renderer/modules/webaudio/audio_param_handler.cc

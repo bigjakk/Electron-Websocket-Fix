@@ -112,6 +112,19 @@ GC end to the last sweep slice stays well below the GC interval.
 
 Platforms: all. Not compiled here.
 
+Build and check status (2026-11-21)
+  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on).
+  - test/v8-sweep-flag-test.js: --v8-options lists the flag (default 5);
+    every CppGC.SweepInTask / SweepInLowPriorityTask slice in a trace
+    carries max_duration_ms = 5 without the flag, and 1 or 2 with
+    --cppheap-max-incremental-sweep-duration-ms=1 or 2 (slice p50 5.10,
+    1.15 and 2.15 ms).
+  - Not checked: the effect on frame times in a real page.
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/src/flags/flag-definitions.h b/src/flags/flag-definitions.h
 index 528cf0e9c059e9be7c000eb4c655961311d79c8f..e948c0883e07851ad461d2a5d60f3d1549dbf04b 100644
 --- a/src/flags/flag-definitions.h

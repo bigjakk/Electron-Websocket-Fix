@@ -122,6 +122,22 @@ Not verified (nothing was compiled or run)
   thread now sleeps between swap and swap ack instead of spinning, which
   costs one thread wake-up per frame.
 
+Build and check status (2026-11-21)
+  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on).
+  - Frame-cap gate with the switch on (test/run-frame-cap-gate.ps1): launch
+    caps 60/144/240, setFrameCap at run time, hide/show, resize, a change
+    of N, setFrameCap(0) and a second animating view, all within 1 %; a cap
+    above reach loses no rate (best of 5 within +0.5..+1.8 % of the switch
+    off). test/frame-cap-test.js cpu suite at a 144 cap:
+    VizCompositorThread 88 % of a core with the switch off, 16 % with it on
+    (2 runs each).
+  - Not checked: a GPU swap chain (software compositing here), release
+    timing against real vsync hardware.
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/components/viz/common/frame_sinks/begin_frame_source.cc b/components/viz/common/frame_sinks/begin_frame_source.cc
 index 9b5c568c31a5b5777c764ff1c17262a81db36710..943494cb15cd3f398a97c7ca3d43775abd1dcb04 100644
 --- a/components/viz/common/frame_sinks/begin_frame_source.cc

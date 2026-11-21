@@ -124,6 +124,16 @@ Risks / not verified
   poll_us.
 - TimeDelta * double is used for the scaling (as upstream does elsewhere).
 
+Build and check status (2026-11-21)
+  - Not compiled: every change is in macOS-only code (the one unguarded
+    line is an #include <algorithm>), so a Windows build does not contain
+    it. Desk-checked against this tree (identifiers, signatures, includes,
+    deps): nothing found that would fail.
+  - Not checked: everything; it needs a macOS build and machine.
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/gpu/ipc/service/command_buffer_stub.cc b/gpu/ipc/service/command_buffer_stub.cc
 index a8dc0b43948eaea959627b22698df93f68b0b2ab..3c63876b851be88b32bc24e82c9cd01fe40d874d 100644
 --- a/gpu/ipc/service/command_buffer_stub.cc

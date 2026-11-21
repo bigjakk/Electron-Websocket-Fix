@@ -173,6 +173,16 @@ another application could reach the page in the window between focus loss and
 pointer lock being torn down. When the gate is closed the sub-pixel remainder
 is cleared and ordinary mouse moves flow as in a plain lock.
 
+Build and check status (2026-11-21)
+  - Not compiled: Linux-only files, not part of a Windows build.
+    Desk-checked against this tree (identifiers, xinput protos, overrides,
+    implementers, gn deps): nothing found that would fail; one minor logic
+    bug, listed under "Known limits" above.
+  - Not checked: everything; it needs a Linux X11 build.
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/ui/events/devices/x11/device_data_manager_x11.cc b/ui/events/devices/x11/device_data_manager_x11.cc
 index 0fd92a26c8859579e162d6543b290d10afa2c838..a03fbc9b13f981244e9b13c7fa814f534792f14b 100644
 --- a/ui/events/devices/x11/device_data_manager_x11.cc

@@ -98,6 +98,19 @@ resume; same for an 'input-event' listener receiving events.
 Platforms: all (browser process, UI thread). Not compiled, TypeScript
 not type-checked here.
 
+Build and check status (2026-11-21)
+  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on).
+    The browser JS bundle was rebuilt with it.
+  - test/input-emit-test.js: 10/10 checks with the switch off and on
+    (listener added and removed, events reach JS when listened to, a
+    before-mouse-event listener that preventDefault()s still blocks the
+    event).
+  - Not checked: the CPU saved per input event.
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/lib/browser/api/web-contents.ts b/lib/browser/api/web-contents.ts
 index 1f7f125e3abec5264d64989a7fa20c2b66fba17f..c322dd693394388168075d332f679e18fd98caac 100644
 --- a/lib/browser/api/web-contents.ts

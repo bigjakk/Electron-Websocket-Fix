@@ -88,6 +88,18 @@ WM_MOUSEMOVE at the full report rate while the hidden cursor is pinned
 against the clip rectangle was not measured; if it does not, part 2 simply
 runs less often.
 
+Build and check status (2026-11-21)
+  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on).
+  - test/raw-input-test.js: the same results as with the switch off
+    (movement (200,120), wheel -4000, motion in wheel packets dropped as in
+    stock): no change in what the page sees.
+  - Not checked: the cost it is meant to save (not measured), high-rate
+    mice.
+The "not compiled" / "not verified" notes above were written before the
+build; they stay for the caveats they list. Details and raw logs:
+patches/electron-45/RESULTS.md and results/.
+
 diff --git a/ui/views/win/hwnd_message_handler.cc b/ui/views/win/hwnd_message_handler.cc
 index b0eed3081bea1f23c23894b16825a1671af01ddb..bedcf05936234846ff8c9b5cc1c917a03331bf7f 100644
 --- a/ui/views/win/hwnd_message_handler.cc
