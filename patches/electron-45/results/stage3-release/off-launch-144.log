@@ -1,0 +1,23 @@
+﻿# 2026-11-21T17:07:23  C:\electron\dist-45.4.1-kcc\electron.exe frame-cap-test.js --kcc-suite=launch --kcc-cap=144 --kcc-mode=2d --enable-features=CustomFrameCap:fps/144 --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\off-launch-144.json --enable-logging
+
+[15848:1121/170723.744:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file:///C:/projects/Electron-Websocket-Fix/test/frame-cap.html?busy=0&label=main&mode=2d (0)
+[frame-cap:launch] page renderer 2d; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:launch] measure launch 144: 143.99 fps (1440 frames / 10000 ms; interval mean 6.945 sd 0.559 p50 7.000 p99 7.900 max 10.80 ms)
+[frame-cap:launch] PASS  launch CustomFrameCap:fps/144  target 144 got 143.99 (-0.00 %, tol 1 %)
+[frame-cap:launch] measure launch 144 after hide/show: 144.02 fps (1441 frames / 10006 ms; interval mean 6.943 sd 0.490 p50 7.000 p99 7.900 max 9.30 ms)
+[frame-cap:launch] PASS  launch cap 144 after hide/show  target 144 got 144.02 (0.01 %, tol 1 %)
+[frame-cap:launch] measure launch 144 after resize: 144.00 fps (1441 frames / 10007 ms; interval mean 6.944 sd 0.501 p50 7.000 p99 7.900 max 8.30 ms)
+[frame-cap:launch] PASS  launch cap 144 after resize  target 144 got 144.00 (0.00 %, tol 1 %)
+[frame-cap:launch] measure setFrameCap(0) after launch cap: 1253.00 fps (12530 frames / 10000 ms; interval mean 0.798 sd 0.613 p50 0.700 p99 3.800 max 6.80 ms)
+[frame-cap:launch] PASS  setFrameCap(0) uncaps a launch cap  launch cap 144, got 1253.00 (must exceed 151)
+[frame-cap:launch] measure re-cap 144: 144.01 fps (1441 frames / 10006 ms; interval mean 6.944 sd 0.497 p50 7.000 p99 7.900 max 8.40 ms)
+[frame-cap:launch] PASS  setFrameCap(144) re-caps  target 144 got 144.01 (0.01 %, tol 1 %)
+[frame-cap:launch] 5/5 checks passed, exit 0
+# exit 0  2026-11-21T17:08:22

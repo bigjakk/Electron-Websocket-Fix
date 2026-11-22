@@ -1,0 +1,77 @@
+﻿# 2026-11-21T17:43:40  C:\electron\dist-45.4.1-kcc\electron.exe  3 runs per variant, interleaved
+off-1    exit 0  gl True  lost False  rAF 458/s  console-lost 0  events 0
+all-1    exit 0  gl True  lost False  rAF 351/s  console-lost 0  events 0
+features-1 exit 0  gl True  lost False  rAF 445/s  console-lost 0  events 0
+js-1     exit 0  gl True  lost False  rAF 436/s  console-lost 0  events 0
+KccNoPointerLockEscCooldown-1 exit 0  gl True  lost False  rAF 458/s  console-lost 0  events 0
+KccPinRawPointerLock-1 exit 0  gl True  lost False  rAF 467/s  console-lost 0  events 0
+KccRawInputKeepWheelMotion-1 exit 0  gl True  lost False  rAF 451/s  console-lost 0  events 0
+KccRawInputFastPath-1 exit 0  gl True  lost False  rAF 464/s  console-lost 0  events 0
+KccLeanLockedMouseMove-1 exit 0  gl True  lost False  rAF 459/s  console-lost 0  events 0
+KccSkipUnobservedInputEmits-1 exit 0  gl True  lost False  rAF 454/s  console-lost 0  events 0
+KccSkipCanvasPerfSampling-1 exit 0  gl True  lost False  rAF 472/s  console-lost 0  events 0
+KccLabelTexturesOnce-1 exit 0  gl True  lost False  rAF 421/s  console-lost 0  events 0
+KccCacheVsyncInterval-1 exit 0  gl True  lost False  rAF 465/s  console-lost 0  events 0
+KccMacFineGpuBackpressure-1 exit 0  gl True  lost False  rAF 443/s  console-lost 0  events 0
+KccAudioParamCoalesce-1 exit 0  gl True  lost False  rAF 450/s  console-lost 0  events 0
+KccHrtfPannerKRateAngles-1 exit 0  gl True  lost False  rAF 446/s  console-lost 0  events 0
+KccX11AllowUnredirect-1 exit 0  gl True  lost False  rAF 462/s  console-lost 0  events 0
+KccX11RawMouse-1 exit 0  gl True  lost False  rAF 468/s  console-lost 0  events 0
+KccFrameCapPreciseRelease-1 exit 0  gl True  lost False  rAF 476/s  console-lost 0  events 0
+off-2    exit 0  gl True  lost False  rAF 459/s  console-lost 0  events 0
+all-2    exit 0  gl True  lost False  rAF 438/s  console-lost 0  events 0
+features-2 exit 0  gl True  lost False  rAF 445/s  console-lost 0  events 0
+js-2     exit 0  gl True  lost False  rAF 475/s  console-lost 0  events 0
+KccNoPointerLockEscCooldown-2 exit 0  gl True  lost False  rAF 386/s  console-lost 0  events 0
+KccPinRawPointerLock-2 exit 0  gl True  lost False  rAF 437/s  console-lost 0  events 0
+KccRawInputKeepWheelMotion-2 exit 0  gl True  lost False  rAF 415/s  console-lost 0  events 0
+KccRawInputFastPath-2 exit 0  gl True  lost False  rAF 452/s  console-lost 0  events 0
+KccLeanLockedMouseMove-2 exit 0  gl True  lost False  rAF 449/s  console-lost 0  events 0
+KccSkipUnobservedInputEmits-2 exit 0  gl True  lost False  rAF 471/s  console-lost 0  events 0
+KccSkipCanvasPerfSampling-2 exit 0  gl True  lost False  rAF 452/s  console-lost 0  events 0
+KccLabelTexturesOnce-2 exit 1  gl True  lost True  rAF 59/s  console-lost 1  events 0
+KccCacheVsyncInterval-2 exit 0  gl True  lost False  rAF 476/s  console-lost 0  events 0
+KccMacFineGpuBackpressure-2 exit 0  gl True  lost False  rAF 460/s  console-lost 0  events 0
+KccAudioParamCoalesce-2 exit 0  gl True  lost False  rAF 465/s  console-lost 0  events 0
+KccHrtfPannerKRateAngles-2 exit 0  gl True  lost False  rAF 457/s  console-lost 0  events 0
+KccX11AllowUnredirect-2 exit 0  gl True  lost False  rAF 426/s  console-lost 0  events 0
+KccX11RawMouse-2 exit 0  gl True  lost False  rAF 447/s  console-lost 0  events 0
+KccFrameCapPreciseRelease-2 exit 0  gl True  lost False  rAF 460/s  console-lost 0  events 0
+off-3    exit 0  gl True  lost False  rAF 472/s  console-lost 0  events 0
+all-3    exit 0  gl True  lost False  rAF 468/s  console-lost 0  events 0
+features-3 exit 0  gl True  lost False  rAF 451/s  console-lost 0  events 0
+js-3     exit 0  gl True  lost False  rAF 380/s  console-lost 0  events 0
+KccNoPointerLockEscCooldown-3 exit 0  gl True  lost False  rAF 439/s  console-lost 0  events 0
+KccPinRawPointerLock-3 exit 0  gl True  lost False  rAF 444/s  console-lost 0  events 0
+KccRawInputKeepWheelMotion-3 exit 0  gl True  lost False  rAF 439/s  console-lost 0  events 0
+KccRawInputFastPath-3 exit 0  gl True  lost False  rAF 447/s  console-lost 0  events 0
+KccLeanLockedMouseMove-3 exit 0  gl True  lost False  rAF 460/s  console-lost 0  events 0
+KccSkipUnobservedInputEmits-3 exit 0  gl True  lost False  rAF 473/s  console-lost 0  events 0
+KccSkipCanvasPerfSampling-3 exit 0  gl True  lost False  rAF 451/s  console-lost 0  events 0
+KccLabelTexturesOnce-3 exit 0  gl True  lost False  rAF 473/s  console-lost 0  events 0
+KccCacheVsyncInterval-3 exit 0  gl True  lost False  rAF 466/s  console-lost 0  events 0
+KccMacFineGpuBackpressure-3 exit 0  gl True  lost False  rAF 461/s  console-lost 0  events 0
+KccAudioParamCoalesce-3 exit 0  gl True  lost False  rAF 446/s  console-lost 0  events 0
+KccHrtfPannerKRateAngles-3 exit 0  gl True  lost False  rAF 475/s  console-lost 0  events 0
+KccX11AllowUnredirect-3 exit 0  gl True  lost False  rAF 469/s  console-lost 0  events 0
+KccX11RawMouse-3 exit 0  gl True  lost False  rAF 467/s  console-lost 0  events 0
+KccFrameCapPreciseRelease-3 exit 0  gl True  lost False  rAF 445/s  console-lost 0  events 0
+off  3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 458 median 459
+all  3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 351 median 438
+features 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 445 median 445
+js   3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 380 median 436
+KccNoPointerLockEscCooldown 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 386 median 439
+KccPinRawPointerLock 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 437 median 444
+KccRawInputKeepWheelMotion 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 415 median 439
+KccRawInputFastPath 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 447 median 452
+KccLeanLockedMouseMove 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 449 median 459
+KccSkipUnobservedInputEmits 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 454 median 471
+KccSkipCanvasPerfSampling 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 451 median 452
+KccLabelTexturesOnce 3 runs: context lost 1, failed 1, crash lines 0; rAF/s min 59 median 421
+KccCacheVsyncInterval 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 465 median 466
+KccMacFineGpuBackpressure 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 443 median 460
+KccAudioParamCoalesce 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 446 median 450
+KccHrtfPannerKRateAngles 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 446 median 457
+KccX11AllowUnredirect 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 426 median 462
+KccX11RawMouse 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 447 median 467
+KccFrameCapPreciseRelease 3 runs: context lost 0, failed 0, crash lines 0; rAF/s min 445 median 460

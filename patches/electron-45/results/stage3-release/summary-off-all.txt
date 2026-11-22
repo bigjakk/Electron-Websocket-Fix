@@ -1,0 +1,63 @@
+﻿frame-cap gate  2026-11-21T17:06:23
+exe: C:\electron\dist-45.4.1-kcc\electron.exe
+variants: off,all  parts: A,B  heavy suite: webgl page, busy 5, 3 ms, 5 runs each  features via: commandline
+
+off-launch-60                  exit 0  checks 5/5
+off-launch-144                 exit 0  checks 5/5
+off-launch-240                 exit 0  checks 5/5
+off-runtime-2d                 exit 0  checks 14/14  (uncapped baseline 1247.3 fps, page 2d)
+off-runtime-webgl              exit 0  checks 14/14  (uncapped baseline 369.0 fps, page webgl2)
+all-launch-60                  exit 0  checks 5/5
+all-launch-144                 exit 0  checks 5/5
+all-launch-240                 exit 0  checks 5/5
+all-runtime-2d                 exit 0  checks 14/14  (uncapped baseline 1208.7 fps, page 2d)
+all-runtime-webgl (attempt 1)  exit 1  checks 3/9  (uncapped baseline 57.6 fps, page webgl2)
+    FAIL setFrameCap(30) after hide/show: target 30 got 57.64 (92.15 %, tol 1 %)
+    FAIL setFrameCap(30) after resize: target 30 got 57.68 (92.27 %, tol 1 %)
+    FAIL change 30 -> 25 takes effect at once (2 s): target 25 got 57.49 (129.97 %, tol 3 %)
+    FAIL change 25 -> 20 takes effect at once (2 s): target 20 got 57.70 (188.50 %, tol 3 %)
+    FAIL change 20 -> 30 takes effect at once (2 s): target 30 got 57.73 (92.44 %, tol 3 %)
+    FAIL two views, cap 45: main view: target 45 got 58.50 (29.99 %, tol 1 %)
+    SKIP setFrameCap(60): uncapped baseline 57.6 is below 1.1 x 60
+    SKIP setFrameCap(144): uncapped baseline 57.6 is below 1.1 x 144
+    SKIP setFrameCap(240): uncapped baseline 57.6 is below 1.1 x 240
+    SKIP caps 144, 240 and 60 for hide/show, resize and a change of N: uncapped baseline 57.6 cannot reach 1.1 x each: using 30 (for 144), 25 (for 240), 20 (for 60)
+    SKIP two views, cap 144: two-view uncapped rate 57.3 is below 1.1 x 144
+    SKIP two views, cap 60: two-view uncapped rate 57.3 is below 1.1 x 60
+all-runtime-webgl (attempt 2)  exit 0  checks 14/14  (uncapped baseline 372.5 fps, page webgl2)
+off-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 107.4, cap1000 108.4, cap240 110.8, cap144 109.8)
+all-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 108.5, cap1000 109.7, cap240 109.6, cap144 110.1)
+off-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 108.4, cap1000 109.3, cap240 109.3, cap144 108.9)
+all-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 109.8, cap1000 109.9, cap240 109.3, cap144 109.3)
+off-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 109.3, cap1000 109.4, cap240 110.9, cap144 109.0)
+all-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 108.6, cap1000 109.6, cap240 109.4, cap144 110.1)
+off-heavy-5-4                  exit 0  checks 3/3  (busy 5 ms: reach 110.0, cap1000 109.2, cap240 109.2, cap144 109.9)
+all-heavy-5-4                  exit 0  checks 3/3  (busy 5 ms: reach 109.0, cap1000 109.6, cap240 109.6, cap144 110.2)
+off-heavy-5-5                  exit 0  checks 3/3  (busy 5 ms: reach 109.6, cap1000 109.4, cap240 108.7, cap144 108.9)
+all-heavy-5-5                  exit 0  checks 3/3  (busy 5 ms: reach 109.7, cap1000 109.9, cap240 109.4, cap144 109.4)
+off-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 149.9, cap1000 153.8, cap240 154.3, cap144 143.9)
+all-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 154.0, cap1000 153.0, cap240 154.8, cap144 144.0)
+off-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 208.5, cap1000 208.7, cap240 204.1, cap144 144.0)
+all-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 169.1, cap1000 149.3, cap240 152.8, cap144 144.0)
+off-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 152.4, cap1000 153.9, cap240 151.5, cap144 142.8)
+all-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 153.7, cap1000 155.3, cap240 152.7, cap144 144.0)
+off-heavy-3-4                  exit 0  checks 3/3  (busy 3 ms: reach 154.4, cap1000 155.8, cap240 154.3, cap144 143.6)
+all-heavy-3-4                  exit 0  checks 3/3  (busy 3 ms: reach 207.9, cap1000 208.3, cap240 207.6, cap144 144.0)
+off-heavy-3-5                  exit 0  checks 3/3  (busy 3 ms: reach 206.8, cap1000 167.1, cap240 153.5, cap144 144.0)
+all-heavy-3-5                  exit 0  checks 3/3  (busy 3 ms: reach 153.8, cap1000 154.2, cap240 152.8, cap144 144.0)
+
+heavy suite, busy 5 ms, 5 runs per variant: best / median [each run]
+  off      reach 110.0 / 109.3 [107.4 / 108.4 / 109.3 / 110.0 / 109.6]  cap1000 109.4 / 109.3 [108.4 / 109.3 / 109.4 / 109.2 / 109.4]  cap240 110.9 / 109.3 [110.8 / 109.3 / 110.9 / 109.2 / 108.7]  cap144 109.9 / 109.0 [109.8 / 108.9 / 109.0 / 109.9 / 108.9]
+  all      reach 109.8 / 109.0 [108.5 / 109.8 / 108.6 / 109.0 / 109.7]  cap1000 109.9 / 109.7 [109.7 / 109.9 / 109.6 / 109.6 / 109.9]  cap240 109.6 / 109.4 [109.6 / 109.3 / 109.4 / 109.6 / 109.4]  cap144 110.2 / 110.1 [110.1 / 109.3 / 110.1 / 110.2 / 109.4]
+  all|5        cap1000  best   109.9 vs off   109.4  (+0.4 %; medians +0.3 %)  ok
+  all|5        cap240   best   109.6 vs off   110.9  (-1.2 %; medians +0.1 %)  ok
+  all|5        cap144   best   110.2 vs off   109.9  (+0.3 %; medians +1.0 %)  ok
+
+heavy suite, busy 3 ms, 5 runs per variant: best / median [each run]
+  off      reach 208.5 / 154.4 [149.9 / 208.5 / 152.4 / 154.4 / 206.8]  cap1000 208.7 / 155.8 [153.8 / 208.7 / 153.9 / 155.8 / 167.1]  cap240 204.1 / 154.3 [154.3 / 204.1 / 151.5 / 154.3 / 153.5]  cap144 144.0 / 143.9 [143.9 / 144.0 / 142.8 / 143.6 / 144.0]
+  all      reach 207.9 / 154.0 [154.0 / 169.1 / 153.7 / 207.9 / 153.8]  cap1000 208.3 / 154.2 [153.0 / 149.3 / 155.3 / 208.3 / 154.2]  cap240 207.6 / 152.8 [154.8 / 152.8 / 152.7 / 207.6 / 152.8]  cap144 144.0 / 144.0 [144.0 / 144.0 / 144.0 / 144.0 / 144.0]
+  all|3        cap1000  best   208.3 vs off   208.7  (-0.2 %; medians -1.0 %)  ok
+  all|3        cap240   best   207.6 vs off   204.1  (+1.7 %; medians -0.9 %)  ok
+  all|3        cap144   best   144.0 vs off   144.0  (+0.0 %; medians +0.1 %)  ok
+
+FRAME-CAP GATE: PASS

@@ -1,0 +1,3 @@
+ninja: Entering directory `out\Release'
+[1/2] ACTION //electron:electron_version_file(//build/toolchain/win:win_clang_x64)
+[2/2] ACTION //electron:electron_dist_zip(//build/toolchain/win:win_clang_x64)

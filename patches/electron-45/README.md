@@ -236,7 +236,8 @@ Recorded because the next milestone bump will hit the same places.
 
 - Baseline: Chromium `156.0.8078.100` with all 301 of Electron v45.4.1's Chromium patches and
   all 37 of its V8 patches applied (so the diffs match what a synced tree contains).
-- `apply.sh --check` passes for all 23 patches in order on that baseline.
+- `apply.sh --check` passes for all 22 patches in order on that baseline (and passed for all
+  23 before c61 was dropped).
 - `apply.sh --commit` followed by `refresh.sh` reproduces every diff byte for byte. This was
   **not** true as first written: git abbreviates blob ids to a length that depends on the size
   of the repository, so every `index` line changed between the sparse checkout the drafts were

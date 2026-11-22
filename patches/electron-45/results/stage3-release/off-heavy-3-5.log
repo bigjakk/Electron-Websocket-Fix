@@ -1,0 +1,20 @@
+﻿# 2026-11-21T17:37:05  C:\electron\dist-45.4.1-kcc\electron.exe frame-cap-test.js --kcc-suite=heavy --kcc-busy=3 --kcc-mode=webgl --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\off-heavy-3-5.json --enable-logging
+
+[6520:1121/173706.295:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file:///C:/projects/Electron-Websocket-Fix/test/frame-cap.html?busy=3&label=main&mode=webgl (0)
+[frame-cap:heavy] page renderer webgl2; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:heavy] measure uncapped, busy 3 ms: 206.76 fps (2068 frames / 10002 ms; interval mean 4.836 sd 0.209 p50 4.800 p99 5.700 max 7.50 ms)
+[frame-cap:heavy] measure cap 1000, busy 3 ms: 167.11 fps (1672 frames / 10006 ms; interval mean 5.984 sd 1.090 p50 6.000 p99 9.400 max 11.70 ms)
+[frame-cap:heavy] PASS  cap 1000 at or above reach (207): window did not freeze  uncapped 206.76, capped 167.11 (-19.18 % vs uncapped, informational)
+[frame-cap:heavy] measure cap 240, busy 3 ms: 153.46 fps (1535 frames / 10003 ms; interval mean 6.516 sd 0.865 p50 6.400 p99 9.800 max 11.90 ms)
+[frame-cap:heavy] PASS  cap 240 at or above reach (207): window did not freeze  uncapped 206.76, capped 153.46 (-25.78 % vs uncapped, informational)
+[frame-cap:heavy] measure cap 144, busy 3 ms: 144.03 fps (1441 frames / 10005 ms; interval mean 6.943 sd 0.813 p50 6.900 p99 9.800 max 13.30 ms)
+[frame-cap:heavy] PASS  cap 144 with busy 3 ms page  target 144 got 144.03 (0.02 %, tol 1 %)
+[frame-cap:heavy] 3/3 checks passed, exit 0
+# exit 0  2026-11-21T17:37:51

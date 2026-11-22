@@ -96,7 +96,45 @@ in most of the build anyway.
 
 ### Official build, `out/Release` (Stage 3)
 
-_pending_
+```
+import("//electron/build/args/release.gn")
+is_official_build = true
+use_remoteexec = false
+use_reclient = false
+
+# src/electron carries the series' local commits, so the version would
+# otherwise come out of git describe as 45.4.1-<n>-g<sha>.
+override_electron_version = "45.4.1"
+```
+
+The Release args from BUILD-GUIDE.md, plus the version override the DCHECK build also uses
+([`args.gn`](results/stage3-release/args.gn), driver
+[`build_release.ps1`](results/stage3-release/build_release.ps1)). Effective values from
+`gn args out/Release --list`:
+
+- `is_official_build = true`, `is_debug = false`, `is_component_build = false`,
+  `dcheck_always_on = false`;
+- `use_thin_lto = true`, `thin_lto_enable_optimizations = true`, `symbol_level = 2`;
+- `chrome_pgo_phase = 2` with **Electron's own profiles**, which come with the Electron
+  checkout. Compiles use
+  `-fprofile-use=electron/build/pgo_profiles/electron-win-x64-1794713269-6bfc23bf15.profdata`;
+  V8's builtins use `electron-v8-builtins.profile`. The Krunker-trained profile was not used:
+  the brief keeps it for when you ask;
+- `is_component_ffmpeg = true`, `proprietary_codecs = true`.
+
+GN: 36,314 targets from 5,105 files ([log](results/stage3-release/gn-gen-release.log)).
+The build reused the `out/Release` directory of the v45.0.0-alpha.14 build. The tree had
+moved to another Chromium patch level, so nearly everything was rebuilt.
+
+| Pass | What | Steps | Time | Result |
+|---|---|---|---|---|
+| gen | `gn gen out/Release` | | 05:00-05:01 | exit 0 |
+| full | `autoninja -C out/Release -k 0 electron` | 44,575 | 05:05-17:01 (11 h 55 min) | exit 0 ([log](results/stage3-release/build-full-release.log)); `electron.exe` 249,946,624 bytes |
+| zip | `autoninja -C out/Release electron:electron_dist_zip` | 2 | 17:02-17:04 | exit 0 ([log](results/stage3-release/build-dist-zip-release.log)) |
+
+**The 22 diffs compiled in the official configuration without a change** (no fixup
+commits). The log has no compiler warnings. Its one warning is the linker's note that the
+ThinLTO cache (9.1 GB) had outgrown its 8.7 GB limit and was pruned.
 
 ## Test harness
 

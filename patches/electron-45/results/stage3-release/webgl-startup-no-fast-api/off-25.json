@@ -1,0 +1,14 @@
+{
+ "events": [],
+ "consoleLost": [
+  "WebGL: CONTEXT_LOST_WEBGL: loseContext: context lost"
+ ],
+ "page": {
+  "hasGl": true,
+  "lost": true,
+  "rafPerSec": 59
+ },
+ "loadMs": 95,
+ "webglStatus": "unavailable_software",
+ "exit": 1
+}

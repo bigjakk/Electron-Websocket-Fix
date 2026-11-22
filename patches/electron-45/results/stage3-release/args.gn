@@ -1,0 +1,8 @@
+import("//electron/build/args/release.gn")
+is_official_build = true
+use_remoteexec = false
+use_reclient = false
+
+# src/electron carries the series' local commits, so the version would
+# otherwise come out of git describe as 45.4.1-<n>-g<sha>.
+override_electron_version = "45.4.1"

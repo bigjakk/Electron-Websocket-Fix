@@ -1,0 +1,12 @@
+{
+ "events": [],
+ "consoleLost": [],
+ "page": {
+  "hasGl": true,
+  "lost": false,
+  "rafPerSec": 465
+ },
+ "loadMs": 108,
+ "webglStatus": "unavailable_software",
+ "exit": 0
+}
