@@ -88,11 +88,13 @@ Not verified
 - The per-call cost figures are from the owner's trace, not re-measured.
 
 Build and check status (2026-11-21)
-  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
-    build (dcheck_always_on).
-  - Not exercised: without a GPU DCompPresenter is not used, and
+  - Compiled without any change on Windows, in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on) and in the official Release build (dist.zip).
+  - DCHECK build: Not exercised: without a GPU DCompPresenter is not used, and
     GetVSyncIntervalIfAvailable ran 0 times with the switch off and on. The
     build only showed that it runs with the switch on.
+  - Release build (dist.zip): not exercised either (0 calls with the switch
+    off and on).
   - Not checked: everything the patch does; it needs a GPU with
     --disable-gpu-vsync.
 The "not compiled" / "not verified" notes above were written before the

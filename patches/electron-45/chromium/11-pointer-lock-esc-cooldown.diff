@@ -74,14 +74,16 @@ Platforms: all (browser process, UI thread, platform-independent).
 Not compiled. base/feature_list.h is newly included in this file.
 
 Build and check status (2026-11-21)
-  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
-    build (dcheck_always_on).
-  - test/pointer-lock-test.js: lock with a gesture, Esc through
-    webContents.sendInputEvent (it reaches ExclusiveAccessManager like a
-    real key), re-lock ~44 ms later. Switch off: SecurityError (the 1.25 s
-    cooldown); on: locked. The controls pass both ways (a re-lock 1.5 s
-    after Esc works; one without a gesture 5.5 s later is refused with
+  - Compiled without any change on Windows, in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on) and in the official Release build (dist.zip).
+  - DCHECK build: test/pointer-lock-test.js: lock with a gesture, Esc through
+    webContents.sendInputEvent (it reaches ExclusiveAccessManager like a real
+    key), re-lock ~44 ms later. Switch off: SecurityError (the 1.25 s
+    cooldown); on: locked. The controls pass both ways (a re-lock 1.5 s after
+    Esc works; one without a gesture 5.5 s later is refused with
     NotAllowedError).
+  - Release build (dist.zip): the same result (switch off: SecurityError for a
+    re-lock 45 ms after Esc; on: locked).
   - Not checked: a physical Esc key, other sites.
 The "not compiled" / "not verified" notes above were written before the
 build; they stay for the caveats they list. Details and raw logs:

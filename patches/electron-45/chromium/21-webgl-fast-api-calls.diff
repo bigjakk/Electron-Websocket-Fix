@@ -145,12 +145,15 @@ taken only from TurboFan code, so the gain depends on the call sites being
 optimised and monomorphic.
 
 Build and check status (2026-11-21)
-  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
-    build (dcheck_always_on).
+  - Compiled without any change on Windows, in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on) and in the official Release build (dist.zip).
     The generated bindings were rebuilt with it.
-  - test/webgl-fast-api-test.js: the same GL error sequence and pixel hash
-    with fast API calls, with --no-turbo-fast-api-calls and with every
-    switch on; the call loop was optimized by TurboFan.
+  - DCHECK build: test/webgl-fast-api-test.js: the same GL error sequence and
+    pixel hash with fast API calls, with --no-turbo-fast-api-calls and with
+    every switch on; the call loop was optimized by TurboFan.
+  - Release build (dist.zip): the same GL error sequence and pixel hash in all
+    three runs; TurboFan-optimized loop 6.5 s with fast calls, 6.3 s without
+    (WARP).
   - Not checked: speed (WebGL runs on WARP here, which says nothing about a
     GPU).
 The "not compiled" / "not verified" notes above were written before the

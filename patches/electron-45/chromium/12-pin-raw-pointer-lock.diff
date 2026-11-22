@@ -103,12 +103,14 @@ WindowTreeHost::RequestUnadjustedMovement() returns nullptr, so a raw
 lock is never granted there). Browser process, UI thread. Not compiled.
 
 Build and check status (2026-11-21)
-  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
-    build (dcheck_always_on).
-  - test/raw-input-test.js (SendInput relative packets reaching WM_INPUT):
-    after requestPointerLock() without options on a raw lock, 40 packets of
-    (5,3) sum to (200,120) with the switch: still raw. Switch off:
+  - Compiled without any change on Windows, in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on) and in the official Release build (dist.zip).
+  - DCHECK build: test/raw-input-test.js (SendInput relative packets reaching
+    WM_INPUT): after requestPointerLock() without options on a raw lock, 40
+    packets of (5,3) sum to (200,120) with the switch: still raw. Switch off:
     (352,112), downgraded to OS-accelerated movement.
+  - Release build (dist.zip): the same result (switch off (352,113), on
+    (200,120)).
   - Not checked: whether Krunker or the client re-requests the lock this
     way; the macOS half (not compiled here).
 The "not compiled" / "not verified" notes above were written before the

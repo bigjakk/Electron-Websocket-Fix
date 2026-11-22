@@ -131,12 +131,14 @@ in any other way (a SetValue or ramp event left in a listener timeline
 disables coalescing for that param until it is pruned).
 
 Build and check status (2026-11-21)
-  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
-    build (dcheck_always_on).
-  - test/page-check.js + audioparam.html: with the switch the time to queue
-    a batch of setTargetAtTime events stays flat while the AudioContext is
-    suspended (0.50-1.02x over four scenarios); with it off it grows
-    12-13x.
+  - Compiled without any change on Windows, in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on) and in the official Release build (dist.zip).
+  - DCHECK build: test/page-check.js + audioparam.html: with the switch the
+    time to queue a batch of setTargetAtTime events stays flat while the
+    AudioContext is suspended (0.50-1.02x over four scenarios); with it off it
+    grows 12-13x.
+  - Release build (dist.zip): with the switch 0.47-1.00x over the four
+    scenarios; off 14-15x.
   - Not checked: whether Krunker hits this path; the rounding difference
     against stock (by design not bit-identical).
 The "not compiled" / "not verified" notes above were written before the

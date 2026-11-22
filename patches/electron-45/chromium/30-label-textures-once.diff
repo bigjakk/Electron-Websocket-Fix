@@ -87,10 +87,15 @@ Not verified
   subject and from what ANGLE does with the label.
 
 Build and check status (2026-11-21)
-  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
-    build (dcheck_always_on).
-  - test/page-check.js + canvas-texture.html with the switch on: runs
-    without crash or DCHECK, glError 0.
+  - Compiled without any change on Windows, in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on) and in the official Release build (dist.zip).
+  - DCHECK build: test/page-check.js + canvas-texture.html with the switch on:
+    runs without crash or DCHECK, glError 0.
+  - Release build (dist.zip): runs with the switch on, glError 0, WebGL
+    context not lost. The switch was briefly suspected of a WebGL context lost
+    at page load; that is stock behaviour on this machine: it happens as often
+    with the switch off, and on the v45.0.0-alpha.14 control too (RESULTS.md,
+    test harness item 7).
   - Not checked: how many labels are skipped (no trace counter for it) and
     the D3D11 cost it removes (WARP here, no GPU).
 The "not compiled" / "not verified" notes above were written before the

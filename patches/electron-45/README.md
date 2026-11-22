@@ -9,8 +9,9 @@ Two kinds of patch live here, and they are not equally trustworthy:
   [`../electron-44/`](../electron-44/).
 - **Drafted** (every other group): new patches from the 2026-11-20 performance survey,
   written against the real 156 source. On Windows every draft compiled as written (no fix
-  was needed), and each was run against a synthetic check and both release gates on a
-  machine **without a GPU**: see [RESULTS.md](RESULTS.md). One draft, c61, was dropped after
+  was needed), in a DCHECK build and in the official Release build (the dist.zip). Each was
+  run against a synthetic check and both release gates on both builds, on a machine
+  **without a GPU**: see [RESULTS.md](RESULTS.md). One draft, c61, was dropped after
   its check (see [Not in this set](#not-in-this-set)). The macOS and Linux drafts (c32, c50,
   c51) have still never been compiled. **None has been tested in the game.** Treat every
   number in a patch description as an estimate until it is measured on a real machine.
@@ -165,14 +166,21 @@ Low risk, small: c13, c14, c20, c30, c31, c41, c50, v01.
 
 - **The frame cap burns a core today.** While it holds a swap ack, `BackToBackBeginFrameSource`
   keeps re-posting a zero-delay tick that is dropped for "GPU busy", so the viz thread never
-  sleeps. Estimated at roughly 75% of a core at a 240 cap; **measured** at 77-100% of a core
-  at a 144 cap on the build machine (software compositing), and 11-33% with c60. That
-  accidental spin is also why the release is already on time. c60 removes the spin and keeps
-  the timing with a high-resolution timer.
-- **Input under a cap is about one cap period old.** The finished frame sits in viz until the
-  *next* ack release. Measured on the build machine at a 144 cap: main-frame start to display
-  draw about 6.6 ms (0.95 periods) with an idle page, about 13.5 ms (two periods) with 3 ms
-  of script per frame. The survey blamed `just_submitted_in_deadline` in cc's state machine;
+  sleeps. Estimated at roughly 75% of a core at a 240 cap; **measured** at a 144 cap on the
+  build machine (software compositing):
+  - DCHECK build, 2D page: 77-100% of a core, and 11-33% with c60;
+  - Release build, WebGL page: 98-100%, and 35-49% with c60.
+
+  That accidental spin is also why the release is already on time. c60 removes the spin and
+  keeps the timing with a high-resolution timer.
+- **Input under a cap is one to two cap periods old.** The finished frame sits in viz until the
+  *next* ack release. Measured on the build machine at a 144 cap, main-frame start to display
+  draw:
+  - DCHECK build, 2D page: about 6.6 ms (0.95 periods) with an idle page, about 13.5 ms (two
+    periods) with 3 ms of script per frame;
+  - Release build, WebGL page: 13.7 ms (two periods) both ways.
+
+  The survey blamed `just_submitted_in_deadline` in cc's state machine;
   that is not involved. The cause is in viz, **but c61's fix does not work** and c61 was
   dropped (see [Not in this set](#not-in-this-set)).
 - **Linux has no raw mouse input in Chromium at all**, on X11 or Wayland. c51 adds it for X11.

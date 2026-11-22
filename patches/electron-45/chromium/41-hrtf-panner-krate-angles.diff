@@ -80,11 +80,13 @@ Platforms: all (no platform-specific code).
 Not verified: compilation.
 
 Build and check status (2026-11-21)
-  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
-    build (dcheck_always_on).
-  - test/page-check.js + hrtf.html: four renders in OfflineAudioContexts
-    (switch off twice, on twice) are identical sample for sample (one
-    SHA-256).
+  - Compiled without any change on Windows, in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on) and in the official Release build (dist.zip).
+  - DCHECK build: test/page-check.js + hrtf.html: four renders in
+    OfflineAudioContexts (switch off twice, on twice) are identical sample for
+    sample (one SHA-256).
+  - Release build (dist.zip): the four renders are identical sample for
+    sample.
   - Not checked: the CPU saved per quantum (not measured).
 The "not compiled" / "not verified" notes above were written before the
 build; they stay for the caveats they list. Details and raw logs:

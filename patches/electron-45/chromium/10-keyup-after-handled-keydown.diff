@@ -65,12 +65,14 @@ Not compiled; ui::DomCode and base::flat_set are already used by this
 header (keyboard_keys_to_lock_).
 
 Build and check status (2026-11-21)
-  - Compiled without any change on Windows in the Electron 45.4.1 DCHECK
-    build (dcheck_always_on).
-  - test/keyup-test.js: a before-input-event listener preventDefault()s one
-    key; keydown A, keydown and keyup of that key, keyup A (sendInputEvent
-    and CDP Input.dispatchKeyEvent). The page receives keyup A both ways.
-    Stock (v45.0.0-alpha.14 on the same machine) loses it both ways.
+  - Compiled without any change on Windows, in the Electron 45.4.1 DCHECK
+    build (dcheck_always_on) and in the official Release build (dist.zip).
+  - DCHECK build: test/keyup-test.js: a before-input-event listener
+    preventDefault()s one key; keydown A, keydown and keyup of that key, keyup
+    A (sendInputEvent and CDP Input.dispatchKeyEvent). The page receives keyup
+    A both ways. Stock (v45.0.0-alpha.14 on the same machine) loses it both
+    ways.
+  - Release build (dist.zip): the same result (keyup A arrives both ways).
   - Not checked: real keyboards, IME, menu accelerators.
 The "not compiled" / "not verified" notes above were written before the
 build; they stay for the caveats they list. Details and raw logs:
