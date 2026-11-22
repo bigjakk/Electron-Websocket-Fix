@@ -127,7 +127,7 @@ if ($Only -contains 'c21') {
   $sameC = $pc -and ($pc.errHash -eq $pb.errHash) -and ($pc.pixHash -eq $pb.pixHash)
   $tf = $pa.turbofannedBeforeLoop -and $pa.turbofannedAfterLoop -and $pb.turbofannedAfterLoop
   Verdict 'c21' ((Clean $a) -and (Clean $b) -and (Clean $c) -and $same -and $sameC -and $tf) ("fast: err $($pa.errHash) pix $($pa.pixHash) errors $($pa.errTotal) $($pa.errCounts | ConvertTo-Json -Compress) loop $([math]::Round($pa.loopMs)) ms turbofan $($pa.turbofannedBeforeLoop)/$($pa.turbofannedAfterLoop); " +
-    "no-fast: err $($pb.errHash) pix $($pb.pixHash) loop $([math]::Round($pb.loopMs)) ms; all flags: err $($pc.errHash) pix $($pc.pixHash); renderer $($pa.renderer)$(CrashNote $a)$(CrashNote $b)$(CrashNote $c)")
+    "no-fast: err $($pb.errHash) pix $($pb.pixHash) loop $([math]::Round($pb.loopMs)) ms; all flags: err $($pc.errHash) pix $($pc.pixHash); WebGL context lost $($pa.contextLost)/$($pb.contextLost)/$($pc.contextLost); renderer $($pa.renderer)$(CrashNote $a)$(CrashNote $b)$(CrashNote $c)")
 }
 
 # ---- v01: cppgc incremental sweep slice --------------------------------------
@@ -167,11 +167,11 @@ if ($Only -contains 'c20') {
     $vi = & $count 'WinVSyncProvider::GetVSyncIntervalIfAvailable'
     $vp = & $count 'WinVSyncProvider::GetVSyncParameters'
     Remove-Item $trace -ErrorAction SilentlyContinue
-    $res[$mode] = [pscustomobject]@{ r = $r; rm = $rm; vi = $vi; vp = $vp; frames = $r.res.result.frames; fps = $r.res.result.fps; glError = $r.res.result.glError }
-    Say ("       c20/c30/c31 flags $mode`: exit $($r.code), {0} frames ({1:N1} fps), glError {2}, RecordMetrics {3}, GetVSyncIntervalIfAvailable {4}, GetVSyncParameters {5}, gpu_compositing {6}$(CrashNote $r)" -f $res[$mode].frames, $res[$mode].fps, $res[$mode].glError, $rm, $vi, $vp, $r.res.gpuFeatureStatus.gpu_compositing)
+    $res[$mode] = [pscustomobject]@{ r = $r; rm = $rm; vi = $vi; vp = $vp; frames = $r.res.result.frames; fps = $r.res.result.fps; glError = $r.res.result.glError; lost = $r.res.result.contextLost }
+    Say ("       c20/c30/c31 flags $mode`: exit $($r.code), {0} frames ({1:N1} fps), glError {2}, WebGL context lost {7}, RecordMetrics {3}, GetVSyncIntervalIfAvailable {4}, GetVSyncParameters {5}, gpu_compositing {6}$(CrashNote $r)" -f $res[$mode].frames, $res[$mode].fps, $res[$mode].glError, $rm, $vi, $vp, $r.res.gpuFeatureStatus.gpu_compositing, $res[$mode].lost)
   }
   Verdict 'c20' ((Clean $res.off.r) -and (Clean $res.on.r) -and $res.off.rm -gt 0 -and $res.on.rm -eq 0) "RecordMetrics slices: off $($res.off.rm), on $($res.on.rm) (must be > 0 and 0)"
-  Verdict 'c30' ((Clean $res.off.r) -and (Clean $res.on.r) -and $res.on.glError -eq 0 -and $res.on.frames -gt 0) "texture-rebind page ran without crash or DCHECK, glError $($res.on.glError), $($res.on.frames) frames with KccLabelTexturesOnce (no counter for the skipped labels in a trace)"
+  Verdict 'c30' ((Clean $res.off.r) -and (Clean $res.on.r) -and $res.on.glError -eq 0 -and $res.on.frames -gt 0 -and $res.on.lost -eq $false) "texture-rebind page ran without crash or DCHECK, glError $($res.on.glError), WebGL context lost $($res.on.lost), $($res.on.frames) frames with KccLabelTexturesOnce (no counter for the skipped labels in a trace)"
   if ($res.off.vi -eq 0 -and $res.on.vi -eq 0) {
     Say "c31    N/A   GetVSyncIntervalIfAvailable never ran (off $($res.off.vi), on $($res.on.vi)): DCompPresenter is not used on this machine, so KccCacheVsyncInterval was not exercised; the build ran with it on."
   } else {

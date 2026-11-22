@@ -67,6 +67,7 @@ window.kccResult = new Promise((resolve) => {
     c2.fillStyle = '#fff'; c2.fillText(String(frames), 8, 14);
     if (now - t0 < SECONDS * 1000) requestAnimationFrame(frame);
     else resolve({ frames, seconds: (now - t0) / 1000, fps: frames * 1000 / (now - t0), glError: gl.getError(),
+                   contextLost: gl.isContextLost(),
                    renderer: (() => { const e = gl.getExtension('WEBGL_debug_renderer_info'); return e ? gl.getParameter(e.UNMASKED_RENDERER_WEBGL) : ''; })() });
   }
   requestAnimationFrame(frame);

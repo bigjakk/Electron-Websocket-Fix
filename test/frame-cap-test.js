@@ -277,6 +277,14 @@ async function suiteRuntime(win) {
   view2.setBounds({ x: 320, y: 0, width: 320, height: 480 });
   await view2.webContents.loadFile(path.join(__dirname, 'frame-cap.html'), { query: { label: 'second', mode: MODE } });
   await sleep(1500);
+  if (MODE === 'webgl' && await view2.webContents.executeJavaScript('!!gl && gl.isContextLost()')) {
+    check('second view WebGL context alive at load', false,
+      'the second view\'s WebGL2 context was lost at load, so it draws nothing; the two-view checks were not run');
+    log('WEBGL CONTEXT LOST at load in the second view: two-view checks not run');
+    win.contentView.removeChildView(view2);
+    view2.webContents.close();
+    return;
+  }
   const both = async (name) => {
     const [a, b] = await Promise.all([measure(wc, `${name} main`), measure(view2.webContents, `${name} second`)]);
     return [a, b];
@@ -467,6 +475,17 @@ app.whenReady().then(async () => {
       return finish(3);
     }
     log(`page renderer ${results.pageRenderer}; gpu feature status ${JSON.stringify(results.gpuFeatureStatus)}`);
+    // A WebGL2 context lost at load leaves the page drawing nothing: there are
+    // no frames for a cap to hold, and rAF runs near 58/s whatever the cap. A
+    // Stage 3 run hit this at startup (it also happens with every switch off),
+    // and its rates then read as a list of cap failures. Report it as what it
+    // is and measure nothing.
+    if (results.pageRenderer === 'webgl2' && await wc.executeJavaScript('gl.isContextLost()')) {
+      check('page WebGL context alive at load', false,
+        'the WebGL2 context was lost at load, so the page draws nothing and no cap has frames to hold; nothing was measured');
+      log('WEBGL CONTEXT LOST at load: nothing measured');
+      return finish(1);
+    }
     if (SUITE === 'launch') await suiteLaunch(win);
     else if (SUITE === 'runtime') await suiteRuntime(win);
     else if (SUITE === 'heavy') await suiteHeavy(win);

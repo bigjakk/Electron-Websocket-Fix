@@ -138,7 +138,7 @@ function run() {
     if (px[k] | px[k + 1] | px[k + 2]) nonBlack++;
   }
   return {
-    renderer: rendererName, iterations: ITER, loopMs,
+    renderer: rendererName, iterations: ITER, loopMs, contextLost: gl.isContextLost(),
     errHash: errHash.toString(16), errTotal, errCounts,
     pixHash: pixHash.toString(16), nonBlackPixels: nonBlack,
     optStatusBeforeLoop: optStatus, optStatusAfterLoop: optStatusAfter,
