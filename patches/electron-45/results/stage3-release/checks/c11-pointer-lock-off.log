@@ -1,0 +1,14 @@
+﻿# 2026-11-21T18:59:10  C:\electron\dist-45.4.1-kcc\electron.exe pointer-lock-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\checks\c11-pointer-lock-off.json
+
+[pointer-lock-test] 3 ms  request with gesture: locked
+[pointer-lock-test] PASS  lock with a user gesture  locked
+[pointer-lock-test] 48 ms  Esc: unlocked after 44 ms
+[pointer-lock-test] PASS  Esc releases the lock  
+[pointer-lock-test] 49 ms  request with gesture 44 ms after Esc: rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock.
+[pointer-lock-test] PASS  switch off: re-lock inside the cooldown is refused (kUserEscapeCooldown)  rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock.
+[pointer-lock-test] 1509 ms  request with gesture 1503 ms after Esc: locked
+[pointer-lock-test] PASS  control: re-lock 1.5 s after Esc succeeds  locked
+[pointer-lock-test] 1554 ms  Esc: unlocked after 45 ms
+[pointer-lock-test] 7059 ms  request WITHOUT gesture 5549 ms after Esc: rejected NotAllowedError: A user gesture is required to request Pointer Lock.
+[pointer-lock-test] PASS  control: a request without a user gesture is refused  rejected NotAllowedError: A user gesture is required to request Pointer Lock.
+# exit 0  2026-11-21T18:59:18

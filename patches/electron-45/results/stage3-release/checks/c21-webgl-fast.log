@@ -1,0 +1,4 @@
+﻿# 2026-11-21T19:00:13  C:\electron\dist-45.4.1-kcc\electron.exe webgl-fast-api-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\checks\c21-webgl-fast.json --js-flags=--allow-natives-syntax
+
+[webgl-fast-api] {"renderer":"ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)","iterations":20000,"loopMs":6535,"contextLost":false,"errHash":"2ac24dc","errTotal":11205,"errCounts":{"1280":5060,"1281":957,"1282":5188},"pixHash":"ebb47edf","nonBlackPixels":490,"optStatusBeforeLoop":41,"optStatusAfterLoop":41,"turbofannedBeforeLoop":true,"turbofannedAfterLoop":true}
+# exit 0  2026-11-21T19:00:21

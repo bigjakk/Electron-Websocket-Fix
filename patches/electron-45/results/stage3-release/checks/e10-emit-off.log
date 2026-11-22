@@ -1,0 +1,13 @@
+﻿# 2026-11-21T18:58:43  C:\electron\dist-45.4.1-kcc\electron.exe input-emit-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\checks\e10-emit-off.json
+
+[input-emit] PASS  no listener: page receives the moves  page mousemove 20 of 20
+[input-emit] PASS  input-event listener receives every move while registered  listener 20 of 20, page 20
+[input-emit] PASS  removed input-event listener receives nothing more  listener 0 after removal
+[input-emit] PASS  page still receives moves after the listener is removed  page 20 of 20
+[input-emit] PASS  input-event listener added again receives every move  listener 20 of 20
+[input-emit] PASS  with two listeners, removing one leaves the other receiving  remaining listener 20 of 20
+[input-emit] PASS  once() input-event listener runs exactly once  ran 1 times
+[input-emit] PASS  before-mouse-event preventDefault() blocks page mouse events  page 0, listener saw 20
+[input-emit] PASS  page receives mouse events again after the blocker is removed  page 20 of 20
+[input-emit] PASS  non-preventing before-mouse-event listener sees every move  listener 20, page 20
+# exit 0  2026-11-21T18:58:56

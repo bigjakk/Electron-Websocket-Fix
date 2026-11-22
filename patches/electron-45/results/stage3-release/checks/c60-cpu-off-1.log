@@ -1,0 +1,15 @@
+﻿# 2026-11-21T19:01:55  C:\electron\dist-45.4.1-kcc\electron.exe frame-cap-test.js --kcc-suite=cpu --kcc-cap=144 --kcc-mode=webgl --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\checks\c60-cpu-off-1.json
+
+[frame-cap:cpu] page renderer webgl2; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:cpu] measure cpu suite, cap 144: 144.01 fps (1441 frames / 10006 ms; interval mean 6.944 sd 0.070 p50 6.900 p99 7.100 max 7.10 ms)
+[frame-cap:cpu] GPU process 8984: 107.3 % of a core over 11.20 s
+[frame-cap:cpu]   VizCompositorThread [13004]: 99.8 %
+[frame-cap:cpu]   CrGpuMain [13344]: 4.2 %
+[frame-cap:cpu]   Chrome_ChildIOThread [9408]: 2.1 %
+[frame-cap:cpu]   (unnamed) [14888]: 0.7 %
+[frame-cap:cpu]   (unnamed) [6284]: 0.6 %
+[frame-cap:cpu]   (unnamed) [3592]: 0.1 %
+[frame-cap:cpu] PASS  cpu suite: cap 144 holds  target 144 got 144.01 (0.01 %, tol 1 %)
+[frame-cap:cpu] PASS  cpu suite: VizCompositorThread found  99.8 % of a core
+[frame-cap:cpu] 2/2 checks passed, exit 0
+# exit 0  2026-11-21T19:02:12

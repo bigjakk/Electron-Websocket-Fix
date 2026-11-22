@@ -1,0 +1,47 @@
+﻿frame-cap gate  2026-11-21T17:59:23
+exe: C:\electron\dist-45.4.1-kcc\electron.exe
+variants: precise  parts: A,B  heavy suite: webgl page, busy 5, 3 ms, 5 runs each  features via: commandline
+
+precise-launch-60              exit 0  checks 5/5
+precise-launch-144             exit 0  checks 5/5
+precise-launch-240             exit 0  checks 5/5
+precise-runtime-2d             exit 0  checks 14/14  (uncapped baseline 965.3 fps, page 2d)
+precise-runtime-webgl (attempt 1) exit 1  checks 0/1  (uncapped baseline 0 fps, page webgl2)
+    FAIL page WebGL context alive at load: the WebGL2 context was lost at load, so the page draws nothing and no cap has frames to hold; nothing was measured
+precise-runtime-webgl (attempt 2) exit 0  checks 14/14  (uncapped baseline 376.1 fps, page webgl2)
+off-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 146.1, cap1000 146.9, cap240 146.2, cap144 144.0)
+precise-heavy-5-1              exit 0  checks 3/3  (busy 5 ms: reach 118.1, cap1000 111.5, cap240 109.8, cap144 110.0)
+off-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 108.2, cap1000 109.1, cap240 109.9, cap144 110.6)
+precise-heavy-5-2              exit 0  checks 3/3  (busy 5 ms: reach 110.2, cap1000 111.6, cap240 111.3, cap144 110.3)
+off-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 110.1, cap1000 109.0, cap240 110.1, cap144 110.6)
+precise-heavy-5-3              exit 0  checks 3/3  (busy 5 ms: reach 108.3, cap1000 107.9, cap240 111.4, cap144 110.5)
+off-heavy-5-4                  exit 0  checks 3/3  (busy 5 ms: reach 110.1, cap1000 109.6, cap240 110.6, cap144 111.1)
+precise-heavy-5-4              exit 0  checks 3/3  (busy 5 ms: reach 111.2, cap1000 110.6, cap240 110.5, cap144 110.6)
+off-heavy-5-5                  exit 0  checks 3/3  (busy 5 ms: reach 108.6, cap1000 106.7, cap240 109.8, cap144 110.5)
+precise-heavy-5-5              exit 0  checks 3/3  (busy 5 ms: reach 110.1, cap1000 110.3, cap240 110.0, cap144 110.1)
+off-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 155.5, cap1000 152.4, cap240 152.0, cap144 144.1)
+precise-heavy-3-1              exit 0  checks 3/3  (busy 3 ms: reach 154.1, cap1000 152.8, cap240 152.3, cap144 144.1)
+off-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 155.8, cap1000 154.8, cap240 155.3, cap144 144.0)
+precise-heavy-3-2              exit 0  checks 3/3  (busy 3 ms: reach 206.3, cap1000 203.5, cap240 200.6, cap144 144.0)
+off-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 208.3, cap1000 170.8, cap240 154.0, cap144 143.5)
+precise-heavy-3-3              exit 0  checks 3/3  (busy 3 ms: reach 155.9, cap1000 153.9, cap240 151.1, cap144 143.6)
+off-heavy-3-4                  exit 0  checks 3/3  (busy 3 ms: reach 153.2, cap1000 155.4, cap240 153.4, cap144 143.6)
+precise-heavy-3-4              exit 0  checks 3/3  (busy 3 ms: reach 155.2, cap1000 156.3, cap240 154.4, cap144 143.6)
+off-heavy-3-5                  exit 0  checks 3/3  (busy 3 ms: reach 152.4, cap1000 152.2, cap240 150.9, cap144 143.6)
+precise-heavy-3-5              exit 0  checks 3/3  (busy 3 ms: reach 154.1, cap1000 154.9, cap240 152.5, cap144 143.6)
+
+heavy suite, busy 5 ms, 5 runs per variant: best / median [each run]
+  off      reach 146.1 / 110.1 [146.1 / 108.2 / 110.1 / 110.1 / 108.6]  cap1000 146.9 / 109.1 [146.9 / 109.1 / 109.0 / 109.6 / 106.7]  cap240 146.2 / 110.1 [146.2 / 109.9 / 110.1 / 110.6 / 109.8]  cap144 144.0 / 110.6 [144.0 / 110.6 / 110.6 / 111.1 / 110.5]
+  precise  reach 118.1 / 110.2 [118.1 / 110.2 / 108.3 / 111.2 / 110.1]  cap1000 111.6 / 110.6 [111.5 / 111.6 / 107.9 / 110.6 / 110.3]  cap240 111.4 / 110.5 [109.8 / 111.3 / 111.4 / 110.5 / 110.0]  cap144 110.6 / 110.3 [110.0 / 110.3 / 110.5 / 110.6 / 110.1]
+  precise|5    cap1000  best   111.6 vs off   146.9  (-24.0 %; medians +1.4 %)  DROP
+  precise|5    cap240   best   111.4 vs off   146.2  (-23.8 %; medians +0.3 %)  DROP
+  precise|5    cap144   best   110.6 vs off   144.0  (-23.2 %; medians -0.3 %)  DROP
+
+heavy suite, busy 3 ms, 5 runs per variant: best / median [each run]
+  off      reach 208.3 / 155.5 [155.5 / 155.8 / 208.3 / 153.2 / 152.4]  cap1000 170.8 / 154.8 [152.4 / 154.8 / 170.8 / 155.4 / 152.2]  cap240 155.3 / 153.4 [152.0 / 155.3 / 154.0 / 153.4 / 150.9]  cap144 144.1 / 143.6 [144.1 / 144.0 / 143.5 / 143.6 / 143.6]
+  precise  reach 206.3 / 155.2 [154.1 / 206.3 / 155.9 / 155.2 / 154.1]  cap1000 203.5 / 154.9 [152.8 / 203.5 / 153.9 / 156.3 / 154.9]  cap240 200.6 / 152.5 [152.3 / 200.6 / 151.1 / 154.4 / 152.5]  cap144 144.1 / 143.6 [144.1 / 144.0 / 143.6 / 143.6 / 143.6]
+  precise|3    cap1000  best   203.5 vs off   170.8  (+19.1 %; medians +0.1 %)  ok
+  precise|3    cap240   best   200.6 vs off   155.3  (+29.2 %; medians -0.6 %)  ok
+  precise|3    cap144   best   144.1 vs off   144.1  (+0.0 %; medians +0.0 %)  ok
+
+FRAME-CAP GATE: FAIL

@@ -1,0 +1,36 @@
+﻿off-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 143.6, cap1000 145.9, cap240 144.9, cap144 144)
+precise-heavy-5-1              exit 0  checks 3/3  (busy 5 ms: reach 136.4, cap1000 115.4, cap240 113.3, cap144 113.2)
+off-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 146.0, cap1000 145.3, cap240 144.3, cap144 144.0)
+precise-heavy-5-2              exit 0  checks 3/3  (busy 5 ms: reach 146.5, cap1000 120.7, cap240 109.2, cap144 109.9)
+off-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 110.1, cap1000 109.5, cap240 108.8, cap144 109.5)
+precise-heavy-5-3              exit 0  checks 3/3  (busy 5 ms: reach 110.8, cap1000 111.2, cap240 110.3, cap144 111.2)
+off-heavy-5-4                  exit 0  checks 3/3  (busy 5 ms: reach 110.7, cap1000 110.5, cap240 109.8, cap144 109.4)
+precise-heavy-5-4              exit 0  checks 3/3  (busy 5 ms: reach 108.8, cap1000 110.2, cap240 110.5, cap144 110.1)
+off-heavy-5-5                  exit 0  checks 3/3  (busy 5 ms: reach 109.5, cap1000 111.5, cap240 109.0, cap144 110.4)
+precise-heavy-5-5              exit 0  checks 3/3  (busy 5 ms: reach 109.3, cap1000 111.4, cap240 110.3, cap144 108.7)
+off-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 205.8, cap1000 209.2, cap240 208.6, cap144 144.0)
+precise-heavy-3-1              exit 0  checks 3/3  (busy 3 ms: reach 207.5, cap1000 165.9, cap240 156.1, cap144 144.0)
+off-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 150.1, cap1000 153.5, cap240 154.7, cap144 143.6)
+precise-heavy-3-2              exit 0  checks 3/3  (busy 3 ms: reach 149.1, cap1000 153.9, cap240 156.9, cap144 143.6)
+off-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 153.0, cap1000 154.8, cap240 155.6, cap144 143.6)
+precise-heavy-3-3              exit 0  checks 3/3  (busy 3 ms: reach 152.8, cap1000 153.1, cap240 155.9, cap144 143.6)
+off-heavy-3-4                  exit 0  checks 3/3  (busy 3 ms: reach 154.6, cap1000 153.5, cap240 156.8, cap144 144.2)
+precise-heavy-3-4              exit 0  checks 3/3  (busy 3 ms: reach 154.4, cap1000 152.3, cap240 154.7, cap144 144.2)
+off-heavy-3-5                  exit 0  checks 3/3  (busy 3 ms: reach 156.8, cap1000 155.7, cap240 156.5, cap144 144.0)
+precise-heavy-3-5              exit 0  checks 3/3  (busy 3 ms: reach 155.4, cap1000 153.3, cap240 155.2, cap144 144.0)
+
+heavy suite, busy 5 ms, 5 runs per variant: best / median [each run]
+  off      reach 146.0 / 110.7 [143.6 / 146.0 / 110.1 / 110.7 / 109.5]  cap1000 145.9 / 111.5 [145.9 / 145.3 / 109.5 / 110.5 / 111.5]  cap240 144.9 / 109.8 [144.9 / 144.3 / 108.8 / 109.8 / 109.0]  cap144 144.0 / 110.4 [144 / 144.0 / 109.5 / 109.4 / 110.4]
+  precise  reach 146.5 / 110.8 [136.4 / 146.5 / 110.8 / 108.8 / 109.3]  cap1000 120.7 / 111.4 [115.4 / 120.7 / 111.2 / 110.2 / 111.4]  cap240 113.3 / 110.3 [113.3 / 109.2 / 110.3 / 110.5 / 110.3]  cap144 113.2 / 110.1 [113.2 / 109.9 / 111.2 / 110.1 / 108.7]
+  precise|5    cap1000  best   120.7 vs off   145.9  (-17.2 %; medians -0.1 %)  DROP
+  precise|5    cap240   best   113.3 vs off   144.9  (-21.8 %; medians +0.4 %)  DROP
+  precise|5    cap144   best   113.2 vs off   144.0  (-21.4 %; medians -0.3 %)  DROP
+
+heavy suite, busy 3 ms, 5 runs per variant: best / median [each run]
+  off      reach 205.8 / 154.6 [205.8 / 150.1 / 153.0 / 154.6 / 156.8]  cap1000 209.2 / 154.8 [209.2 / 153.5 / 154.8 / 153.5 / 155.7]  cap240 208.6 / 156.5 [208.6 / 154.7 / 155.6 / 156.8 / 156.5]  cap144 144.2 / 144.0 [144.0 / 143.6 / 143.6 / 144.2 / 144.0]
+  precise  reach 207.5 / 154.4 [207.5 / 149.1 / 152.8 / 154.4 / 155.4]  cap1000 165.9 / 153.3 [165.9 / 153.9 / 153.1 / 152.3 / 153.3]  cap240 156.9 / 155.9 [156.1 / 156.9 / 155.9 / 154.7 / 155.2]  cap144 144.2 / 144.0 [144.0 / 143.6 / 143.6 / 144.2 / 144.0]
+  precise|3    cap1000  best   165.9 vs off   209.2  (-20.7 %; medians -1.0 %)  DROP
+  precise|3    cap240   best   156.9 vs off   208.6  (-24.8 %; medians -0.4 %)  DROP
+  precise|3    cap144   best   144.2 vs off   144.2  (+0.0 %; medians +0.0 %)  ok
+
+FRAME-CAP GATE: FAIL

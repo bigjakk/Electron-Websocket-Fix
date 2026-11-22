@@ -1,0 +1,9 @@
+﻿# 2026-11-21T19:03:07  C:\electron\dist-45.4.1-kcc\electron.exe frame-cap-test.js --kcc-suite=latency --kcc-cap=144 --kcc-busy=0 --kcc-mode=webgl --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\checks\lat-busy0.json
+
+[frame-cap:latency] page renderer webgl2; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:latency] measure latency window, cap 144: 144.01 fps (577 frames / 4007 ms; interval mean 6.944 sd 0.083 p50 6.900 p99 7.100 max 7.50 ms)
+[frame-cap:latency] latency: {"cap":144,"periodMs":6.944444444444445,"renderer":16116,"gpu":14304,"counts":{"beginImplFrame":579,"beginMainFrame":578,"rendererDraws":579,"displayDraws":579,"paired":578},"submitToDisplayDrawMs":{"p10":6.476700007915497,"p50":6.549500003457069,"p90":6.608500003814697},"beginImplFrameToSubmitMs":{"p50":6.895000010728836,"p90":6.9759999960660934},"beginImplFrameToDisplayDrawMs":{"p10":13.366199985146523,"p50":13.446699991822243,"p90":13.508699998259544},"beginMainFrameToDisplayDrawMs":{"p10":13.661100000143051,"p50":13.702099993824959,"p90":13.73870000243187},"mainFrameMs":{"p50":1.905000001192093}}
+[frame-cap:latency] PASS  latency suite: cap 144 holds  target 144 got 144.01 (0.00 %, tol 1 %)
+[frame-cap:latency] PASS  latency suite: trace has renderer and display draws  paired 578 renderer draws with display draws
+[frame-cap:latency] 2/2 checks passed, exit 0
+# exit 0  2026-11-21T19:03:16

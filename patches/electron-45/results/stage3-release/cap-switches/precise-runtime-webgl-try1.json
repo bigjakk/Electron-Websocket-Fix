@@ -1,0 +1,63 @@
+{
+  "suite": "runtime",
+  "cap": 0,
+  "busy": 0,
+  "mode": "webgl",
+  "windowMs": 10000,
+  "enableFeatures": "KccFrameCapPreciseRelease",
+  "featuresVia": "command line",
+  "versions": {
+    "electron": "45.4.1",
+    "chrome": "156.0.8078.100",
+    "v8": "15.6.75.57-electron.d384e85dffdbe2dd"
+  },
+  "measurements": [],
+  "checks": [
+    {
+      "name": "page WebGL context alive at load",
+      "pass": false,
+      "detail": "the WebGL2 context was lost at load, so the page draws nothing and no cap has frames to hold; nothing was measured"
+    }
+  ],
+  "events": [],
+  "started": "2026-11-22T02:04:42.031Z",
+  "gpuFeatureStatus": {
+    "2d_canvas": "disabled_software",
+    "direct_rendering_display_compositor": "disabled_off_ok",
+    "gpu_compositing": "disabled_software",
+    "multiple_raster_threads": "enabled_on",
+    "opengl": "disabled_off",
+    "rasterization": "disabled_software",
+    "raw_draw": "disabled_off_ok",
+    "skia_graphite": "disabled_off",
+    "trees_in_viz": "disabled_off",
+    "video_decode": "disabled_software",
+    "video_encode": "disabled_software",
+    "webgl": "disabled_off",
+    "webgpu": "disabled_off",
+    "webnn": "disabled_off"
+  },
+  "pageRenderer": "webgl2",
+  "gpuDevices": [
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    }
+  ],
+  "finished": "2026-11-22T02:04:44.806Z",
+  "exitCode": 1,
+  "failed": [
+    "page WebGL context alive at load"
+  ]
+}

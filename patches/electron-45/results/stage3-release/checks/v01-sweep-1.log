@@ -1,0 +1,6 @@
+﻿# 2026-11-21T19:00:50  C:\electron\dist-45.4.1-kcc\electron.exe v8-sweep-flag-test.js --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\checks\v01-sweep-1.json --kcc-trace=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\checks\v01-sweep-1-trace.json --kcc-expect-ms=1 --js-flags=--cppheap-max-incremental-sweep-duration-ms=1
+
+[v8-sweep] page churn rounds 371; slices {"CppGC.SweepInLowPriorityTask":{"count":876,"values":{"1":876},"maxSliceMs":2.702,"p50SliceMs":1.114}}
+[v8-sweep] PASS  incremental sweep slices were traced  876 slices
+[v8-sweep] PASS  every slice carries max_duration_ms = 1  values seen: {"1":876}
+# exit 0  2026-11-21T19:01:02

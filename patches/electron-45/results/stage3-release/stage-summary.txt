@@ -1,0 +1,135 @@
+﻿== gates  2026-11-21T17:05:09  exe C:\electron\dist-45.4.1-kcc\electron.exe  features via commandline, c60/c61 page webgl  session: >bigjakk|rdp-tcp#1|2|Active|51|11/20/2026 12:16 PM
+  versions: electron 45.4.1, chrome 156.0.8078.100, v8 15.6.75.57-electron.d384e85dffdbe2dd, node 24.22.3
+  gpu_compositing disabled_software, webgl unavailable_software; WebGL2 renderer: ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)
+  WS-off-1               exit 0  p99 32.5 ms  max 33.9 ms  >50ms 0/724  rAF frames 8065  PASS
+  WS-off-2               exit 0  p99 32.1 ms  max 43.1 ms  >50ms 0/725  rAF frames 3618  PASS
+  WS GATE (off): PASS
+  WS-on-1                exit 0  p99 32.6 ms  max 35.9 ms  >50ms 0/731  rAF frames 3599  PASS
+  WS-on-2                exit 0  p99 33.5 ms  max 36.8 ms  >50ms 0/698  rAF frames 3248  PASS
+  WS GATE (on): PASS
+  off-launch-60                  exit 0  checks 5/5
+  off-launch-144                 exit 0  checks 5/5
+  off-launch-240                 exit 0  checks 5/5
+  off-runtime-2d                 exit 0  checks 14/14  (uncapped baseline 1247.3 fps, page 2d)
+  off-runtime-webgl              exit 0  checks 14/14  (uncapped baseline 369.0 fps, page webgl2)
+  all-launch-60                  exit 0  checks 5/5
+  all-launch-144                 exit 0  checks 5/5
+  all-launch-240                 exit 0  checks 5/5
+  all-runtime-2d                 exit 0  checks 14/14  (uncapped baseline 1208.7 fps, page 2d)
+  all-runtime-webgl (attempt 1)  exit 1  checks 3/9  (uncapped baseline 57.6 fps, page webgl2)
+      FAIL setFrameCap(30) after hide/show: target 30 got 57.64 (92.15 %, tol 1 %)
+      FAIL setFrameCap(30) after resize: target 30 got 57.68 (92.27 %, tol 1 %)
+      FAIL change 30 -> 25 takes effect at once (2 s): target 25 got 57.49 (129.97 %, tol 3 %)
+      FAIL change 25 -> 20 takes effect at once (2 s): target 20 got 57.70 (188.50 %, tol 3 %)
+      FAIL change 20 -> 30 takes effect at once (2 s): target 30 got 57.73 (92.44 %, tol 3 %)
+      FAIL two views, cap 45: main view: target 45 got 58.50 (29.99 %, tol 1 %)
+      SKIP setFrameCap(60): uncapped baseline 57.6 is below 1.1 x 60
+      SKIP setFrameCap(144): uncapped baseline 57.6 is below 1.1 x 144
+      SKIP setFrameCap(240): uncapped baseline 57.6 is below 1.1 x 240
+      SKIP caps 144, 240 and 60 for hide/show, resize and a change of N: uncapped baseline 57.6 cannot reach 1.1 x each: using 30 (for 144), 25 (for 240), 20 (for 60)
+      SKIP two views, cap 144: two-view uncapped rate 57.3 is below 1.1 x 144
+      SKIP two views, cap 60: two-view uncapped rate 57.3 is below 1.1 x 60
+  all-runtime-webgl (attempt 2)  exit 0  checks 14/14  (uncapped baseline 372.5 fps, page webgl2)
+  off-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 107.4, cap1000 108.4, cap240 110.8, cap144 109.8)
+  all-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 108.5, cap1000 109.7, cap240 109.6, cap144 110.1)
+  off-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 108.4, cap1000 109.3, cap240 109.3, cap144 108.9)
+  all-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 109.8, cap1000 109.9, cap240 109.3, cap144 109.3)
+  off-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 109.3, cap1000 109.4, cap240 110.9, cap144 109.0)
+  all-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 108.6, cap1000 109.6, cap240 109.4, cap144 110.1)
+  off-heavy-5-4                  exit 0  checks 3/3  (busy 5 ms: reach 110.0, cap1000 109.2, cap240 109.2, cap144 109.9)
+  all-heavy-5-4                  exit 0  checks 3/3  (busy 5 ms: reach 109.0, cap1000 109.6, cap240 109.6, cap144 110.2)
+  off-heavy-5-5                  exit 0  checks 3/3  (busy 5 ms: reach 109.6, cap1000 109.4, cap240 108.7, cap144 108.9)
+  all-heavy-5-5                  exit 0  checks 3/3  (busy 5 ms: reach 109.7, cap1000 109.9, cap240 109.4, cap144 109.4)
+  off-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 149.9, cap1000 153.8, cap240 154.3, cap144 143.9)
+  all-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 154.0, cap1000 153.0, cap240 154.8, cap144 144.0)
+  off-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 208.5, cap1000 208.7, cap240 204.1, cap144 144.0)
+  all-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 169.1, cap1000 149.3, cap240 152.8, cap144 144.0)
+  off-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 152.4, cap1000 153.9, cap240 151.5, cap144 142.8)
+  all-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 153.7, cap1000 155.3, cap240 152.7, cap144 144.0)
+  off-heavy-3-4                  exit 0  checks 3/3  (busy 3 ms: reach 154.4, cap1000 155.8, cap240 154.3, cap144 143.6)
+  all-heavy-3-4                  exit 0  checks 3/3  (busy 3 ms: reach 207.9, cap1000 208.3, cap240 207.6, cap144 144.0)
+  off-heavy-3-5                  exit 0  checks 3/3  (busy 3 ms: reach 206.8, cap1000 167.1, cap240 153.5, cap144 144.0)
+  all-heavy-3-5                  exit 0  checks 3/3  (busy 3 ms: reach 153.8, cap1000 154.2, cap240 152.8, cap144 144.0)
+  heavy suite, busy 5 ms, 5 runs per variant: best / median [each run]
+    off      reach 110.0 / 109.3 [107.4 / 108.4 / 109.3 / 110.0 / 109.6]  cap1000 109.4 / 109.3 [108.4 / 109.3 / 109.4 / 109.2 / 109.4]  cap240 110.9 / 109.3 [110.8 / 109.3 / 110.9 / 109.2 / 108.7]  cap144 109.9 / 109.0 [109.8 / 108.9 / 109.0 / 109.9 / 108.9]
+    all      reach 109.8 / 109.0 [108.5 / 109.8 / 108.6 / 109.0 / 109.7]  cap1000 109.9 / 109.7 [109.7 / 109.9 / 109.6 / 109.6 / 109.9]  cap240 109.6 / 109.4 [109.6 / 109.3 / 109.4 / 109.6 / 109.4]  cap144 110.2 / 110.1 [110.1 / 109.3 / 110.1 / 110.2 / 109.4]
+    all|5        cap1000  best   109.9 vs off   109.4  (+0.4 %; medians +0.3 %)  ok
+    all|5        cap240   best   109.6 vs off   110.9  (-1.2 %; medians +0.1 %)  ok
+    all|5        cap144   best   110.2 vs off   109.9  (+0.3 %; medians +1.0 %)  ok
+  heavy suite, busy 3 ms, 5 runs per variant: best / median [each run]
+    off      reach 208.5 / 154.4 [149.9 / 208.5 / 152.4 / 154.4 / 206.8]  cap1000 208.7 / 155.8 [153.8 / 208.7 / 153.9 / 155.8 / 167.1]  cap240 204.1 / 154.3 [154.3 / 204.1 / 151.5 / 154.3 / 153.5]  cap144 144.0 / 143.9 [143.9 / 144.0 / 142.8 / 143.6 / 144.0]
+    all      reach 207.9 / 154.0 [154.0 / 169.1 / 153.7 / 207.9 / 153.8]  cap1000 208.3 / 154.2 [153.0 / 149.3 / 155.3 / 208.3 / 154.2]  cap240 207.6 / 152.8 [154.8 / 152.8 / 152.7 / 207.6 / 152.8]  cap144 144.0 / 144.0 [144.0 / 144.0 / 144.0 / 144.0 / 144.0]
+    all|3        cap1000  best   208.3 vs off   208.7  (-0.2 %; medians -1.0 %)  ok
+    all|3        cap240   best   207.6 vs off   204.1  (+1.7 %; medians -0.9 %)  ok
+    all|3        cap144   best   144.0 vs off   144.0  (+0.0 %; medians +0.1 %)  ok
+  FRAME-CAP GATE: PASS
+== gates done  2026-11-21T17:38:38
+== cap-switches  2026-11-21T17:59:22  exe C:\electron\dist-45.4.1-kcc\electron.exe  features via commandline, c60/c61 page webgl  session: >bigjakk|rdp-tcp#1|2|Active|1|11/20/2026 12:16 PM
+  precise-launch-60              exit 0  checks 5/5
+  precise-launch-144             exit 0  checks 5/5
+  precise-launch-240             exit 0  checks 5/5
+  precise-runtime-2d             exit 0  checks 14/14  (uncapped baseline 965.3 fps, page 2d)
+  precise-runtime-webgl (attempt 1) exit 1  checks 0/1  (uncapped baseline 0 fps, page webgl2)
+      FAIL page WebGL context alive at load: the WebGL2 context was lost at load, so the page draws nothing and no cap has frames to hold; nothing was measured
+  precise-runtime-webgl (attempt 2) exit 0  checks 14/14  (uncapped baseline 376.1 fps, page webgl2)
+  off-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 146.1, cap1000 146.9, cap240 146.2, cap144 144.0)
+  precise-heavy-5-1              exit 0  checks 3/3  (busy 5 ms: reach 118.1, cap1000 111.5, cap240 109.8, cap144 110.0)
+  off-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 108.2, cap1000 109.1, cap240 109.9, cap144 110.6)
+  precise-heavy-5-2              exit 0  checks 3/3  (busy 5 ms: reach 110.2, cap1000 111.6, cap240 111.3, cap144 110.3)
+  off-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 110.1, cap1000 109.0, cap240 110.1, cap144 110.6)
+  precise-heavy-5-3              exit 0  checks 3/3  (busy 5 ms: reach 108.3, cap1000 107.9, cap240 111.4, cap144 110.5)
+  off-heavy-5-4                  exit 0  checks 3/3  (busy 5 ms: reach 110.1, cap1000 109.6, cap240 110.6, cap144 111.1)
+  precise-heavy-5-4              exit 0  checks 3/3  (busy 5 ms: reach 111.2, cap1000 110.6, cap240 110.5, cap144 110.6)
+  off-heavy-5-5                  exit 0  checks 3/3  (busy 5 ms: reach 108.6, cap1000 106.7, cap240 109.8, cap144 110.5)
+  precise-heavy-5-5              exit 0  checks 3/3  (busy 5 ms: reach 110.1, cap1000 110.3, cap240 110.0, cap144 110.1)
+  off-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 155.5, cap1000 152.4, cap240 152.0, cap144 144.1)
+  precise-heavy-3-1              exit 0  checks 3/3  (busy 3 ms: reach 154.1, cap1000 152.8, cap240 152.3, cap144 144.1)
+  off-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 155.8, cap1000 154.8, cap240 155.3, cap144 144.0)
+  precise-heavy-3-2              exit 0  checks 3/3  (busy 3 ms: reach 206.3, cap1000 203.5, cap240 200.6, cap144 144.0)
+  off-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 208.3, cap1000 170.8, cap240 154.0, cap144 143.5)
+  precise-heavy-3-3              exit 0  checks 3/3  (busy 3 ms: reach 155.9, cap1000 153.9, cap240 151.1, cap144 143.6)
+  off-heavy-3-4                  exit 0  checks 3/3  (busy 3 ms: reach 153.2, cap1000 155.4, cap240 153.4, cap144 143.6)
+  precise-heavy-3-4              exit 0  checks 3/3  (busy 3 ms: reach 155.2, cap1000 156.3, cap240 154.4, cap144 143.6)
+  off-heavy-3-5                  exit 0  checks 3/3  (busy 3 ms: reach 152.4, cap1000 152.2, cap240 150.9, cap144 143.6)
+  precise-heavy-3-5              exit 0  checks 3/3  (busy 3 ms: reach 154.1, cap1000 154.9, cap240 152.5, cap144 143.6)
+  heavy suite, busy 5 ms, 5 runs per variant: best / median [each run]
+    off      reach 146.1 / 110.1 [146.1 / 108.2 / 110.1 / 110.1 / 108.6]  cap1000 146.9 / 109.1 [146.9 / 109.1 / 109.0 / 109.6 / 106.7]  cap240 146.2 / 110.1 [146.2 / 109.9 / 110.1 / 110.6 / 109.8]  cap144 144.0 / 110.6 [144.0 / 110.6 / 110.6 / 111.1 / 110.5]
+    precise  reach 118.1 / 110.2 [118.1 / 110.2 / 108.3 / 111.2 / 110.1]  cap1000 111.6 / 110.6 [111.5 / 111.6 / 107.9 / 110.6 / 110.3]  cap240 111.4 / 110.5 [109.8 / 111.3 / 111.4 / 110.5 / 110.0]  cap144 110.6 / 110.3 [110.0 / 110.3 / 110.5 / 110.6 / 110.1]
+    precise|5    cap1000  best   111.6 vs off   146.9  (-24.0 %; medians +1.4 %)  DROP
+    precise|5    cap240   best   111.4 vs off   146.2  (-23.8 %; medians +0.3 %)  DROP
+    precise|5    cap144   best   110.6 vs off   144.0  (-23.2 %; medians -0.3 %)  DROP
+  heavy suite, busy 3 ms, 5 runs per variant: best / median [each run]
+    off      reach 208.3 / 155.5 [155.5 / 155.8 / 208.3 / 153.2 / 152.4]  cap1000 170.8 / 154.8 [152.4 / 154.8 / 170.8 / 155.4 / 152.2]  cap240 155.3 / 153.4 [152.0 / 155.3 / 154.0 / 153.4 / 150.9]  cap144 144.1 / 143.6 [144.1 / 144.0 / 143.5 / 143.6 / 143.6]
+    precise  reach 206.3 / 155.2 [154.1 / 206.3 / 155.9 / 155.2 / 154.1]  cap1000 203.5 / 154.9 [152.8 / 203.5 / 153.9 / 156.3 / 154.9]  cap240 200.6 / 152.5 [152.3 / 200.6 / 151.1 / 154.4 / 152.5]  cap144 144.1 / 143.6 [144.1 / 144.0 / 143.6 / 143.6 / 143.6]
+    precise|3    cap1000  best   203.5 vs off   170.8  (+19.1 %; medians +0.1 %)  ok
+    precise|3    cap240   best   200.6 vs off   155.3  (+29.2 %; medians -0.6 %)  ok
+    precise|3    cap144   best   144.1 vs off   144.1  (+0.0 %; medians +0.0 %)  ok
+  FRAME-CAP GATE: FAIL
+== cap-switches done  2026-11-21T18:22:21
+== checks  2026-11-21T18:58:36  exe C:\electron\dist-45.4.1-kcc\electron.exe  features via commandline, c60/c61 page webgl  session: >bigjakk|rdp-tcp#1|2|Active|1:01|11/20/2026 12:16 PM
+  c10    PASS  flags off: exit 0; page saw [keydown KeyA, keyup KeyA] via sendInputEvent, [keydown KeyA, keyup KeyA] via CDP
+  c10    PASS  flags on: exit 0; page saw [keydown KeyA, keyup KeyA] via sendInputEvent, [keydown KeyA, keyup KeyA] via CDP
+  e10    PASS  KccSkipUnobservedInputEmits off: exit 0, 10/10 checks
+  e10    PASS  KccSkipUnobservedInputEmits on: exit 0, 10/10 checks
+  c11    PASS  KccNoPointerLockEscCooldown off: exit 0; re-lock 45 ms after Esc: rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock.; 5/5 checks
+  c11    PASS  KccNoPointerLockEscCooldown on: exit 0; re-lock 45 ms after Esc: locked; 5/5 checks
+  c12    PASS  after requestPointerLock() without options on a raw lock: switch off (352,113) (downgraded to OS-accelerated movement), on (200,120) (must stay raw: 200,120)
+  c13    PASS  motion in 40 packets that also carry a wheel tick: switch off (0,0), on (200,0) (must be 200,0); wheel deltaY off -4000, on -4000 (must match)
+  c14    PASS  same results as switch off: raw-move (200,120), raw-wheel motion (0,0) vs off (0,0), wheel deltaY -4000 vs off -4000
+  c15    PASS  raw pointermoves: switch off coalesced up to 16, predicted up to 10; on coalesced up to 1, predicted up to 0 (must be 1 and 0); movement (200,120), coalesced entries sum to 200 (must be 200,120 and 200)
+  raw    PASS  every switch on: raw-move (200,120) coalesced max 1; raw-wheel (200,0) wheel -4000; after-plain-request (200,120)
+  c21    PASS  fast: err 2ac24dc pix ebb47edf errors 11205 {"1280":5060,"1281":957,"1282":5188} loop 6535 ms turbofan True/True; no-fast: err 2ac24dc pix ebb47edf loop 6304 ms; all flags: err 2ac24dc pix ebb47edf; WebGL context lost False/False/False; renderer ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)
+  v01    PASS  flag listed by --v8-options: --cppheap-max-incremental-sweep-duration-ms (maximum duration in ms of a single incremental sweeping task of CppHeap on the mutator thread (values below 1 are treated as 1)) type: int  default: --cppheap-max-incremental-sweep-duration-ms=5 --memory-balancer (use membalancer, a new heap limit balancing algorithm)
+  v01    PASS  no flag (stock 5 ms): exit 0; slices {"CppGC.SweepInLowPriorityTask":{"count":178,"values":{"5":178},"maxSliceMs":6.466,"p50SliceMs":5.115}}
+  v01    PASS  --cppheap-max-incremental-sweep-duration-ms=1: exit 0; slices {"CppGC.SweepInLowPriorityTask":{"count":876,"values":{"1":876},"maxSliceMs":2.702,"p50SliceMs":1.114}}
+  v01    PASS  --cppheap-max-incremental-sweep-duration-ms=2: exit 0; slices {"CppGC.SweepInLowPriorityTask":{"count":391,"values":{"2":391},"maxSliceMs":3.67,"p50SliceMs":2.087}}
+  c20    PASS  RecordMetrics slices: off 10, on 0 (must be > 0 and 0)
+  c30    PASS  texture-rebind page ran without crash or DCHECK, glError 0, WebGL context lost False, 1041 frames with KccLabelTexturesOnce (no counter for the skipped labels in a trace)
+  c31    N/A   GetVSyncIntervalIfAvailable never ran (off 0, on 0): DCompPresenter is not used on this machine, so KccCacheVsyncInterval was not exercised; the build ran with it on.
+  c40    PASS  with the switch every scenario stays flat (growth <= 1.5x): True; stock grew > 3x in 4 of 4 scenarios
+  c41    PASS  4 renders (off x2, on x2): 1 distinct buffer(s); identical sample for sample: True
+  c60    PASS  VizCompositorThread at a 144 cap (webgl page): off 98.8 %, on 41.5 % of a core (mean of 2 runs each; must at least halve); the cap held in every run: True
+  lat    INFO  busy 0 ms, 144 cap (P 6.94 ms, webgl page): exit 0, 144.01 fps; main frame start->DrawAndSwap p10/p50/p90 13.66/13.70/13.74 ms; BeginImplFrame->DrawAndSwap p50 13.45 ms; submit->display draw p50 6.55 ms
+  lat    INFO  busy 3 ms, 144 cap (P 6.94 ms, webgl page): exit 0, 144.01 fps; main frame start->DrawAndSwap p10/p50/p90 13.66/13.70/13.74 ms; BeginImplFrame->DrawAndSwap p50 13.44 ms; submit->display draw p50 6.54 ms
+  SYNTHETIC CHECKS: PASS
+== checks done  2026-11-21T19:03:26

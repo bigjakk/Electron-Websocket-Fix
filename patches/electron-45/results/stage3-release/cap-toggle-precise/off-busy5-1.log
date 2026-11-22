@@ -1,0 +1,36 @@
+﻿# 2026-11-21T18:42:57  C:\electron\dist-45.4.1-kcc\electron.exe cap-toggle-test.js --kcc-busy=5 --kcc-cycles=8 --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\cap-toggle-precise\off-busy5-1.json --enable-logging
+
+[13172:1121/184258.110:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file:///C:/projects/Electron-Websocket-Fix/test/frame-cap.html?busy=5&label=main&mode=webgl (0)
+[cap-toggle] cap    0: 143.22 fps (interval mean 6.982 sd 0.339 ms)
+[cap-toggle] cap 1000: 144.78 fps (interval mean 6.907 sd 0.162 ms)
+[cap-toggle] cap    0: 146.80 fps (interval mean 6.812 sd 0.128 ms)
+[cap-toggle]   cycle 1: cap 1000 144.8 vs uncapped neighbours 143.2 / 146.8: -0.2 %
+[cap-toggle] cap  240: 144.29 fps (interval mean 6.930 sd 0.244 ms)
+[cap-toggle] cap    0: 144.89 fps (interval mean 6.902 sd 0.165 ms)
+[cap-toggle]   cycle 2: cap 240 144.3 vs uncapped neighbours 146.8 / 144.9: -1.1 %
+[cap-toggle] cap 1000: 143.34 fps (interval mean 6.976 sd 0.180 ms)
+[cap-toggle] cap    0: 141.07 fps (interval mean 7.088 sd 0.242 ms)
+[cap-toggle]   cycle 3: cap 1000 143.3 vs uncapped neighbours 144.9 / 141.1: 0.3 %
+[cap-toggle] cap  240: 141.51 fps (interval mean 7.067 sd 0.206 ms)
+[cap-toggle] cap    0: 143.74 fps (interval mean 6.957 sd 0.177 ms)
+[cap-toggle]   cycle 4: cap 240 141.5 vs uncapped neighbours 141.1 / 143.7: -0.6 %
+[cap-toggle] cap 1000: 144.33 fps (interval mean 6.928 sd 0.184 ms)
+[cap-toggle] cap    0: 144.01 fps (interval mean 6.944 sd 0.279 ms)
+[cap-toggle]   cycle 5: cap 1000 144.3 vs uncapped neighbours 143.7 / 144.0: 0.3 %
+[cap-toggle] cap  240: 146.90 fps (interval mean 6.807 sd 0.117 ms)
+[cap-toggle] cap    0: 113.98 fps (interval mean 8.774 sd 1.059 ms)
+[cap-toggle]   cycle 6: cap 240 146.9 vs uncapped neighbours 144.0 / 114.0: 13.9 %
+[cap-toggle] cap 1000: 113.42 fps (interval mean 8.817 sd 1.085 ms)
+[cap-toggle] cap    0: 116.03 fps (interval mean 8.618 sd 1.017 ms)
+[cap-toggle]   cycle 7: cap 1000 113.4 vs uncapped neighbours 114.0 / 116.0: -1.4 %
+[cap-toggle] cap  240: 117.54 fps (interval mean 8.508 sd 1.008 ms)
+[cap-toggle] cap    0: 113.69 fps (interval mean 8.796 sd 1.161 ms)
+[cap-toggle]   cycle 8: cap 240 117.5 vs uncapped neighbours 116.0 / 113.7: 2.3 %
+# exit 0  2026-11-21T18:44:13

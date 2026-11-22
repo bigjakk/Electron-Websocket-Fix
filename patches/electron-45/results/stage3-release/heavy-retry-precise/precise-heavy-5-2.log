@@ -1,0 +1,20 @@
+﻿# 2026-11-21T18:25:45  C:\electron\dist-45.4.1-kcc\electron.exe frame-cap-test.js --kcc-suite=heavy --kcc-busy=5 --kcc-mode=webgl --enable-features=KccFrameCapPreciseRelease --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\heavy-retry-precise\precise-heavy-5-2.json --enable-logging
+
+[16936:1121/182546.117:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file:///C:/projects/Electron-Websocket-Fix/test/frame-cap.html?busy=5&label=main&mode=webgl (0)
+[frame-cap:heavy] page renderer webgl2; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:heavy] measure uncapped, busy 5 ms: 146.49 fps (1465 frames / 10001 ms; interval mean 6.826 sd 0.148 p50 6.800 p99 7.300 max 8.00 ms)
+[frame-cap:heavy] measure cap 1000, busy 5 ms: 120.75 fps (1208 frames / 10004 ms; interval mean 8.282 sd 1.346 p50 8.100 p99 12.200 max 13.80 ms)
+[frame-cap:heavy] PASS  cap 1000 at or above reach (146): window did not freeze  uncapped 146.49, capped 120.75 (-17.57 % vs uncapped, informational)
+[frame-cap:heavy] measure cap 240, busy 5 ms: 109.17 fps (1092 frames / 10003 ms; interval mean 9.160 sd 1.137 p50 9.000 p99 13.000 max 14.60 ms)
+[frame-cap:heavy] PASS  cap 240 at or above reach (146): window did not freeze  uncapped 146.49, capped 109.17 (-25.48 % vs uncapped, informational)
+[frame-cap:heavy] measure cap 144, busy 5 ms: 109.94 fps (1100 frames / 10006 ms; interval mean 9.096 sd 1.079 p50 9.000 p99 12.400 max 14.40 ms)
+[frame-cap:heavy] PASS  cap 144 at or above reach (146): window did not freeze  uncapped 146.49, capped 109.94 (informational)
+[frame-cap:heavy] 3/3 checks passed, exit 0
+# exit 0  2026-11-21T18:26:31

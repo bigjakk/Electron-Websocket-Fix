@@ -1,0 +1,115 @@
+{
+  "suite": "latency",
+  "cap": 144,
+  "busy": 0,
+  "mode": "webgl",
+  "windowMs": 10000,
+  "enableFeatures": "",
+  "featuresVia": "command line",
+  "versions": {
+    "electron": "45.4.1",
+    "chrome": "156.0.8078.100",
+    "v8": "15.6.75.57-electron.d384e85dffdbe2dd"
+  },
+  "measurements": [
+    {
+      "label": "main",
+      "fps": 144.00519117510962,
+      "frames": 577,
+      "elapsedMs": 4006.7999999970198,
+      "meanMs": 6.944194107447174,
+      "sdMs": 0.08287563768355603,
+      "p01Ms": 6.799999997019768,
+      "p50Ms": 6.9000000059604645,
+      "p99Ms": 7.100000008940697,
+      "maxMs": 7.5,
+      "name": "latency window, cap 144"
+    }
+  ],
+  "checks": [
+    {
+      "name": "latency suite: cap 144 holds",
+      "pass": true,
+      "detail": "target 144 got 144.01 (0.00 %, tol 1 %)"
+    },
+    {
+      "name": "latency suite: trace has renderer and display draws",
+      "pass": true,
+      "detail": "paired 578 renderer draws with display draws"
+    }
+  ],
+  "events": [],
+  "started": "2026-11-22T03:03:07.220Z",
+  "gpuFeatureStatus": {
+    "2d_canvas": "disabled_software",
+    "direct_rendering_display_compositor": "disabled_off_ok",
+    "gpu_compositing": "disabled_software",
+    "multiple_raster_threads": "enabled_on",
+    "opengl": "disabled_off",
+    "rasterization": "disabled_software",
+    "raw_draw": "disabled_off_ok",
+    "skia_graphite": "disabled_off",
+    "trees_in_viz": "disabled_off",
+    "video_decode": "disabled_software",
+    "video_encode": "disabled_software",
+    "webgl": "disabled_off",
+    "webgpu": "disabled_off",
+    "webnn": "disabled_off"
+  },
+  "pageRenderer": "webgl2",
+  "gpuDevices": [
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    }
+  ],
+  "latency": {
+    "cap": 144,
+    "periodMs": 6.944444444444445,
+    "renderer": 16116,
+    "gpu": 14304,
+    "counts": {
+      "beginImplFrame": 579,
+      "beginMainFrame": 578,
+      "rendererDraws": 579,
+      "displayDraws": 579,
+      "paired": 578
+    },
+    "submitToDisplayDrawMs": {
+      "p10": 6.476700007915497,
+      "p50": 6.549500003457069,
+      "p90": 6.608500003814697
+    },
+    "beginImplFrameToSubmitMs": {
+      "p50": 6.895000010728836,
+      "p90": 6.9759999960660934
+    },
+    "beginImplFrameToDisplayDrawMs": {
+      "p10": 13.366199985146523,
+      "p50": 13.446699991822243,
+      "p90": 13.508699998259544
+    },
+    "beginMainFrameToDisplayDrawMs": {
+      "p10": 13.661100000143051,
+      "p50": 13.702099993824959,
+      "p90": 13.73870000243187
+    },
+    "mainFrameMs": {
+      "p50": 1.905000001192093
+    }
+  },
+  "finished": "2026-11-22T03:03:16.555Z",
+  "exitCode": 0,
+  "failed": []
+}

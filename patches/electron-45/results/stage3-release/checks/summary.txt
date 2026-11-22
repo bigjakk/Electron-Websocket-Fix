@@ -1,0 +1,48 @@
+﻿synthetic checks  2026-11-21T18:58:36
+exe: C:\electron\dist-45.4.1-kcc\electron.exe
+checks: c10,c11,raw,e10,c21,v01,c20,c40,c41,c60,lat
+
+c10    PASS  flags off: exit 0; page saw [keydown KeyA, keyup KeyA] via sendInputEvent, [keydown KeyA, keyup KeyA] via CDP
+c10    PASS  flags on: exit 0; page saw [keydown KeyA, keyup KeyA] via sendInputEvent, [keydown KeyA, keyup KeyA] via CDP
+e10    PASS  KccSkipUnobservedInputEmits off: exit 0, 10/10 checks
+e10    PASS  KccSkipUnobservedInputEmits on: exit 0, 10/10 checks
+c11    PASS  KccNoPointerLockEscCooldown off: exit 0; re-lock 45 ms after Esc: rejected SecurityError: Pointer lock cannot be acquired immediately after the user has exited the lock.; 5/5 checks
+c11    PASS  KccNoPointerLockEscCooldown on: exit 0; re-lock 45 ms after Esc: locked; 5/5 checks
+       raw off: exit 0; raw-move (200,120) in 5 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,113) in 5 moves, coalesced max 15, predicted max 10, wheel dY 0
+       raw c12: exit 0; raw-move (200,120) in 4 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (200,120) in 5 moves, coalesced max 17, predicted max 10, wheel dY 0
+       raw c13: exit 0; raw-move (200,120) in 7 moves, coalesced max 9, predicted max 10, wheel dY 0; raw-wheel (200,0) in 19 moves, coalesced max 4, predicted max 2, wheel dY -4000; after-plain-request (187,112) in 6 moves, coalesced max 15, predicted max 10, wheel dY 0
+       raw c14: exit 0; raw-move (200,120) in 4 moves, coalesced max 16, predicted max 10, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (352,112) in 5 moves, coalesced max 16, predicted max 10, wheel dY 0
+       raw c15: exit 0; raw-move (200,120) in 5 moves, coalesced max 1, predicted max 0, wheel dY 0; raw-wheel (0,0) in 0 moves, coalesced max 0, predicted max 0, wheel dY -4000; after-plain-request (351,112) in 6 moves, coalesced max 16, predicted max 10, wheel dY 0
+       raw all: exit 0; raw-move (200,120) in 5 moves, coalesced max 1, predicted max 0, wheel dY 0; raw-wheel (200,0) in 14 moves, coalesced max 1, predicted max 0, wheel dY -4000; after-plain-request (200,120) in 4 moves, coalesced max 1, predicted max 0, wheel dY 0
+c12    PASS  after requestPointerLock() without options on a raw lock: switch off (352,113) (downgraded to OS-accelerated movement), on (200,120) (must stay raw: 200,120)
+c13    PASS  motion in 40 packets that also carry a wheel tick: switch off (0,0), on (200,0) (must be 200,0); wheel deltaY off -4000, on -4000 (must match)
+c14    PASS  same results as switch off: raw-move (200,120), raw-wheel motion (0,0) vs off (0,0), wheel deltaY -4000 vs off -4000
+c15    PASS  raw pointermoves: switch off coalesced up to 16, predicted up to 10; on coalesced up to 1, predicted up to 0 (must be 1 and 0); movement (200,120), coalesced entries sum to 200 (must be 200,120 and 200)
+raw    PASS  every switch on: raw-move (200,120) coalesced max 1; raw-wheel (200,0) wheel -4000; after-plain-request (200,120)
+c21    PASS  fast: err 2ac24dc pix ebb47edf errors 11205 {"1280":5060,"1281":957,"1282":5188} loop 6535 ms turbofan True/True; no-fast: err 2ac24dc pix ebb47edf loop 6304 ms; all flags: err 2ac24dc pix ebb47edf; WebGL context lost False/False/False; renderer ANGLE (Microsoft, Microsoft Basic Render Driver (0x0000008C) Direct3D11 vs_5_0 ps_5_0, D3D11)
+v01    PASS  flag listed by --v8-options: --cppheap-max-incremental-sweep-duration-ms (maximum duration in ms of a single incremental sweeping task of CppHeap on the mutator thread (values below 1 are treated as 1)) type: int  default: --cppheap-max-incremental-sweep-duration-ms=5 --memory-balancer (use membalancer, a new heap limit balancing algorithm)
+v01    PASS  no flag (stock 5 ms): exit 0; slices {"CppGC.SweepInLowPriorityTask":{"count":178,"values":{"5":178},"maxSliceMs":6.466,"p50SliceMs":5.115}}
+v01    PASS  --cppheap-max-incremental-sweep-duration-ms=1: exit 0; slices {"CppGC.SweepInLowPriorityTask":{"count":876,"values":{"1":876},"maxSliceMs":2.702,"p50SliceMs":1.114}}
+v01    PASS  --cppheap-max-incremental-sweep-duration-ms=2: exit 0; slices {"CppGC.SweepInLowPriorityTask":{"count":391,"values":{"2":391},"maxSliceMs":3.67,"p50SliceMs":2.087}}
+       c20/c30/c31 flags off: exit 0, 957 frames (119.6 fps), glError 0, WebGL context lost False, RecordMetrics 10, GetVSyncIntervalIfAvailable 0, GetVSyncParameters 959, gpu_compositing disabled_software
+       c20/c30/c31 flags on: exit 0, 1041 frames (130.1 fps), glError 0, WebGL context lost False, RecordMetrics 0, GetVSyncIntervalIfAvailable 0, GetVSyncParameters 1043, gpu_compositing disabled_software
+c20    PASS  RecordMetrics slices: off 10, on 0 (must be > 0 and 0)
+c30    PASS  texture-rebind page ran without crash or DCHECK, glError 0, WebGL context lost False, 1041 frames with KccLabelTexturesOnce (no counter for the skipped labels in a trace)
+c31    N/A   GetVSyncIntervalIfAvailable never ran (off 0, on 0): DCompPresenter is not used on this machine, so KccCacheVsyncInterval was not exercised; the build ran with it on.
+       c40 flags off: exit 0: never-started t=0.000 9.02->126.28 ms (14.00x); after-run-1 t=0.461 8.76->126.02 ms (14.39x); after-run-2 t=0.580 8.54->129.36 ms (15.15x); after-run-3 t=0.612 8.38->126.38 ms (15.08x)
+       c40 flags on: exit 0: never-started t=0.000 1.50->0.70 ms (0.47x); after-run-1 t=0.453 0.78->0.78 ms (1.00x); after-run-2 t=0.543 0.74->0.74 ms (1.00x); after-run-3 t=0.580 0.74->0.72 ms (0.97x)
+c40    PASS  with the switch every scenario stays flat (growth <= 1.5x): True; stock grew > 3x in 4 of 4 scenarios
+       c41 off-1: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+       c41 off-2: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+       c41 on-1: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+       c41 on-2: exit 0, sample hash c0da18b9, sha256 435EA1F60C58CE4F, non-zero samples 1909369
+c41    PASS  4 renders (off x2, on x2): 1 distinct buffer(s); identical sample for sample: True
+       c60 off-1: exit 0, cap 144 measured 144.01 fps, VizCompositorThread 99.8 % of a core, GPU process 107.3 %
+       c60 on-1: exit 0, cap 144 measured 144.00 fps, VizCompositorThread 48.5 % of a core, GPU process 87.9 %
+       c60 off-2: exit 0, cap 144 measured 144.01 fps, VizCompositorThread 97.9 % of a core, GPU process 131.8 %
+       c60 on-2: exit 0, cap 144 measured 144.01 fps, VizCompositorThread 34.5 % of a core, GPU process 71.2 %
+c60    PASS  VizCompositorThread at a 144 cap (webgl page): off 98.8 %, on 41.5 % of a core (mean of 2 runs each; must at least halve); the cap held in every run: True
+lat    INFO  busy 0 ms, 144 cap (P 6.94 ms, webgl page): exit 0, 144.01 fps; main frame start->DrawAndSwap p10/p50/p90 13.66/13.70/13.74 ms; BeginImplFrame->DrawAndSwap p50 13.45 ms; submit->display draw p50 6.55 ms
+lat    INFO  busy 3 ms, 144 cap (P 6.94 ms, webgl page): exit 0, 144.01 fps; main frame start->DrawAndSwap p10/p50/p90 13.66/13.70/13.74 ms; BeginImplFrame->DrawAndSwap p50 13.44 ms; submit->display draw p50 6.54 ms
+
+SYNTHETIC CHECKS: PASS

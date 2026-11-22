@@ -1,0 +1,16 @@
+﻿# 2026-11-21T18:04:41  C:\electron\dist-45.4.1-kcc\electron.exe frame-cap-test.js --kcc-suite=runtime --kcc-mode=webgl --enable-features=KccFrameCapPreciseRelease --kcc-out=C:\projects\Electron-Websocket-Fix\patches\electron-45\results\stage3-release\precise-runtime-webgl.json --enable-logging
+
+[9624:1121/180442.276:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file:///C:/projects/Electron-Websocket-Fix/test/frame-cap.html?busy=0&label=main&mode=webgl (0)
+[9624:1121/180442.276:INFO:CONSOLE:0] "WebGL: CONTEXT_LOST_WEBGL: loseContext: context lost", source: file:///C:/projects/Electron-Websocket-Fix/test/frame-cap.html?busy=0&label=main&mode=webgl (0)
+[frame-cap:runtime] page renderer webgl2; gpu feature status {"2d_canvas":"disabled_software","direct_rendering_display_compositor":"disabled_off_ok","gpu_compositing":"disabled_software","multiple_raster_threads":"enabled_on","opengl":"disabled_off","rasterization":"disabled_software","raw_draw":"disabled_off_ok","skia_graphite":"disabled_off","trees_in_viz":"disabled_off","video_decode":"disabled_software","video_encode":"disabled_software","webgl":"disabled_off","webgpu":"disabled_off","webnn":"disabled_off"}
+[frame-cap:runtime] FAIL  page WebGL context alive at load  the WebGL2 context was lost at load, so the page draws nothing and no cap has frames to hold; nothing was measured
+[frame-cap:runtime] WEBGL CONTEXT LOST at load: nothing measured
+[frame-cap:runtime] 0/1 checks passed, exit 1
+# exit 1  2026-11-21T18:04:44
