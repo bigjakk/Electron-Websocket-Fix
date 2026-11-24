@@ -1,0 +1,6 @@
+{
+  "name": "kcc-ab-harness",
+  "version": "1.0.0",
+  "description": "Loads Krunker with the client's switches and records frame intervals for a build or switch comparison",
+  "main": "main.js"
+}
