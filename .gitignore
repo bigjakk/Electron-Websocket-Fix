@@ -4,5 +4,6 @@ Thumbs.db
 *.log
 *.zip
 
-# Raw build and test logs of the patch series are part of the record.
-!patches/electron-45/results/**/*.log
+# Raw build and test logs stay on the machine that made them; new ones are not
+# committed. The logs of the Windows build stages that are already tracked under
+# patches/electron-45/results/ stay tracked until the branch is cleaned up.
