@@ -140,19 +140,20 @@ Known limits:
     fallback path above depends on the content layer re-centring.
   - Every raw event is dispatched on its own, as on Windows.  8 kHz mice
     will cost browser UI thread time; raw events are not coalesced here.
-  - Found in a desk-check on 2026-11-21, not fixed (it cannot be compiled
-    on the Windows build machine): SetRawMouseMotionEnabled(true) resets
-    raw_mouse_event_flags_ to 0, and only ordinary mouse events refresh it.
-    The server queues a motion's raw event before its core motion event, so
-    when the lock is taken from a mousedown and the mouse moves with the
-    button still held, the first move made from raw motion carries no
-    button or modifier flags: a kMouseMoved instead of kMouseDragged, and
-    the page sees buttons == 0 (and loses a held Shift/Ctrl) on that one
-    mousemove, until the next core event corrects it.  Possible fix: seed
-    the field on enable with XGetMaskAsEventFlags() &
-    kRawMouseMotionStateFlags (ui/base/x/x11_drag_drop_client.h; one
-    synchronous QueryPointer; covers Shift, Ctrl, Alt, Super and the left,
-    middle and right buttons).
+  - Found in a desk-check on 2026-11-21, fixed on the Linux build on
+    2026-11-24: SetRawMouseMotionEnabled(true) reset raw_mouse_event_flags_
+    to 0, and only ordinary mouse events refresh it.  The server queues a
+    motion's raw event before its core motion event, so when the lock was
+    taken from a mousedown and the mouse moved with the button still held,
+    the first move made from raw motion carried no button or modifier
+    flags: a kMouseMoved instead of kMouseDragged, and the page saw
+    buttons == 0 (and lost a held Shift/Ctrl) on that one mousemove.  The
+    field is now seeded on enable with XGetMaskAsEventFlags() &
+    kRawMouseMotionStateFlags (ui/base/x/x11_drag_drop_client.h, already
+    used in this file; one synchronous QueryPointer; Shift, Ctrl, Alt,
+    Super and the left, middle and right buttons.  Caps Lock and Num Lock
+    are not in that mask and stay off until the next ordinary mouse event,
+    as before).
 
 Not verified: nothing was compiled or run.  Type and field names were
 taken from ui/gfx/x/generated_protos/xinput.h, which is checked in and is
@@ -280,7 +281,7 @@ index 5e14481343aa5dcf3a729a283c046f2321d25fb9..d0f79891c9c9cac70b9186a297dba45d
    std::vector<x11::Input::DeviceId> master_pointers_;
  
 diff --git a/ui/ozone/platform/x11/x11_window.cc b/ui/ozone/platform/x11/x11_window.cc
-index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262b0ecf347 100644
+index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..23850aa18c932b1fa41fc7dc38409138f844d3e2 100644
 --- a/ui/ozone/platform/x11/x11_window.cc
 +++ b/ui/ozone/platform/x11/x11_window.cc
 @@ -5,6 +5,7 @@
@@ -326,7 +327,7 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
  // Opacity for drag widget windows.
  constexpr float kDragWidgetOpacity = .75f;
  
-@@ -1360,6 +1375,40 @@ bool X11Window::IsWmSyncActiveForTest() {
+@@ -1360,6 +1375,45 @@ bool X11Window::IsWmSyncActiveForTest() {
    return bounds_wm_sync_.get();
  }
  
@@ -341,7 +342,12 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
 +  raw_mouse_motion_seen_ = false;
 +  raw_mouse_motion_remainder_x_ = 0.0;
 +  raw_mouse_motion_remainder_y_ = 0.0;
-+  raw_mouse_event_flags_ = 0;
++  // The server queues a motion's raw event before its core event, so with a
++  // lock taken from a mousedown the first raw move would go out before any
++  // ordinary mouse event has set the button and modifier state. Start from the
++  // pointer's state instead (one synchronous QueryPointer).
++  raw_mouse_event_flags_ =
++      enabled ? ui::XGetMaskAsEventFlags() & kRawMouseMotionStateFlags : 0;
 +
 +  if (enabled) {
 +    ++g_raw_mouse_motion_users;
@@ -367,7 +373,7 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
  bool X11Window::HandleAsAtkEvent(const x11::Event& event) {
  #if !BUILDFLAG(USE_ATK)
    // TODO(crbug.com/40653448): Support ATK in Ozone/X11.
-@@ -1378,6 +1427,20 @@ bool X11Window::HandleAsAtkEvent(const x11::Event& event) {
+@@ -1378,6 +1432,20 @@ bool X11Window::HandleAsAtkEvent(const x11::Event& event) {
  }
  
  void X11Window::OnEvent(const x11::Event& xev) {
@@ -388,7 +394,7 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
    auto event_type = ui::EventTypeFromXEvent(xev);
    if (event_type != EventType::kUnknown) {
      // If this event can be translated, it will be handled in ::DispatchEvent.
-@@ -1475,6 +1538,13 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
+@@ -1475,6 +1543,13 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
      return;
    }
  
@@ -402,7 +408,7 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
    // If after CoalescePendingMotionEvents the type of xev is resolved to
    // UNKNOWN, i.e: xevent translation returns nullptr, don't dispatch the
    // event. TODO(crbug.com/40559202): investigate why ColescePendingMotionEvents
-@@ -1487,6 +1557,88 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
+@@ -1487,6 +1562,88 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
                              base::Unretained(platform_window_delegate())));
  }
  
@@ -491,7 +497,7 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
  void X11Window::UpdateDecorationInsets() {
    auto atom = x11::GetAtom("_GTK_FRAME_EXTENTS");
    auto insets_dip =
-@@ -1983,6 +2135,7 @@ void X11Window::CloseXWindow() {
+@@ -1983,6 +2140,7 @@ void X11Window::CloseXWindow() {
  
    CancelResize();
    UnconfineCursor();
