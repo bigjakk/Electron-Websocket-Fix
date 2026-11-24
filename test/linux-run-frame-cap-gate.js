@@ -73,8 +73,11 @@ function runSuite(name, argv) {
     const res = c.readJson(json);
     const crash = c.crashLines(log);
     const froze = Boolean(res && (res.measurements || []).some((m) => m.error));
-    attempts.push({ attempt, code, res, crash, froze, json, log });
-    const retry = code === 1 && res && !froze && crash.length === 0;
+    // frame-cap.html falls back to a 2D canvas when WebGL2 is unavailable; a
+    // WebGL suite that drew in 2D did not test what it is for.
+    const noWebgl = argv.includes('--kcc-mode=webgl') && res && res.pageRenderer && res.pageRenderer !== 'webgl2';
+    attempts.push({ attempt, code, res, crash, froze, noWebgl, json, log });
+    const retry = code === 1 && res && !froze && !noWebgl && crash.length === 0;
     if (!retry) break;
   }
   return attempts;
@@ -95,12 +98,14 @@ function writeSuite(name, attempts) {
       for (const f of failed) line += `\n    FAIL ${f.name}: ${f.detail}`;
       for (const s of a.res.skipped || []) if (s) line += `\n    SKIP ${s.name}: ${s.why}`;
       if (a.froze) line += '\n    FROZE: a measurement timed out';
+      if (a.noWebgl) line += `\n    FAIL page renderer: ${a.res.pageRenderer} (WebGL2 unavailable: the WebGL suite drew on a 2D canvas)`;
     } else line += '  NO RESULT FILE';
     for (const l of a.crash) line += `\n    LOG: ${l}`;
     say(line);
   }
   const crashes = attempts.filter((a) => a.crash.length > 0).length;
-  return attempts[attempts.length - 1].code === 0 && crashes === 0;
+  const last = attempts[attempts.length - 1];
+  return last.code === 0 && crashes === 0 && !last.noWebgl;
 }
 
 let allPass = true;

@@ -119,8 +119,23 @@ in Node, keep the same pass rules, feature list, arguments and re-run rules:
 | `raw-input-test.js` + `send-input.ps1` | `x11-raw-mouse-test.js` + `linux-vmouse.py` (c51; also c12 and c15 on the X11 raw path) |
 | (none) | `x11-window-props-test.js` (c50) |
 
-`--no-sandbox`: Ubuntu 24.04 restricts unprivileged user namespaces, so an electron run from
-a build directory cannot start its sandbox; the v42 to v44 Linux tests ran the same way.
+Every run gets `--ozone-platform=x11 --no-sandbox --disable-gpu --enable-unsafe-swiftshader`
+(`linux-common.js`; `KCC_NO_SWIFTSHADER=1` drops the last two on a machine with a GPU):
+
+- `--no-sandbox`: Ubuntu 24.04 restricts unprivileged user namespaces, so an electron run
+  from a build directory cannot start its sandbox; the v42 to v44 Linux tests ran the same
+  way.
+- `--disable-gpu --enable-unsafe-swiftshader`: without a GPU and without these switches the
+  GPU process exits at start-up until Chromium disables GPU access, and WebGL is unavailable
+  (`frame-cap.html` then silently draws on a 2D canvas; the Linux frame-cap driver now fails
+  such a WebGL suite). With `--enable-unsafe-swiftshader` alone the page's WebGL2 context was
+  lost at load in **5 of 5** launches of `webgl-startup-test.js` (v44.0.0 binary); with
+  `--disable-gpu` added, 0 of 5. That combination gives what the Windows build machine had:
+  software compositing (`gpu_compositing: disabled_software`) and WebGL on a software
+  rasteriser (ANGLE over SwiftShader here, over WARP there). The third combination tried,
+  `--use-angle=swiftshader`, puts the display compositor on SwiftShader's Vulkan device: no
+  loss, but a different output path from the Windows reference and about a third of the
+  frame rate, so it is not used.
 
 Dry run of the harness on the archived v44.0.0 Linux build (stock for c50 and c51): the
 unadjusted lock is refused (`NotSupportedError`) and the plain lock follows acceleration

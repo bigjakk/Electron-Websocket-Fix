@@ -5,8 +5,18 @@
 //
 // Every run gets --ozone-platform=x11 (the client runs on X11) and, unless
 // KCC_SANDBOX=1 is set, --no-sandbox: Ubuntu 24.04 restricts unprivileged user
-// namespaces, so a build tree's electron cannot start its sandbox there. Runs
-// use the X server in $DISPLAY (see linux-x11-env.sh).
+// namespaces, so a build tree's electron cannot start its sandbox there.
+// Unless KCC_NO_SWIFTSHADER=1 is set, also --disable-gpu
+// --enable-unsafe-swiftshader, for a machine without a GPU. Without them the
+// GPU process exits at start-up until Chromium disables GPU access, and WebGL
+// is unavailable. With --enable-unsafe-swiftshader alone the GPU process first
+// fails on hardware GL and the page's WebGL context is lost at load (5 of 5
+// launches of webgl-startup-test.js here); with --disable-gpu as well it starts
+// in software mode at once (0 of 5 lost). The display compositor then runs its
+// software output path and WebGL runs on ANGLE over SwiftShader: what the
+// Windows build machine had (software compositing, WebGL on WARP). On a machine
+// with a GPU set KCC_NO_SWIFTSHADER=1 to leave both out.
+// Runs use the X server in $DISPLAY (see linux-x11-env.sh).
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -31,7 +41,11 @@ function joinFeatures(features) {
 // kcc-flags.ps1 ("WATCHDOG" is what the test scripts log when they time out).
 const CRASH_PATTERN = /Check failed|DCHECK failed|NOTREACHED|FATAL:|child-process-gone|render-process-gone|HARNESS ERROR|\bWATCHDOG\b/;
 
-const PLATFORM_ARGS = ['--ozone-platform=x11', ...(process.env.KCC_SANDBOX === '1' ? [] : ['--no-sandbox'])];
+const PLATFORM_ARGS = [
+  '--ozone-platform=x11',
+  ...(process.env.KCC_SANDBOX === '1' ? [] : ['--no-sandbox']),
+  ...(process.env.KCC_NO_SWIFTSHADER === '1' ? [] : ['--disable-gpu', '--enable-unsafe-swiftshader']),
+];
 
 // Command line options of the drivers: --name value or --name=value.
 function parseArgs(argv, defaults) {
