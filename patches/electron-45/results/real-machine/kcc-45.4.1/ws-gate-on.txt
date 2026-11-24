@@ -1,0 +1,6 @@
+﻿WS starvation gate  flags on  2026-11-21T19:43:20
+exe: C:\projects\electron-builds\45.4.1-kcc\dist\electron.exe
+
+WS-on-1                exit 0  p99 32.3 ms  max 33.2 ms  >50ms 0/497  rAF frames 6807  PASS
+WS-on-2                exit 0  p99 32.3 ms  max 32.8 ms  >50ms 0/496  rAF frames 7104  PASS
+WS GATE (on): PASS

@@ -1,0 +1,29 @@
+== 2026-11-24T09:41:04  scene match, 3 launches each, 0 min, switches on
+   A base = C:\projects\electron-builds\45.4.1-kcc\dist\electron.exe
+   B pgo = C:\projects\electron-builds\45.4.1-kcc-pgo\dist\electron.exe
+09:43:13  base-1  lock screen not up  exit 0
+09:45:18  pgo-1  lock screen not up  exit 0
+09:47:53  pgo-2  lock screen not up  exit 0
+09:50:42  base-2  lock screen not up  exit 0
+09:52:11  base-3  lock screen not up  exit 0
+09:54:44  pgo-3  lock screen not up  exit 0
+-- match scene, frames per second per launch (mean of 2 s windows)
+   base-1            418.4 fps   99th-percentile frame  6.54 ms   slowest  165.6 ms   62 windows
+   base-2            469.4 fps   99th-percentile frame  5.53 ms   slowest   81.9 ms   79 windows
+   base-3            465.0 fps   99th-percentile frame  6.10 ms   slowest  102.7 ms   41 windows
+   pgo-1             533.7 fps   99th-percentile frame  3.97 ms   slowest   31.9 ms   58 windows
+   pgo-2             621.0 fps   99th-percentile frame  5.24 ms   slowest  120.7 ms   69 windows
+   pgo-3             583.9 fps   99th-percentile frame  4.09 ms   slowest   77.4 ms   72 windows
+   base     n=3  mean    450.9  median    465.0  lowest    418.4  highest    469.4
+   pgo      n=3  mean    579.5  median    583.9  lowest    533.7  highest    621.0
+   pgo against base: +128.6 fps on the means (+28.5 %), medians +25.6 %; a random relabelling does as well in 10.4 % of 20000 tries
+-- match scene, frames per second per launch (mean of 2 s windows)
+   base-1            418.4 fps   99th-percentile frame  6.54 ms   slowest  165.6 ms   62 windows
+   base-2            469.4 fps   99th-percentile frame  5.53 ms   slowest   81.9 ms   79 windows
+   base-3            465.0 fps   99th-percentile frame  6.10 ms   slowest  102.7 ms   41 windows
+   pgo-1             533.7 fps   99th-percentile frame  3.97 ms   slowest   31.9 ms   58 windows
+   pgo-2             621.0 fps   99th-percentile frame  5.24 ms   slowest  120.7 ms   69 windows
+   pgo-3             583.9 fps   99th-percentile frame  4.09 ms   slowest   77.4 ms   72 windows
+   base     n=3  mean    450.9  median    465.0  lowest    418.4  highest    469.4
+   pgo      n=3  mean    579.5  median    583.9  lowest    533.7  highest    621.0
+   pgo against base: +128.6 fps on the means (+28.5 %), medians +25.6 %; a random relabelling does as well in 10.4 % of 20000 tries (lowest possible with 3 and 3 launches: 10 %)

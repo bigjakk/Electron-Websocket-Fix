@@ -1,0 +1,17 @@
+﻿# 2026-11-21T20:42:06  C:\projects\electron-builds\45.4.1-kcc\dist\electron.exe  3 runs per variant and busy level, interleaved; 8 (capped, uncapped) cycles per run
+off-busy5-1          exit 0  uncapped 192/193/193/193/193/193/193/193/193  capped vs neighbours 1000:-1.1% 240:+0.1% 1000:+0.1% 240:+0.0% 1000:-0.1% 240:-0.1% 1000:+0.1% 240:+0.2%
+precise-busy5-1      exit 0  uncapped 193/193/194/193/193/193/193/193/194  capped vs neighbours 1000:+0.2% 240:-0.2% 1000:+0.1% 240:+0.4% 1000:+0.3% 240:+0.1% 1000:+0.1% 240:+0.0%
+off-busy5-2          exit 0  uncapped 198/198/198/199/198/198/198/198/198  capped vs neighbours 1000:+0.1% 240:-0.1% 1000:+0.0% 240:-0.2% 1000:+0.0% 240:+0.0% 1000:+0.1% 240:+0.0%
+precise-busy5-2      exit 0  uncapped 193/193/193/193/194/194/194/193/193  capped vs neighbours 1000:+0.1% 240:+0.2% 1000:+0.3% 240:+0.1% 1000:-0.2% 240:-0.3% 1000:+0.3% 240:+0.1%
+off-busy5-3          exit 0  uncapped 193/193/194/193/193/193/193/193/193  capped vs neighbours 1000:-0.3% 240:-0.4% 1000:+0.3% 240:+0.2% 1000:+0.2% 240:+0.0% 1000:+0.1% 240:-0.1%
+precise-busy5-3      exit 0  uncapped 191/192/192/193/193/193/193/193/194  capped vs neighbours 1000:-0.6% 240:+0.1% 1000:-0.3% 240:-0.2% 1000:+0.2% 240:+0.2% 1000:+0.1% 240:+0.2%
+off-busy3-1          exit 0  uncapped 329/329/329/329/329/330/330/330/330  capped vs neighbours 1000:+0.0% 240:-27.1% 1000:+0.1% 240:-27.1% 1000:+0.0% 240:-27.2% 1000:-0.1% 240:-27.2%
+precise-busy3-1      exit 0  uncapped 329/329/330/330/329/329/330/330/329  capped vs neighbours 1000:+0.0% 240:-27.1% 1000:+0.0% 240:-27.1% 1000:+0.2% 240:-27.1% 1000:+0.0% 240:-27.1%
+off-busy3-2          exit 0  uncapped 317/316/318/318/318/318/317/317/317  capped vs neighbours 1000:+0.2% 240:-24.3% 1000:-0.3% 240:-24.5% 1000:-0.3% 240:-24.4% 1000:+0.2% 240:-24.3%
+precise-busy3-2      exit 0  uncapped 318/317/317/317/316/316/316/316/316  capped vs neighbours 1000:-0.2% 240:-24.3% 1000:+0.3% 240:-24.2% 1000:+0.0% 240:-24.1% 1000:+0.0% 240:-24.1%
+off-busy3-3          exit 0  uncapped 316/316/316/317/316/316/317/318/318  capped vs neighbours 1000:-0.2% 240:-24.1% 1000:-0.1% 240:-24.1% 1000:+0.2% 240:-24.2% 1000:-0.2% 240:-24.4%
+precise-busy3-3      exit 0  uncapped 316/316/317/317/317/317/316/316/316  capped vs neighbours 1000:+0.3% 240:-24.2% 1000:+0.0% 240:-24.2% 1000:-0.2% 240:-24.2% 1000:+0.3% 240:-24.1%
+off|busy3         24 pairs: capped vs uncapped neighbours median -0.3 %, mean -12.6 %, min -27.2 %, pairs below -3 %: 12
+off|busy5         24 pairs: capped vs uncapped neighbours median +0.0 %, mean +0.0 %, min -1.1 %, pairs below -3 %: 0
+precise|busy3     24 pairs: capped vs uncapped neighbours median -0.2 %, mean -12.6 %, min -27.1 %, pairs below -3 %: 12
+precise|busy5     24 pairs: capped vs uncapped neighbours median +0.1 %, mean +0.0 %, min -0.6 %, pairs below -3 %: 0

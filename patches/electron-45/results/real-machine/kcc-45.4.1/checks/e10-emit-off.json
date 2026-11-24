@@ -1,0 +1,57 @@
+{
+  "enableFeatures": "",
+  "checks": [
+    {
+      "name": "no listener: page receives the moves",
+      "pass": true,
+      "detail": "page mousemove 20 of 20"
+    },
+    {
+      "name": "input-event listener receives every move while registered",
+      "pass": true,
+      "detail": "listener 20 of 20, page 20"
+    },
+    {
+      "name": "removed input-event listener receives nothing more",
+      "pass": true,
+      "detail": "listener 0 after removal"
+    },
+    {
+      "name": "page still receives moves after the listener is removed",
+      "pass": true,
+      "detail": "page 20 of 20"
+    },
+    {
+      "name": "input-event listener added again receives every move",
+      "pass": true,
+      "detail": "listener 20 of 20"
+    },
+    {
+      "name": "with two listeners, removing one leaves the other receiving",
+      "pass": true,
+      "detail": "remaining listener 20 of 20"
+    },
+    {
+      "name": "once() input-event listener runs exactly once",
+      "pass": true,
+      "detail": "ran 1 times"
+    },
+    {
+      "name": "before-mouse-event preventDefault() blocks page mouse events",
+      "pass": true,
+      "detail": "page 0, listener saw 20"
+    },
+    {
+      "name": "page receives mouse events again after the blocker is removed",
+      "pass": true,
+      "detail": "page 20 of 20"
+    },
+    {
+      "name": "non-preventing before-mouse-event listener sees every move",
+      "pass": true,
+      "detail": "listener 20, page 20"
+    }
+  ],
+  "events": [],
+  "exitCode": 0
+}

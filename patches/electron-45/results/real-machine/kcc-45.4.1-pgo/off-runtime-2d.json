@@ -1,0 +1,379 @@
+{
+  "suite": "runtime",
+  "cap": 0,
+  "busy": 0,
+  "mode": "2d",
+  "windowMs": 10000,
+  "enableFeatures": "",
+  "featuresVia": "command line",
+  "versions": {
+    "electron": "45.4.1",
+    "chrome": "156.0.8078.100",
+    "v8": "15.6.75.57-electron.d384e85dffdbe2dd"
+  },
+  "measurements": [
+    {
+      "label": "main",
+      "fps": 5756.31218439078,
+      "frames": 57566,
+      "elapsedMs": 10000.5,
+      "meanMs": 0.17372233610117083,
+      "sdMs": 0.12189369174468843,
+      "p01Ms": 0,
+      "p50Ms": 0.19999998807907104,
+      "p99Ms": 0.699999988079071,
+      "maxMs": 2.7999999821186066,
+      "name": "uncapped baseline"
+    },
+    {
+      "label": "main",
+      "fps": 60.00339453483468,
+      "frames": 601,
+      "elapsedMs": 10016.09999999404,
+      "meanMs": 16.665723793667286,
+      "sdMs": 0.08373468649786657,
+      "p01Ms": 16.5,
+      "p50Ms": 16.69999998807907,
+      "p99Ms": 16.80000001192093,
+      "maxMs": 17.099999994039536,
+      "name": "setFrameCap(60)"
+    },
+    {
+      "label": "main",
+      "fps": 144.00927415710936,
+      "frames": 1441,
+      "elapsedMs": 10006.300000011921,
+      "meanMs": 6.943997224158169,
+      "sdMs": 0.11394928011425266,
+      "p01Ms": 6.799999982118607,
+      "p50Ms": 6.9000000059604645,
+      "p99Ms": 7.0999999940395355,
+      "maxMs": 9.099999994039536,
+      "name": "setFrameCap(144)"
+    },
+    {
+      "label": "main",
+      "fps": 240.03999000249937,
+      "frames": 2401,
+      "elapsedMs": 10002.5,
+      "meanMs": 4.165972511453561,
+      "sdMs": 0.07545490039391634,
+      "p01Ms": 4,
+      "p50Ms": 4.199999988079071,
+      "p99Ms": 4.300000011920929,
+      "maxMs": 4.799999982118607,
+      "name": "setFrameCap(240)"
+    },
+    {
+      "label": "main",
+      "fps": 144.00927415710936,
+      "frames": 1441,
+      "elapsedMs": 10006.300000011921,
+      "meanMs": 6.943997224158169,
+      "sdMs": 0.07427921565684446,
+      "p01Ms": 6.799999982118607,
+      "p50Ms": 6.9000000059604645,
+      "p99Ms": 7.100000023841858,
+      "maxMs": 7.4000000059604645,
+      "name": "144 after hide/show"
+    },
+    {
+      "label": "main",
+      "fps": 144.00927415710936,
+      "frames": 1441,
+      "elapsedMs": 10006.300000011921,
+      "meanMs": 6.943997224158169,
+      "sdMs": 0.07511534498494973,
+      "p01Ms": 6.799999982118607,
+      "p50Ms": 6.9000000059604645,
+      "p99Ms": 7.100000023841858,
+      "maxMs": 7.300000011920929,
+      "name": "144 after resize"
+    },
+    {
+      "label": "main",
+      "fps": 240.04391655711072,
+      "frames": 481,
+      "elapsedMs": 2003.800000011921,
+      "meanMs": 4.1659043659291495,
+      "sdMs": 0.08628184248089014,
+      "p01Ms": 4,
+      "p50Ms": 4.199999988079071,
+      "p99Ms": 4.300000011920929,
+      "maxMs": 5,
+      "name": "at once 240"
+    },
+    {
+      "label": "main",
+      "fps": 60,
+      "frames": 120,
+      "elapsedMs": 2000,
+      "meanMs": 16.666666666666668,
+      "sdMs": 0.06992059257747413,
+      "p01Ms": 16.5,
+      "p50Ms": 16.69999998807907,
+      "p99Ms": 16.80000001192093,
+      "maxMs": 16.80000001192093,
+      "name": "at once 60"
+    },
+    {
+      "label": "main",
+      "fps": 144,
+      "frames": 288,
+      "elapsedMs": 2000,
+      "meanMs": 6.944444444444445,
+      "sdMs": 0.06999779537974607,
+      "p01Ms": 6.799999982118607,
+      "p50Ms": 6.9000000059604645,
+      "p99Ms": 7.100000023841858,
+      "maxMs": 7.100000023841858,
+      "name": "at once 144"
+    },
+    {
+      "label": "main",
+      "fps": 7190.5,
+      "frames": 71905,
+      "elapsedMs": 10000,
+      "meanMs": 0.1390723871775259,
+      "sdMs": 0.1479853875896537,
+      "p01Ms": 0,
+      "p50Ms": 0.09999999403953552,
+      "p99Ms": 1,
+      "maxMs": 3.5,
+      "name": "uncapped reference"
+    },
+    {
+      "label": "main",
+      "fps": 7626.323736767178,
+      "frames": 76264,
+      "elapsedMs": 10000.09999999404,
+      "meanMs": 0.1311247770900299,
+      "sdMs": 0.126590847977855,
+      "p01Ms": 0,
+      "p50Ms": 0.09999999403953552,
+      "p99Ms": 0.800000011920929,
+      "maxMs": 2.4000000059604645,
+      "name": "setFrameCap(0)"
+    },
+    {
+      "label": "main",
+      "fps": 6175.5,
+      "frames": 61755,
+      "elapsedMs": 10000,
+      "meanMs": 0.16193020808031738,
+      "sdMs": 0.14912032126423413,
+      "p01Ms": 0,
+      "p50Ms": 0.10000002384185791,
+      "p99Ms": 1,
+      "maxMs": 2.5999999940395355,
+      "name": "two views uncapped main"
+    },
+    {
+      "label": "second",
+      "fps": 4088.759112411313,
+      "frames": 40888,
+      "elapsedMs": 10000.09999999404,
+      "meanMs": 0.24457297984724222,
+      "sdMs": 0.17960857025454038,
+      "p01Ms": 0,
+      "p50Ms": 0.20000001788139343,
+      "p99Ms": 1.100000023841858,
+      "maxMs": 2.5,
+      "name": "two views uncapped second"
+    },
+    {
+      "label": "main",
+      "fps": 144.00927415710936,
+      "frames": 1441,
+      "elapsedMs": 10006.300000011921,
+      "meanMs": 6.943997224158169,
+      "sdMs": 0.0820054669428991,
+      "p01Ms": 6.799999982118607,
+      "p50Ms": 6.9000000059604645,
+      "p99Ms": 7.100000023841858,
+      "maxMs": 7.5999999940395355,
+      "name": "two views cap 144 main"
+    },
+    {
+      "label": "second",
+      "fps": 144.00927415710936,
+      "frames": 1441,
+      "elapsedMs": 10006.300000011921,
+      "meanMs": 6.943997224158169,
+      "sdMs": 0.08921967237997556,
+      "p01Ms": 6.700000017881393,
+      "p50Ms": 6.9000000059604645,
+      "p99Ms": 7.199999988079071,
+      "maxMs": 7.5,
+      "name": "two views cap 144 second"
+    },
+    {
+      "label": "second",
+      "fps": 60.00339453483468,
+      "frames": 601,
+      "elapsedMs": 10016.09999999404,
+      "meanMs": 16.665723793667286,
+      "sdMs": 0.11211111510614524,
+      "p01Ms": 16.399999976158142,
+      "p50Ms": 16.69999998807907,
+      "p99Ms": 16.900000005960464,
+      "maxMs": 17,
+      "name": "two views cap 60 second"
+    },
+    {
+      "label": "main",
+      "fps": 60.00219641976425,
+      "frames": 601,
+      "elapsedMs": 10016.300000011921,
+      "meanMs": 16.666056572399203,
+      "sdMs": 0.10813464523111428,
+      "p01Ms": 16.399999976158142,
+      "p50Ms": 16.69999998807907,
+      "p99Ms": 16.900000005960464,
+      "maxMs": 17,
+      "name": "two views cap 60 main"
+    },
+    {
+      "label": "second",
+      "fps": 6070.9,
+      "frames": 60709,
+      "elapsedMs": 10000,
+      "meanMs": 0.16472022270174108,
+      "sdMs": 0.15083911372343128,
+      "p01Ms": 0,
+      "p50Ms": 0.10000002384185791,
+      "p99Ms": 1,
+      "maxMs": 2.5999999940395355,
+      "name": "two views setFrameCap(0) second"
+    },
+    {
+      "label": "main",
+      "fps": 6075.2,
+      "frames": 60752,
+      "elapsedMs": 10000,
+      "meanMs": 0.1646036344482486,
+      "sdMs": 0.15051398066514035,
+      "p01Ms": 0,
+      "p50Ms": 0.10000002384185791,
+      "p99Ms": 1,
+      "maxMs": 2.4000000059604645,
+      "name": "two views setFrameCap(0) main"
+    }
+  ],
+  "checks": [
+    {
+      "name": "setFrameCap(60)",
+      "pass": true,
+      "detail": "target 60 got 60.00 (0.01 %, tol 1 %)"
+    },
+    {
+      "name": "setFrameCap(144)",
+      "pass": true,
+      "detail": "target 144 got 144.01 (0.01 %, tol 1 %)"
+    },
+    {
+      "name": "setFrameCap(240)",
+      "pass": true,
+      "detail": "target 240 got 240.04 (0.02 %, tol 1 %)"
+    },
+    {
+      "name": "setFrameCap(144) after hide/show",
+      "pass": true,
+      "detail": "target 144 got 144.01 (0.01 %, tol 1 %)"
+    },
+    {
+      "name": "setFrameCap(144) after resize",
+      "pass": true,
+      "detail": "target 144 got 144.01 (0.01 %, tol 1 %)"
+    },
+    {
+      "name": "change 144 -> 240 takes effect at once (2 s)",
+      "pass": true,
+      "detail": "target 240 got 240.04 (0.02 %, tol 3 %)"
+    },
+    {
+      "name": "change 240 -> 60 takes effect at once (2 s)",
+      "pass": true,
+      "detail": "target 60 got 60.00 (0.00 %, tol 3 %)"
+    },
+    {
+      "name": "change 60 -> 144 takes effect at once (2 s)",
+      "pass": true,
+      "detail": "target 144 got 144.00 (0.00 %, tol 3 %)"
+    },
+    {
+      "name": "setFrameCap(0) returns to uncapped (from 60)",
+      "pass": true,
+      "detail": "after setFrameCap(60), setFrameCap(0): 7626.32; uncapped just before 7190.50, baseline 5756.31 (must exceed 90, 80 % of the rate just before and 50 % of the baseline)"
+    },
+    {
+      "name": "two views, cap 144: main view",
+      "pass": true,
+      "detail": "target 144 got 144.01 (0.01 %, tol 1 %)"
+    },
+    {
+      "name": "two views, cap 144: second view",
+      "pass": true,
+      "detail": "target 144 got 144.01 (0.01 %, tol 1 %)"
+    },
+    {
+      "name": "two views, cap 60: main view",
+      "pass": true,
+      "detail": "target 60 got 60.00 (0.00 %, tol 1 %)"
+    },
+    {
+      "name": "two views, cap 60: second view",
+      "pass": true,
+      "detail": "target 60 got 60.00 (0.01 %, tol 1 %)"
+    },
+    {
+      "name": "two views: setFrameCap(0) uncaps both (from 60)",
+      "pass": true,
+      "detail": "uncapped before 6175.50 / 4088.76, after setFrameCap(0) 6075.20 / 6070.90 (must exceed 72 and 80 % of before)"
+    }
+  ],
+  "events": [],
+  "started": "2026-11-24T18:08:50.706Z",
+  "gpuFeatureStatus": {
+    "2d_canvas": "disabled_software",
+    "direct_rendering_display_compositor": "disabled_off_ok",
+    "gpu_compositing": "disabled_software",
+    "multiple_raster_threads": "enabled_on",
+    "opengl": "disabled_off",
+    "rasterization": "disabled_software",
+    "raw_draw": "disabled_off_ok",
+    "skia_graphite": "disabled_off",
+    "trees_in_viz": "disabled_off",
+    "video_decode": "disabled_software",
+    "video_encode": "disabled_software",
+    "webgl": "disabled_off",
+    "webgpu": "disabled_off",
+    "webnn": "disabled_off"
+  },
+  "pageRenderer": "2d",
+  "gpuDevices": [
+    {
+      "vendorId": 4318,
+      "deviceId": 11266,
+      "active": false
+    },
+    {
+      "vendorId": 5140,
+      "deviceId": 140,
+      "active": false
+    }
+  ],
+  "uncappedBaseline": 5756.31218439078,
+  "runtimeCaps": {
+    "mid": 144,
+    "hi": 240,
+    "lo": 60
+  },
+  "twoViewsUncapped": [
+    6175.5,
+    4088.759112411313
+  ],
+  "finished": "2026-11-24T18:11:11.027Z",
+  "exitCode": 0,
+  "failed": []
+}

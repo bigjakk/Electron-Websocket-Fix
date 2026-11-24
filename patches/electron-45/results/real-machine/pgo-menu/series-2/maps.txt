@@ -1,0 +1,19 @@
+# What each launch of series 2 had on screen when it ended, read off the
+# picture the harness saved (the pictures are not in the repository).
+# Rate: the launch's figure in series.txt (frames per second, first 20 s left out).
+base-1  595.5  Team Deathmatch on Subzero
+base-2  717.5  Free For All on Sandstorm
+base-3  717.4  Free For All on Sandstorm
+base-4  714.3  Team Deathmatch on Subzero
+base-5  669.6  Team Deathmatch on Sandstorm
+base-6  664.2  Free For All on Burg
+base-7  671.8  Free For All on Burg
+base-8  630.3  Team Deathmatch on Subzero
+pgo-1  1725.6  no 3D scene: the page stopped at the site's "Verify you are human" check (left out)
+pgo-2   818.7  Team Deathmatch on Sandstorm
+pgo-3   846.7  Free For All on Sandstorm
+pgo-4   729.7  Team Deathmatch on Subzero
+pgo-5   862.4  Team Deathmatch on Sandstorm
+pgo-6   831.1  Team Deathmatch on Sandstorm
+pgo-7   897.4  Free For All on Burg
+pgo-8   770.6  Free For All on Burg

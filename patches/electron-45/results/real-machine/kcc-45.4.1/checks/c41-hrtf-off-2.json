@@ -1,0 +1,53 @@
+{
+  "page": "hrtf.html",
+  "query": "",
+  "enableFeatures": "",
+  "jsFlags": "",
+  "events": [],
+  "gpuFeatureStatus": {
+    "2d_canvas": "enabled",
+    "direct_rendering_display_compositor": "disabled_off_ok",
+    "gpu_compositing": "enabled",
+    "multiple_raster_threads": "enabled_on",
+    "opengl": "enabled_on",
+    "rasterization": "enabled",
+    "raw_draw": "disabled_off_ok",
+    "skia_graphite": "disabled_off",
+    "trees_in_viz": "disabled_off",
+    "video_decode": "enabled",
+    "video_encode": "enabled",
+    "webgl": "enabled",
+    "webgpu": "enabled",
+    "webnn": "disabled_off"
+  },
+  "result": {
+    "hash": "c0da18b9",
+    "perPanner": [
+      {
+        "model": "HRTF",
+        "hash": "143e489c"
+      },
+      {
+        "model": "HRTF",
+        "hash": "ee6cfdda"
+      },
+      {
+        "model": "HRTF",
+        "hash": "1cdbb37d"
+      },
+      {
+        "model": "HRTF",
+        "hash": "688562de"
+      },
+      {
+        "model": "equalpower",
+        "hash": "7a6e4f08"
+      }
+    ],
+    "framesPerContext": 192000,
+    "nonZero": 1909369,
+    "peak": 0.6948411464691162,
+    "rawBytes": 7680000
+  },
+  "exitCode": 0
+}

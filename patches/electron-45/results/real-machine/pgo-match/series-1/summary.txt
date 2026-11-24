@@ -1,0 +1,36 @@
+[kcc-ab] base-1  electron 45.4.1  switches on
+  in match, uncapped: 417.5 fps avg, 1% low 196.1, 0.1% low 112.4, worst frame 165.6 ms, 122.4 s
+  in match, cap 240: no frames
+  menus, uncapped: 679.9 fps avg, 1% low 185.2, 0.1% low 18.1, worst frame 867.2 ms, 5.9 s
+  pointer locks: 1 raw, 0 not raw
+  file: C:\projects\electron-builds\ab-results\pgo-vs-base-match-1\ab-base-1-2026-11-24T17-43-13.json
+[kcc-ab] pgo-1  electron 45.4.1  switches on
+  in match, uncapped: 533.2 fps avg, 1% low 243.9, 0.1% low 135.1, worst frame 31.9 ms, 114.9 s
+  in match, cap 240: no frames
+  menus, uncapped: 623.2 fps avg, 1% low 142.9, 0.1% low 12.4, worst frame 739.2 ms, 5.4 s
+  pointer locks: 1 raw, 0 not raw
+  file: C:\projects\electron-builds\ab-results\pgo-vs-base-match-1\ab-pgo-1-2026-11-24T17-45-18.json
+[kcc-ab] pgo-2  electron 45.4.1  switches on
+  in match, uncapped: 625.7 fps avg, 1% low 270.3, 0.1% low 147.1, worst frame 120.7 ms, 136.9 s
+  in match, cap 240: no frames
+  menus, uncapped: 716.2 fps avg, 1% low 204.1, 0.1% low 66.2, worst frame 766.5 ms, 14.1 s
+  pointer locks: 1 raw, 0 not raw
+  file: C:\projects\electron-builds\ab-results\pgo-vs-base-match-1\ab-pgo-2-2026-11-24T17-47-53.json
+[kcc-ab] base-2  electron 45.4.1  switches on
+  in match, uncapped: 472.9 fps avg, 1% low 204.1, 0.1% low 120.5, worst frame 81.9 ms, 154.2 s
+  in match, cap 240: no frames
+  menus, uncapped: 603.4 fps avg, 1% low 114.9, 0.1% low 11.9, worst frame 922.5 ms, 8.9 s
+  pointer locks: 2 raw, 0 not raw
+  file: C:\projects\electron-builds\ab-results\pgo-vs-base-match-1\ab-base-2-2026-11-24T17-50-41.json
+[kcc-ab] base-3  electron 45.4.1  switches on
+  in match, uncapped: 467 fps avg, 1% low 212.8, 0.1% low 116.3, worst frame 102.7 ms, 81.1 s
+  in match, cap 240: no frames
+  menus, uncapped: 758.4 fps avg, 1% low 188.7, 0.1% low 18.8, worst frame 779.3 ms, 3.9 s
+  pointer locks: 1 raw, 0 not raw
+  file: C:\projects\electron-builds\ab-results\pgo-vs-base-match-1\ab-base-3-2026-11-24T17-52-11.json
+[kcc-ab] pgo-3  electron 45.4.1  switches on
+  in match, uncapped: 587.3 fps avg, 1% low 250, 0.1% low 142.9, worst frame 77.4 ms, 142.7 s
+  in match, cap 240: no frames
+  menus, uncapped: 825.9 fps avg, 1% low 277.8, 0.1% low 24.1, worst frame 886.9 ms, 5.9 s
+  pointer locks: 1 raw, 0 not raw
+  file: C:\projects\electron-builds\ab-results\pgo-vs-base-match-1\ab-pgo-3-2026-11-24T17-54-44.json

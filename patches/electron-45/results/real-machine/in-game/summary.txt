@@ -1,0 +1,15 @@
+[kcc-ab] control  electron 43.0.0  switches off
+  in match, uncapped: 626 fps avg, 1% low 294.1, 0.1% low 135.1, worst frame 112.8 ms, 66.9 s
+  in match, cap 240: 240.1 fps avg, 1% low 227.3, 0.1% low 172.4, worst frame 8 ms, 30.6 s
+  menus, uncapped: 559.3 fps avg, 1% low 181.8, 0.1% low 78.7, worst frame 845.9 ms, 58.7 s
+  file: C:\projects\Electron-Websocket-Fix\patches\electron-45\results\real-machine\in-game\ab-control-2026-11-22T14-35-01.json
+[kcc-ab] off  electron 45.4.1  switches off
+  in match, uncapped: 738.1 fps avg, 1% low 357.1, 0.1% low 196.1, worst frame 153.5 ms, 104 s
+  in match, cap 240: 240.1 fps avg, 1% low 222.2, 0.1% low 142.9, worst frame 10.3 ms, 49.5 s
+  menus, uncapped: 578.3 fps avg, 1% low 181.8, 0.1% low 18.4, worst frame 756.7 ms, 12.7 s
+  file: C:\projects\Electron-Websocket-Fix\patches\electron-45\results\real-machine\in-game\ab-off-2026-11-22T14-38-01.json
+[kcc-ab] on  electron 45.4.1  switches on
+  in match, uncapped: 688.5 fps avg, 1% low 357.1, 0.1% low 208.3, worst frame 79 ms, 99 s
+  in match, cap 240: 240.1 fps avg, 1% low 212.8, 0.1% low 196.1, worst frame 8.3 ms, 80.2 s
+  menus, uncapped: 719.4 fps avg, 1% low 156.2, 0.1% low 59.2, worst frame 754.3 ms, 60.8 s
+  file: C:\projects\Electron-Websocket-Fix\patches\electron-45\results\real-machine\in-game\ab-on-2026-11-22T14-42-11.json

@@ -1,0 +1,59 @@
+== 2026-11-24T03:21:48  scene menu, 8 launches each, 1 min, switches on
+   A base = C:\projects\electron-builds\45.4.1-kcc\dist\electron.exe
+   B pgo = C:\projects\electron-builds\45.4.1-kcc-pgo\dist\electron.exe
+03:22:49  base-1  lock screen up  exit 0
+03:23:52  pgo-1  lock screen up  exit 0
+03:24:56  pgo-2  lock screen up  exit 0
+03:25:59  base-2  lock screen up  exit 0
+03:27:03  base-3  lock screen up  exit 0
+03:28:06  pgo-3  lock screen up  exit 0
+03:29:10  pgo-4  lock screen up  exit 0
+03:30:13  base-4  lock screen up  exit 0
+03:31:17  base-5  lock screen up  exit 0
+03:32:20  pgo-5  lock screen up  exit 0
+03:33:24  pgo-6  lock screen up  exit 0
+03:34:27  base-6  lock screen up  exit 0
+03:35:31  base-7  lock screen up  exit 0
+03:36:34  pgo-7  lock screen up  exit 0
+03:37:38  pgo-8  lock screen up  exit 0
+03:38:41  base-8  lock screen up  exit 0
+-- menu scene, frames per second per launch (mean of 2 s windows, first 20 s left out)
+   base-1            595.5 fps   99th-percentile frame  3.04 ms   slowest  249.1 ms   21 windows
+   base-2            717.5 fps   99th-percentile frame  2.44 ms   slowest    8.8 ms   21 windows
+   base-3            717.4 fps   99th-percentile frame  2.48 ms   slowest    9.1 ms   21 windows
+   base-4            714.3 fps   99th-percentile frame  2.30 ms   slowest   10.0 ms   21 windows
+   base-5            669.6 fps   99th-percentile frame  2.76 ms   slowest  229.6 ms   21 windows
+   base-6            664.2 fps   99th-percentile frame  2.54 ms   slowest    9.3 ms   21 windows
+   base-7            671.8 fps   99th-percentile frame  2.59 ms   slowest   10.2 ms   21 windows
+   base-8            630.3 fps   99th-percentile frame  2.66 ms   slowest    8.9 ms   21 windows
+   pgo-1           1,725.6 fps   99th-percentile frame  1.21 ms   slowest    9.3 ms   21 windows
+   pgo-2             818.7 fps   99th-percentile frame  2.24 ms   slowest    9.1 ms   21 windows
+   pgo-3             846.7 fps   99th-percentile frame  2.07 ms   slowest    9.5 ms   21 windows
+   pgo-4             729.7 fps   99th-percentile frame  2.32 ms   slowest    8.3 ms   21 windows
+   pgo-5             862.4 fps   99th-percentile frame  2.03 ms   slowest    9.3 ms   21 windows
+   pgo-6             831.1 fps   99th-percentile frame  2.20 ms   slowest    9.3 ms   21 windows
+   pgo-7             897.4 fps   99th-percentile frame  1.90 ms   slowest    8.6 ms   21 windows
+   pgo-8             770.6 fps   99th-percentile frame  2.21 ms   slowest    8.6 ms   21 windows
+   base     n=8  mean    672.6  median    670.7  lowest    595.5  highest    717.5
+   pgo      n=8  mean    935.3  median    838.9  lowest    729.7  highest  1,725.6
+   pgo against base: +262.7 fps on the means (+39.1 %), medians +25.1 %; a random relabelling does as well in 0.0 % of 20000 tries
+   pgo-1: left out (-Exclude)
+-- menu scene, frames per second per launch (mean of 2 s windows, first 20 s left out)
+   base-1            595.5 fps   99th-percentile frame  3.04 ms   slowest  249.1 ms   21 windows
+   base-2            717.5 fps   99th-percentile frame  2.44 ms   slowest    8.8 ms   21 windows
+   base-3            717.4 fps   99th-percentile frame  2.48 ms   slowest    9.1 ms   21 windows
+   base-4            714.3 fps   99th-percentile frame  2.30 ms   slowest   10.0 ms   21 windows
+   base-5            669.6 fps   99th-percentile frame  2.76 ms   slowest  229.6 ms   21 windows
+   base-6            664.2 fps   99th-percentile frame  2.54 ms   slowest    9.3 ms   21 windows
+   base-7            671.8 fps   99th-percentile frame  2.59 ms   slowest   10.2 ms   21 windows
+   base-8            630.3 fps   99th-percentile frame  2.66 ms   slowest    8.9 ms   21 windows
+   pgo-2             818.7 fps   99th-percentile frame  2.24 ms   slowest    9.1 ms   21 windows
+   pgo-3             846.7 fps   99th-percentile frame  2.07 ms   slowest    9.5 ms   21 windows
+   pgo-4             729.7 fps   99th-percentile frame  2.32 ms   slowest    8.3 ms   21 windows
+   pgo-5             862.4 fps   99th-percentile frame  2.03 ms   slowest    9.3 ms   21 windows
+   pgo-6             831.1 fps   99th-percentile frame  2.20 ms   slowest    9.3 ms   21 windows
+   pgo-7             897.4 fps   99th-percentile frame  1.90 ms   slowest    8.6 ms   21 windows
+   pgo-8             770.6 fps   99th-percentile frame  2.21 ms   slowest    8.6 ms   21 windows
+   base     n=8  mean    672.6  median    670.7  lowest    595.5  highest    717.5
+   pgo      n=7  mean    822.4  median    831.1  lowest    729.7  highest    897.4
+   pgo against base: +149.8 fps on the means (+22.3 %), medians +23.9 %; a random relabelling does as well in 0.0 % of 20000 tries

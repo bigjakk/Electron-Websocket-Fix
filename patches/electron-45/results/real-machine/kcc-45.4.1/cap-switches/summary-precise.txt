@@ -1,0 +1,45 @@
+﻿frame-cap gate  2026-11-21T20:14:34
+exe: C:\projects\electron-builds\45.4.1-kcc\dist\electron.exe
+variants: precise  parts: A,B  heavy suite: webgl page, busy 5, 3 ms, 5 runs each  features via: commandline
+
+precise-launch-60              exit 0  checks 5/5
+precise-launch-144             exit 0  checks 5/5
+precise-launch-240             exit 0  checks 5/5
+precise-runtime-2d             exit 0  checks 14/14  (uncapped baseline 4943.1 fps, page 2d)
+precise-runtime-webgl          exit 0  checks 14/14  (uncapped baseline 5099.7 fps, page webgl2)
+off-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 198.2, cap1000 198.2, cap240 198.3, cap144 144.0)
+precise-heavy-5-1              exit 0  checks 3/3  (busy 5 ms: reach 198.1, cap1000 198.2, cap240 198.1, cap144 144.0)
+off-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 193.1, cap1000 192.5, cap240 193.0, cap144 144.0)
+precise-heavy-5-2              exit 0  checks 3/3  (busy 5 ms: reach 193.1, cap1000 193.2, cap240 193.1, cap144 144.0)
+off-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 198.2, cap1000 198.1, cap240 198.4, cap144 144.0)
+precise-heavy-5-3              exit 0  checks 3/3  (busy 5 ms: reach 192.9, cap1000 192.7, cap240 193.3, cap144 144.0)
+off-heavy-5-4                  exit 0  checks 3/3  (busy 5 ms: reach 193.4, cap1000 192.9, cap240 193.1, cap144 144.0)
+precise-heavy-5-4              exit 0  checks 3/3  (busy 5 ms: reach 198.3, cap1000 198.1, cap240 198.3, cap144 144.0)
+off-heavy-5-5                  exit 0  checks 3/3  (busy 5 ms: reach 192.4, cap1000 192.0, cap240 193.0, cap144 144.0)
+precise-heavy-5-5              exit 0  checks 3/3  (busy 5 ms: reach 193.2, cap1000 193.4, cap240 193.5, cap144 144.0)
+off-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 316.8, cap1000 315.2, cap240 240.0, cap144 144.0)
+precise-heavy-3-1              exit 0  checks 3/3  (busy 3 ms: reach 316.1, cap1000 316.0, cap240 240.0, cap144 144.0)
+off-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 329.1, cap1000 329.5, cap240 240.0, cap144 144.0)
+precise-heavy-3-2              exit 0  checks 3/3  (busy 3 ms: reach 316.5, cap1000 317.1, cap240 240.0, cap144 144.0)
+off-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 316.9, cap1000 317.2, cap240 240.0, cap144 144.0)
+precise-heavy-3-3              exit 0  checks 3/3  (busy 3 ms: reach 316.7, cap1000 317.0, cap240 240.0, cap144 144.0)
+off-heavy-3-4                  exit 0  checks 3/3  (busy 3 ms: reach 316.7, cap1000 317.5, cap240 240.0, cap144 144.0)
+precise-heavy-3-4              exit 0  checks 3/3  (busy 3 ms: reach 317.3, cap1000 317.2, cap240 240.0, cap144 144.0)
+off-heavy-3-5                  exit 0  checks 3/3  (busy 3 ms: reach 329.2, cap1000 329.1, cap240 238.5, cap144 144.0)
+precise-heavy-3-5              exit 0  checks 3/3  (busy 3 ms: reach 316.2, cap1000 315.9, cap240 240.0, cap144 144.0)
+
+heavy suite, busy 5 ms, 5 runs per variant: best / median [each run]
+  off      reach 198.2 / 193.4 [198.2 / 193.1 / 198.2 / 193.4 / 192.4]  cap1000 198.2 / 192.9 [198.2 / 192.5 / 198.1 / 192.9 / 192.0]  cap240 198.4 / 193.1 [198.3 / 193.0 / 198.4 / 193.1 / 193.0]  cap144 144.0 / 144.0 [144.0 / 144.0 / 144.0 / 144.0 / 144.0]
+  precise  reach 198.3 / 193.2 [198.1 / 193.1 / 192.9 / 198.3 / 193.2]  cap1000 198.2 / 193.4 [198.2 / 193.2 / 192.7 / 198.1 / 193.4]  cap240 198.3 / 193.5 [198.1 / 193.1 / 193.3 / 198.3 / 193.5]  cap144 144.0 / 144.0 [144.0 / 144.0 / 144.0 / 144.0 / 144.0]
+  precise|5    cap1000  best   198.2 vs off   198.2  (+0.0 %; medians +0.2 %)  ok
+  precise|5    cap240   best   198.3 vs off   198.4  (-0.1 %; medians +0.2 %)  ok
+  precise|5    cap144   best   144.0 vs off   144.0  (+0.0 %; medians +0.0 %)  ok
+
+heavy suite, busy 3 ms, 5 runs per variant: best / median [each run]
+  off      reach 329.2 / 316.9 [316.8 / 329.1 / 316.9 / 316.7 / 329.2]  cap1000 329.5 / 317.5 [315.2 / 329.5 / 317.2 / 317.5 / 329.1]  cap240 240.0 / 240.0 [240.0 / 240.0 / 240.0 / 240.0 / 238.5]  cap144 144.0 / 144.0 [144.0 / 144.0 / 144.0 / 144.0 / 144.0]
+  precise  reach 317.3 / 316.5 [316.1 / 316.5 / 316.7 / 317.3 / 316.2]  cap1000 317.2 / 317.0 [316.0 / 317.1 / 317.0 / 317.2 / 315.9]  cap240 240.0 / 240.0 [240.0 / 240.0 / 240.0 / 240.0 / 240.0]  cap144 144.0 / 144.0 [144.0 / 144.0 / 144.0 / 144.0 / 144.0]
+  precise|3    cap1000  best   317.2 vs off   329.5  (-3.7 %; medians -0.2 %)  DROP
+  precise|3    cap240   best   240.0 vs off   240.0  (+0.0 %; medians +0.0 %)  ok
+  precise|3    cap144   best   144.0 vs off   144.0  (+0.0 %; medians +0.0 %)  ok
+
+FRAME-CAP GATE: FAIL

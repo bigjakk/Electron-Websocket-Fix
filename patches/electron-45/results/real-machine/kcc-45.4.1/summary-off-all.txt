@@ -1,0 +1,50 @@
+﻿frame-cap gate  2026-11-21T19:43:55
+exe: C:\projects\electron-builds\45.4.1-kcc\dist\electron.exe
+variants: off,all  parts: A,B  heavy suite: webgl page, busy 5, 3 ms, 5 runs each  features via: commandline
+
+off-launch-60                  exit 0  checks 5/5
+off-launch-144                 exit 0  checks 5/5
+off-launch-240                 exit 0  checks 5/5
+off-runtime-2d                 exit 0  checks 14/14  (uncapped baseline 4955.0 fps, page 2d)
+off-runtime-webgl              exit 0  checks 14/14  (uncapped baseline 5179.7 fps, page webgl2)
+all-launch-60                  exit 0  checks 5/5
+all-launch-144                 exit 0  checks 5/5
+all-launch-240                 exit 0  checks 5/5
+all-runtime-2d                 exit 0  checks 14/14  (uncapped baseline 5209.3 fps, page 2d)
+all-runtime-webgl              exit 0  checks 14/14  (uncapped baseline 5505.6 fps, page webgl2)
+off-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 193.2, cap1000 193.5, cap240 193.3, cap144 144.0)
+all-heavy-5-1                  exit 0  checks 3/3  (busy 5 ms: reach 192.8, cap1000 193.1, cap240 192.6, cap144 144.0)
+off-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 192.8, cap1000 193.0, cap240 192.3, cap144 144.0)
+all-heavy-5-2                  exit 0  checks 3/3  (busy 5 ms: reach 198.2, cap1000 198.3, cap240 198.3, cap144 144.0)
+off-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 193.0, cap1000 193.3, cap240 193.4, cap144 144.0)
+all-heavy-5-3                  exit 0  checks 3/3  (busy 5 ms: reach 193.5, cap1000 193.3, cap240 193.6, cap144 144.0)
+off-heavy-5-4                  exit 0  checks 3/3  (busy 5 ms: reach 198.3, cap1000 198.2, cap240 198.3, cap144 144.0)
+all-heavy-5-4                  exit 0  checks 3/3  (busy 5 ms: reach 193.5, cap1000 187.4, cap240 191.9, cap144 144.0)
+off-heavy-5-5                  exit 0  checks 3/3  (busy 5 ms: reach 198.3, cap1000 198.2, cap240 198.3, cap144 144.0)
+all-heavy-5-5                  exit 0  checks 3/3  (busy 5 ms: reach 198.2, cap1000 198.2, cap240 198.1, cap144 144.0)
+off-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 329.1, cap1000 329.0, cap240 239.4, cap144 144.0)
+all-heavy-3-1                  exit 0  checks 3/3  (busy 3 ms: reach 316.7, cap1000 317.6, cap240 240.0, cap144 144.0)
+off-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 315.1, cap1000 314.5, cap240 240.0, cap144 144.0)
+all-heavy-3-2                  exit 0  checks 3/3  (busy 3 ms: reach 316.2, cap1000 317.1, cap240 240.0, cap144 144.0)
+off-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 316.7, cap1000 317.4, cap240 240.0, cap144 144.0)
+all-heavy-3-3                  exit 0  checks 3/3  (busy 3 ms: reach 329.2, cap1000 329.7, cap240 240.0, cap144 144.0)
+off-heavy-3-4                  exit 0  checks 3/3  (busy 3 ms: reach 316.3, cap1000 317.4, cap240 240.0, cap144 144.0)
+all-heavy-3-4                  exit 0  checks 3/3  (busy 3 ms: reach 315.2, cap1000 316.2, cap240 240.0, cap144 144.0)
+off-heavy-3-5                  exit 0  checks 3/3  (busy 3 ms: reach 316.3, cap1000 316.3, cap240 240.0, cap144 144.0)
+all-heavy-3-5                  exit 0  checks 3/3  (busy 3 ms: reach 316.8, cap1000 317.3, cap240 240.0, cap144 144.0)
+
+heavy suite, busy 5 ms, 5 runs per variant: best / median [each run]
+  off      reach 198.3 / 193.2 [193.2 / 192.8 / 193.0 / 198.3 / 198.3]  cap1000 198.2 / 193.5 [193.5 / 193.0 / 193.3 / 198.2 / 198.2]  cap240 198.3 / 193.4 [193.3 / 192.3 / 193.4 / 198.3 / 198.3]  cap144 144.0 / 144.0 [144.0 / 144.0 / 144.0 / 144.0 / 144.0]
+  all      reach 198.2 / 193.5 [192.8 / 198.2 / 193.5 / 193.5 / 198.2]  cap1000 198.3 / 193.3 [193.1 / 198.3 / 193.3 / 187.4 / 198.2]  cap240 198.3 / 193.6 [192.6 / 198.3 / 193.6 / 191.9 / 198.1]  cap144 144.0 / 144.0 [144.0 / 144.0 / 144.0 / 144.0 / 144.0]
+  all|5        cap1000  best   198.3 vs off   198.2  (+0.0 %; medians -0.1 %)  ok
+  all|5        cap240   best   198.3 vs off   198.3  (+0.0 %; medians +0.1 %)  ok
+  all|5        cap144   best   144.0 vs off   144.0  (+0.0 %; medians +0.0 %)  ok
+
+heavy suite, busy 3 ms, 5 runs per variant: best / median [each run]
+  off      reach 329.1 / 316.3 [329.1 / 315.1 / 316.7 / 316.3 / 316.3]  cap1000 329.0 / 317.4 [329.0 / 314.5 / 317.4 / 317.4 / 316.3]  cap240 240.0 / 240.0 [239.4 / 240.0 / 240.0 / 240.0 / 240.0]  cap144 144.0 / 144.0 [144.0 / 144.0 / 144.0 / 144.0 / 144.0]
+  all      reach 329.2 / 316.7 [316.7 / 316.2 / 329.2 / 315.2 / 316.8]  cap1000 329.7 / 317.3 [317.6 / 317.1 / 329.7 / 316.2 / 317.3]  cap240 240.0 / 240.0 [240.0 / 240.0 / 240.0 / 240.0 / 240.0]  cap144 144.0 / 144.0 [144.0 / 144.0 / 144.0 / 144.0 / 144.0]
+  all|3        cap1000  best   329.7 vs off   329.0  (+0.2 %; medians +0.0 %)  ok
+  all|3        cap240   best   240.0 vs off   240.0  (+0.0 %; medians +0.0 %)  ok
+  all|3        cap144   best   144.0 vs off   144.0  (+0.0 %; medians +0.0 %)  ok
+
+FRAME-CAP GATE: PASS

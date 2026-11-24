@@ -1,0 +1,31 @@
+{
+  "jsFlags": "--cppheap-max-incremental-sweep-duration-ms=1",
+  "expectMs": 1,
+  "checks": [
+    {
+      "name": "incremental sweep slices were traced",
+      "pass": true,
+      "detail": "1164 slices"
+    },
+    {
+      "name": "every slice carries max_duration_ms = 1",
+      "pass": true,
+      "detail": "values seen: {\"1\":1164}"
+    }
+  ],
+  "events": [],
+  "page": {
+    "rounds": 812
+  },
+  "sweepSlices": {
+    "CppGC.SweepInLowPriorityTask": {
+      "count": 1164,
+      "values": {
+        "1": 1164
+      },
+      "maxSliceMs": 1.606,
+      "p50SliceMs": 1.025
+    }
+  },
+  "exitCode": 0
+}

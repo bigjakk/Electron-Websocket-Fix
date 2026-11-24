@@ -1,0 +1,290 @@
+{
+ "label": "pgo-5",
+ "finished": "2026-11-24T11:32:20.621Z",
+ "reason": "1 minute limit",
+ "url": "https://krunker.io/",
+ "versions": {
+  "electron": "45.4.1",
+  "chrome": "156.0.8078.100",
+  "v8": "15.6.75.57-electron.d384e85dffdbe2dd"
+ },
+ "features": "KccNoPointerLockEscCooldown,KccPinRawPointerLock,KccRawInputKeepWheelMotion,KccRawInputFastPath,KccLeanLockedMouseMove,KccSkipUnobservedInputEmits,KccSkipCanvasPerfSampling,KccLabelTexturesOnce,KccCacheVsyncInterval,KccMacFineGpuBackpressure,KccAudioParamCoalesce,KccHrtfPannerKRateAngles,KccX11AllowUnredirect,KccX11RawMouse,KccFrameCapPreciseRelease",
+ "jsFlags": "--cppheap-max-incremental-sweep-duration-ms=1",
+ "frameCap": 240,
+ "fullscreen": true,
+ "rawInput": {
+  "askedFor": true,
+  "rawLocks": 0,
+  "notRawLocks": 0
+ },
+ "note": "intervals between requestAnimationFrame callbacks; low1PctFps = 1000 / 99th-percentile interval",
+ "inMatch": {
+  "uncapped": {
+   "frames": 0
+  },
+  "capped": {
+   "frames": 0
+  }
+ },
+ "outOfMatch": {
+  "uncapped": {
+   "frames": 52238,
+   "seconds": 59,
+   "avgFps": 884.9,
+   "p50Ms": 1.1,
+   "p99Ms": 2.2,
+   "p999Ms": 4.1,
+   "low1PctFps": 454.5,
+   "low01PctFps": 243.9,
+   "maxMs": 757.4,
+   "over8msPerMin": 21.3,
+   "over16msPerMin": 9.1
+  },
+  "capped": {
+   "frames": 0
+  }
+ },
+ "windows": [
+  {
+   "t": 2.7,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 1495.1,
+   "p99Ms": 0.9,
+   "maxMs": 757.4
+  },
+  {
+   "t": 4.1,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 1795.4,
+   "p99Ms": 1.9,
+   "maxMs": 37.9
+  },
+  {
+   "t": 6.1,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 528,
+   "p99Ms": 8,
+   "maxMs": 314.9
+  },
+  {
+   "t": 8.1,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 894.2,
+   "p99Ms": 1.8,
+   "maxMs": 3.3
+  },
+  {
+   "t": 10.1,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 824.4,
+   "p99Ms": 2.2,
+   "maxMs": 3.2
+  },
+  {
+   "t": 12.1,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 873.3,
+   "p99Ms": 1.8,
+   "maxMs": 2.6
+  },
+  {
+   "t": 14.1,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 852.8,
+   "p99Ms": 2.2,
+   "maxMs": 9.6
+  },
+  {
+   "t": 16.1,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 689.3,
+   "p99Ms": 3.4,
+   "maxMs": 5.6
+  },
+  {
+   "t": 18.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 858.8,
+   "p99Ms": 2.2,
+   "maxMs": 7.2
+  },
+  {
+   "t": 20.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 890,
+   "p99Ms": 1.8,
+   "maxMs": 2.5
+  },
+  {
+   "t": 22.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 876.7,
+   "p99Ms": 1.7,
+   "maxMs": 2.3
+  },
+  {
+   "t": 24.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 852.8,
+   "p99Ms": 2.4,
+   "maxMs": 3.7
+  },
+  {
+   "t": 26.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 830,
+   "p99Ms": 2.4,
+   "maxMs": 6.1
+  },
+  {
+   "t": 28.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 964.1,
+   "p99Ms": 1.5,
+   "maxMs": 1.8
+  },
+  {
+   "t": 30.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 887,
+   "p99Ms": 2.3,
+   "maxMs": 6.8
+  },
+  {
+   "t": 32.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 937.7,
+   "p99Ms": 1.9,
+   "maxMs": 9.3
+  },
+  {
+   "t": 34.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 864.6,
+   "p99Ms": 1.9,
+   "maxMs": 2.5
+  },
+  {
+   "t": 36.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 852.3,
+   "p99Ms": 2.1,
+   "maxMs": 2.9
+  },
+  {
+   "t": 38.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 928.8,
+   "p99Ms": 1.7,
+   "maxMs": 3.4
+  },
+  {
+   "t": 40.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 929.3,
+   "p99Ms": 1.7,
+   "maxMs": 2.6
+  },
+  {
+   "t": 42.2,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 851.8,
+   "p99Ms": 2.5,
+   "maxMs": 7.3
+  },
+  {
+   "t": 44.3,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 889.3,
+   "p99Ms": 2,
+   "maxMs": 2.7
+  },
+  {
+   "t": 46.3,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 787,
+   "p99Ms": 2.3,
+   "maxMs": 6.8
+  },
+  {
+   "t": 48.3,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 803.6,
+   "p99Ms": 1.9,
+   "maxMs": 2.6
+  },
+  {
+   "t": 50.3,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 842.7,
+   "p99Ms": 1.8,
+   "maxMs": 2.7
+  },
+  {
+   "t": 52.3,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 843.4,
+   "p99Ms": 1.8,
+   "maxMs": 2.4
+  },
+  {
+   "t": 54.3,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 769,
+   "p99Ms": 2.7,
+   "maxMs": 7.4
+  },
+  {
+   "t": 56.3,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 863.3,
+   "p99Ms": 2.1,
+   "maxMs": 3.3
+  },
+  {
+   "t": 58.3,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 822.8,
+   "p99Ms": 2.1,
+   "maxMs": 3
+  },
+  {
+   "t": 60.1,
+   "cap": "uncapped",
+   "inMatch": false,
+   "fps": 823.6,
+   "p99Ms": 2.1,
+   "maxMs": 4.9
+  }
+ ],
+ "screenshot": "ab-pgo-5-2026-11-24T11-32-20.jpg"
+}

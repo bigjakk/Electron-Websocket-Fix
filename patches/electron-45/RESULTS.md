@@ -2,8 +2,10 @@
 
 Build of Electron **v45.4.1** (Chromium **156.0.8078.100**, V8 **15.6.75.57**) with the patch
 series in this directory, on the machine described below. Raw logs are in
-[`results/`](results/). Nothing here was tested in the game; see
-[What this machine could not check](#what-this-machine-could-not-check).
+[`results/`](results/). The build machine tested nothing in the game; see
+[What this machine could not check](#what-this-machine-could-not-check). One match per
+variant was later played on a second machine
+([Real hardware](#real-hardware-the-same-distzip-on-a-gaming-pc-2026-11-21)).
 
 > **Status: complete, 2026-11-21.** 22 patches. c61 was dropped because its premise was false
 > ([Dropped](#dropped)).
@@ -15,8 +17,22 @@ series in this directory, on the machine described below. Raw logs are in
 >   "cap above reach" verdict rests on a direct test, because the gate's own rule was fooled
 >   by the VM ([Stage 3](#stage-3-release-build-22-patches-the-distzip)).
 > - **Checks:** every synthetic check passes on both builds except c31, which needs a GPU.
+> - **Real hardware:** the dist.zip was then run on a gaming PC with an RTX 5080. Both gates
+>   and every check pass there, c31 included
+>   ([Real hardware](#real-hardware-the-same-distzip-on-a-gaming-pc-2026-11-21)).
 > - **Not compiled:** c32, c50 and c51 (macOS and Linux only).
-> - **In the game:** nothing was tested.
+> - **In the game:** one match per variant on the gaming PC (Electron 43, this build with
+>   the switches off, this build with them on), in a harness and not in the client. The build
+>   plays, holds a 240 cap exactly and is not slower than Electron 43. One match each cannot
+>   rank the switches. c60 trades a wider frame-time spread under a cap for the core it frees.
+>   The harness did not ask for raw mouse movement as the client does, so the raw-input
+>   patches (c12 to c15) were not in play in those matches.
+> - **Profile-guided build (2026-11-24):** the same 22 patches built with a profile recorded
+>   in Krunker. Against the build above, in alternating launches, it ran 16 % and 22 % faster
+>   on the game's menu (two series) and 28.5 % faster in play (three launches each, raw mouse
+>   input on, map and mode of each launch not recorded). Both release gates pass on it on the
+>   gaming PC, switches off and on
+>   ([comparisons](#real-hardware-the-same-distzip-on-a-gaming-pc-2026-11-21)).
 
 ## Machine (Stage 0)
 
@@ -486,6 +502,300 @@ on): **all pass**. c31 is not exercised, as in Stage 2. The results match Stage 
 | c41 | four renders identical | four renders identical |
 | c60 | VizCompositorThread at a 144 cap, 2D page: 88 → 16 % of a core | WebGL page: 98.8 → 41.5 % |
 | input age at a 144 cap (information) | main frame start to DrawAndSwap, 2D page: 6.6 ms (busy 0), 13.5 ms (busy 3) | WebGL page: 13.7 ms at busy 0 and 3, as on the alpha.14 control |
+
+### Real hardware: the same dist.zip on a gaming PC (2026-11-21)
+
+The Stage 3 dist.zip, copied to a second machine and run with the same harness. Results in
+[`results/real-machine/`](results/real-machine/): `kcc-45.4.1/` for this build and
+`control-kcc43/` for the Electron the client ships today. This run was done by the session
+that drafted the series, not by the build session. The folder holds the result files and
+summaries; the raw `.log` files of these runs are kept on the gaming PC, not in the
+repository.
+
+| | |
+|---|---|
+| Machine | Windows 11 Pro 10.0.26200; Intel Core i9-12900KF (16 cores / 24 threads); 32 GB; NVIDIA GeForce RTX 5080 (driver 32.0.16.1742); three monitors, primary 1920x1080 at 143 Hz; console session |
+| Binary | the dist.zip above; zip and `electron.exe` SHA-256 match the values under [Official build](#official-build-outrelease-stage-3) |
+| GPU status | `gpu_compositing: enabled`; WebGL2 on ANGLE D3D11 on the RTX 5080. Everything the build VM ran in software runs on the GPU here |
+| Control | the client's current Electron 43.0.0 build (Chromium 150.0.7871.46), WebSocket gate only |
+
+**WebSocket gate**: all four runs pass on the first attempt.
+
+| Build | Switches | Run | p99 | max | > 50 ms | Result |
+|---|---|---|---|---|---|---|
+| 45.4.1 | off | 1 | 33.1 ms | 42.2 ms | 0/497 | pass |
+| 45.4.1 | off | 2 | 32.6 ms | 33.9 ms | 0/489 | pass |
+| 45.4.1 | on | 1 | 32.3 ms | 33.2 ms | 0/497 | pass |
+| 45.4.1 | on | 2 | 32.3 ms | 32.8 ms | 0/496 | pass |
+| control 43.0.0 | n/a | 1 | 50.6 ms, re-run 41.9 | 78.1 ms, re-run 48.7 | 6/512, re-run 0/487 | pass on the re-run |
+| control 43.0.0 | n/a | 2 | 33.6 ms | 47.9 ms | 0/505 | pass |
+
+**Frame-cap gate**: every launch check (5/5 at 60, 144 and 240) and every runtime check
+(14/14 on the 2D page and on the WebGL page) passed on the first attempt, with the switches
+off, with every switch on and with c60's switch alone. No run was retried and no WebGL
+context was lost. Uncapped, the test pages run at 4,940-5,510 fps.
+
+**A cap above reach** (heavy suite, WebGL page, best of 5 runs interleaved with off):
+
+| Switches | busy 5 ms: cap 1000 / 240 / 144 vs off | busy 3 ms: cap 1000 / 240 / 144 vs off |
+|---|---|---|
+| all | +0.0 / +0.0 / +0.0 % | +0.2 / +0.0 / +0.0 % |
+| c60, first comparison ([`cap-switches/`](results/real-machine/kcc-45.4.1/cap-switches/)) | +0.0 / -0.1 / +0.0 % | **-3.7** / +0.0 / +0.0 % (medians -0.2 / +0.0 / +0.0 %) |
+| c60, 10 runs ([`heavy-repeat-precise-busy3/`](results/real-machine/kcc-45.4.1/heavy-repeat-precise-busy3/)) | not repeated | **+3.8** / +0.0 / +0.0 % (medians +0.0 / +0.0 / +0.0 %) |
+
+c60 alone tripped the best-of-5 rule once (-3.7 % against a -3 % limit) and then beat "off"
+by the same margin in a 10-run repeat. Both come from one thing: **a launch on this machine
+runs in one of two states for its whole life**, about 0.12 ms per frame apart (busy 3 ms: 316
+or 329 fps; busy 5 ms: 193 or 198 fps). Which one a launch gets does not follow the switches:
+
+| Variant | Launches in the fast state, busy 3 ms | busy 5 ms |
+|---|---|---|
+| off | 4 of 23 | 5 of 13 |
+| c60 alone | 2 of 18 | 2 of 8 |
+| every switch on | 1 of 5 | 2 of 5 |
+
+The cause was not looked for. So the rule's two outcomes are the draw of which variant got a
+fast launch, and the direct test is the verdict: within one launch, alternating no cap with a
+cap above reach ([`cap-toggle-precise/`](results/real-machine/kcc-45.4.1/cap-toggle-precise/),
+3 launches per variant and busy level, 8 cycles each), a capped window differs from its
+uncapped neighbours by a median of +0.0 % with the switches off and +0.1 % with c60 at busy
+5 ms (worst pair -1.1 % and -0.6 %), and by at most 0.3 % for the 1000 cap at busy 3 ms with
+either. (At busy 3 ms this page reaches 329 fps here, so the test's 240 cap binds and its
+pairs read -24 to -27 %; that is the cap working, not a loss.) **c60: pass.**
+
+**Synthetic checks** ([`checks/`](results/real-machine/kcc-45.4.1/checks/)): **all pass,
+c31 included.** It is the one check the build VM could not run.
+
+| Check | Real hardware |
+|---|---|
+| c10 | keyup A arrives via sendInputEvent and CDP, switches off and on |
+| c11 | re-lock after Esc: off refused (SecurityError, 43 ms after Esc), on locked (45 ms) |
+| c12 | option-less re-request on a raw lock: off (400,120) accelerated, on (200,120) raw |
+| c13 | motion in wheel packets: off (0,0), on (200,0); wheel deltas equal |
+| c14 | what the page sees is the same as with the switch off |
+| c15 | coalesced / predicted events per move: off up to 8 / 10, on 1 / 0; sums unchanged |
+| e10 | 10/10 checks off and on |
+| c20 | RecordMetrics slices: off 135, on 0 |
+| c21 | identical GL errors and pixels with fast calls, without, and with every switch; loop 1,214 ms with fast calls, 1,260 ms without |
+| v01 | slices carry the limit as set; longest slice 5.38 / 1.61 / 2.53 ms (stock, flag 1, flag 2) |
+| c30 | glError 0, context not lost, 15,669 frames |
+| **c31** | `GetVSyncIntervalIfAvailable` slices: **off 13,344, on 8** |
+| c40 | batch time while suspended flat with the switch; stock grew more than 3x in 4 of 4 scenarios |
+| c41 | four renders identical sample for sample |
+| c60 | VizCompositorThread at a 144 cap, WebGL page: **96.2 % → 0.6 % of a core**; the cap held in every run |
+| input age at a 144 cap (information) | main frame start to DrawAndSwap p50 6.85 ms at busy 0 and 3: one cap period, as on the VM |
+
+**The client starts on this build.** Krunker Civilian Client 1.4.0, run from source on the
+dist.zip's `electron.exe` with a throwaway profile, opened its window, loaded the game page
+and stayed responsive for 35 s. Its log has one line of note: Electron 45 deprecates
+`safeStorage.isEncryptionAvailable`. Nothing was played in the client.
+
+**In a match** ([`in-game/`](results/real-machine/in-game/), 2026-11-22): one match per
+variant, played by a person, in the comparison harness and not in the client.
+[`test/run-krunker-ab.ps1`](../../test/run-krunker-ab.ps1) loads the game page with the
+client's switches, fullscreen at 1920x1080, and records the interval between
+`requestAnimationFrame` callbacks while the pointer is locked. The three runs were started one
+after another, each from a fresh launch. All three exited normally.
+
+**These matches ran without raw mouse input.** The client adds `unadjustedMovement` to the
+game's pointer lock on Windows by default ("Raw Input"); the harness did not. So in all three
+runs the lock was the ordinary one, the raw-input patches (c12, c13, c14, c15) did not run,
+and "switches on" differed from "off" by the other switches only. Found on 2026-11-23 (below);
+the harness has asked for raw movement since then.
+
+| In match | Electron 43.0.0 | 45.4.1, switches off | 45.4.1, switches on |
+|---|---|---|---|
+| Uncapped: average | 626 fps | 738 fps | 689 fps |
+| Uncapped: 2 s windows, 25th to 75th percentile | 493-723 fps | 671-829 fps | 654-742 fps |
+| Uncapped: p99 / p99.9 interval | 3.4 / 7.4 ms | 2.8 / 5.1 ms | 2.8 / 4.8 ms |
+| Uncapped: frames over 16.7 ms, per minute | 9.9 | 6.9 | 4.2 |
+| Uncapped: time measured | 67 s | 104 s | 99 s |
+| 240 cap: average | 240.1 fps | 240.1 fps | 240.1 fps |
+| 240 cap: p99 / p99.9 / longest interval | 4.4 / 5.8 / 8.0 ms | 4.5 / 7.0 / 10.3 ms | 4.7 / 5.1 / 8.3 ms |
+| 240 cap: time measured | 31 s | 50 s | 80 s |
+
+What the three runs show, and what they do not:
+- **The build plays a match and the cap is exact.** The longest uncapped frames (113, 154 and
+  79 ms) all fall in the first six seconds of play.
+- **45.4.1 is not slower than Electron 43 in a match, and has fewer long frames.** The size of
+  the lead is not established. The rate inside one match moves more than the difference
+  between the runs: the Electron 43 match ran at 340-510 fps in its first half and at
+  625-870 fps in its second.
+- **Switches on and off cannot be ranked from one run each.** 689 against 738 fps is 0.10 ms
+  per frame. That is the size of this machine's two launch states (0.12 ms, above), and the
+  switches are fixed at launch, so they cannot be compared inside one launch.
+- **c60 widens the frame-time spread under a cap.** With the switches on, the p99 interval at
+  the 240 cap is 4.7 ms against 4.4-4.5 ms, and the longest frame of a typical 2 s window is
+  5.0 ms against 4.7-4.8 ms. The synthetic c60 check on this machine shows the same at a
+  144 cap: interval spread (sd) 0.07 ms with the switch off and 0.23 ms with it on, p99 7.1
+  against 7.4 ms. The patch's notes expect this: the stock release is exact only because the
+  viz thread spins, and c60 replaces the spin with a timer that fires up to a clock tick
+  late. So c60 buys most of a core in the GPU process for about 0.3 ms of timing spread.
+
+The switch's `spin_us` parameter does not change that within its allowed range
+([`c60-spin-sweep/`](results/real-machine/kcc-45.4.1/c60-spin-sweep/), synthetic WebGL page,
+2 runs of 10 s per cell):
+
+| c60 | 240 cap: interval sd / p99 | 144 cap: interval sd / p99 | VizCompositorThread |
+|---|---|---|---|
+| off | 0.09 ms / 4.3-4.4 ms | 0.07 ms / 7.1 ms | 95-100 % of a core |
+| on, `spin_us` 200 (default) | 0.24 ms / 4.7 ms | 0.23 ms / 7.5 ms | 2-6 % |
+| on, `spin_us` 100 | 0.25-0.26 ms / 4.7 ms | 0.26-0.28 ms / 7.5-7.6 ms | 2-5 % |
+| on, `spin_us` 0 | 0.25-0.26 ms / 4.7-4.8 ms | 0.23-0.25 ms / 7.4-7.5 ms | 2-6 % |
+
+- The synthetic 240 cap reproduces the in-game figures (p99 4.7 ms on, 4.4 ms off).
+- A reading, not a measurement: the wake-up mostly arrives after the release time, so a
+  200 µs lead leaves little to spin for. A lead longer than one clock tick plus the hop to
+  the viz thread (0.5 ms plus roughly 0.1-0.2 ms) should make the release exact again, for
+  under a tenth of a core at a 240 cap. This build clamps `spin_us` to 200, so that needs a
+  patch change and a rebuild to test.
+- One "off" run at 144 had a single 35 ms frame (sd 0.75 ms with it, p99 unchanged). In two
+  "on" runs the harness did not find the viz thread by name and exited 1; the cap held and
+  the whole GPU process used 0.0-0.3 % of a core in both.
+
+**A view flick on the ordinary pointer lock (2026-11-23).** In a 7.5-minute session on the
+instrumented build (the first profile recording, in [`pgo/krunker-train`](../../pgo/krunker-train/),
+switches on) the player saw sudden view flicks that the client on Electron 43 does not show.
+The recording's own counts say which mouse path ran:
+
+| Browser process, 7.5 minutes | Count |
+|---|---|
+| Pointer locks taken (`RenderWidgetHostViewEventHandler::LockPointer`) | 7 |
+| Raw input switched on (`HWNDMessageHandler::RegisterUnadjustedMouseEvent`) | 0 |
+| Raw mouse packets handled (`HWNDMessageHandler::OnInputEvent`) | 0 |
+| Hidden cursor put back in the middle (`MoveCursorToCenter`) | 470 |
+
+- On the ordinary lock Chromium reads movement from the position of the hidden cursor and
+  moves it back to the middle of the window when it comes within 15 % of an edge. That
+  re-centre does not exist on a raw lock. A re-centre read as movement is a view flick; that
+  it is what the player saw is a reading, not something measured.
+- The client locks raw by default, on Electron 43 as on any build, so it does not take this
+  path. The harness did not. Nothing here points at a patch: the raw-input patches did not
+  run at all.
+- Both harnesses now add `unadjustedMovement` the way the client does (`preload.js` in each).
+  Checked on the instrumented build with a test page: raw input switched on 1, re-centres 0.
+- A second session the same day with the fixed harness (5.5 minutes, switches on): 7 pointer
+  locks, all raw; 151,802 raw mouse packets handled; **0 re-centres**. c15's lean path ran
+  57,579 times. No pointer-lock change request reached the browser in either session, so the
+  case c12 guards against did not come up.
+- Whether the player still saw a flick in that second session was not recorded. In the six
+  launches of 2026-11-24 on the two release builds, all on the raw lock with the switches on,
+  **the player saw no flick** (the in-match comparison below). That fits the reading above;
+  the ordinary lock was not played again that day, so it is not a side-by-side test.
+
+**Profile-guided build: first comparison, on the game's menu (2026-11-24).** The same 22
+patches were built a second time with a profile recorded in Krunker
+([`pgo/README.md`](../../pgo/README.md): two sessions on an instrumented build, 13 minutes,
+merged with Electron's stock profile at equal weight). The build ran in `out/ReleasePgo` with
+the Stage 3 `args.gn` plus `pgo_data_path`: 12 h 30 min, 46,706 steps, 0 failed.
+
+| | Stage 3 build (stock profile) | Profile-guided build |
+|---|---|---|
+| dist.zip | 158,245,796 bytes | 162,337,280 bytes, SHA-256 `7bcd914af1fb03dd4fb541327c1f86e8bc37fdb7905f35f5737e6d587929fc33` |
+| `electron.exe` | 249,946,624 bytes | 255,829,504 bytes, SHA-256 `7b661a3b64741ac2d08b367cfac424e5ac200b7b156266d7b3609ec4eabcb445` |
+
+Both hashes were checked again on the gaming PC. The zip is on the build machine, not in the
+repository.
+
+The comparison ([`run-ab-launches.ps1`](../../test/run-ab-launches.ps1), results in
+[`pgo-menu/`](results/real-machine/pgo-menu/)): the two builds launched alternately (A B B A),
+8 launches each, twice. Every switch on. Each launch sat on the game's menu for one minute and
+the first 20 s were left out. The menu draws a live match from a fixed camera, on whatever map
+the matchmaker picked. Nobody played, and the desktop was locked.
+
+| Frames per second, per launch | Stage 3 build (stock profile) | Profile-guided build |
+|---|---|---|
+| Series 1 | 582-691, mean 638 (8 launches) | 706-838, mean 743 (7) |
+| Series 2 | 596-718, mean 673 (8) | 730-897, mean 822 (7) |
+| Series 2, Sandstorm | 718, 717, 670 | 819, 847, 862, 831 |
+| Series 2, Subzero | 596, 714, 630 | 730 |
+| Series 2, Burg | 664, 672 | 897, 771 |
+| 99th-percentile frame, series 2 | 2.30-3.04 ms | 1.90-2.32 ms |
+
+- **On the menu the profile-guided build is faster in every launch:** +16.5 % (series 1) and
+  +22.3 % (series 2) on the means, and +13 % to +25 % map by map in series 2. The maps are
+  known for series 2 only, from a picture of each launch's last frame
+  ([`maps.txt`](results/real-machine/pgo-menu/series-2/maps.txt)).
+- **One launch of the profile-guided build is left out of each series.** In series 2 the
+  picture shows why: the page had stopped at the site's "Verify you are human" check and drew
+  no 3D scene (1,726 fps). Series 1 has no pictures; its launch at 1,724 fps is left out for
+  the same rate. The check was not answered. Thirty-three automated launches in forty minutes
+  are a plausible cause (not checked), and no further series was run.
+- A single launch of the profile-guided build before the two series ran at 1,038 fps. No
+  picture was taken, so what it drew is unknown, and it is not counted.
+- **The release gates could not be run behind the lock screen.** An attempt there measured
+  nothing: every gate page got 0 frames, so its FAIL lines say nothing about the build and
+  are not kept. The gate pages stop drawing on a locked desktop; the comparison harness keeps
+  drawing there, probably because it turns window occlusion off as the client does (a
+  reading, not checked). The gates ran later that day on the unlocked desktop and pass
+  (below).
+- **This is not a match.** The menu has no player input and the desktop was locked, so
+  nothing was shown on the monitor. The Stage 3 build's rate here is in the range of its
+  menu figures from the unlocked desktop on 2026-11-22 (578 and 719 fps). The profile's
+  recordings include time on this menu.
+
+**Profile-guided build: in a match (2026-11-24).** The same script with `-Scene match`
+(results in [`pgo-match/`](results/real-machine/pgo-match/)): three launches a side in the
+order A B B A A B, a person playing each one and ending it with F10. Every switch on, no
+frame cap, fullscreen, desktop unlocked. The harness asked for raw mouse movement and every
+pointer lock was raw (7 locks, 0 not raw), so this is also the first measured play on the raw
+path. Only frames with the pointer locked count.
+
+| Launch | Build | Seconds in match | Frames per second | 1 % low | 0.1 % low | 99th-percentile frame | Frames over 8 ms, per minute |
+|---|---|---|---|---|---|---|---|
+| 1 | Stage 3 (stock profile) | 122 | 418 | 196 | 112 | 5.1 ms | 31 |
+| 2 | Profile-guided | 115 | 533 | 244 | 135 | 4.1 ms | 24 |
+| 3 | Profile-guided | 137 | 626 | 270 | 147 | 3.7 ms | 22 |
+| 4 | Stage 3 (stock profile) | 154 | 473 | 204 | 121 | 4.9 ms | 28 |
+| 5 | Stage 3 (stock profile) | 81 | 467 | 213 | 116 | 4.7 ms | 31 |
+| 6 | Profile-guided | 143 | 587 | 250 | 143 | 4.0 ms | 23 |
+| Mean | Stage 3 / profile-guided | | 452 / 582 | 204 / 255 | 116 / 142 | 4.9 / 3.9 ms | 30 / 23 |
+
+- **In play the profile-guided build is faster in every launch**, and the two ranges do not
+  overlap (418-473 against 533-626). On the script's per-launch figure (the mean of 2-second
+  windows: 418, 469, 465 against 534, 621, 584) that is +28.5 %. The 1 % lows are 25 % higher,
+  the 0.1 % lows 22 % higher, and frames over 8 ms come 23 a minute instead of 30. The single
+  worst frame of a launch shows no pattern (166, 82, 103 ms against 32, 121, 77 ms).
+- **Three launches a side is a first figure.** The permutation test cannot go below 10 % with
+  three and three (2 of the 20 ways to split six launches), and it sits at that floor. What
+  carries the result is the three series together: in the two menu series and in this one,
+  every launch of the profile-guided build is above every launch of the other.
+- **The map and mode of each launch are not recorded**, nor whether all six were the same: the
+  script saves no picture in a match. Inside one launch the rate moves as much as the builds
+  differ (10th to 90th percentile of the 2-second windows: 352-499 in launch 1, 447-629 in
+  launch 2), so what was on screen matters, and the gain per map is not known.
+- The gain is larger in play than on the menu (+16 % and +22 %). Why is not measured.
+- **The player saw no view flick in any of the six launches** (asked after the series). Both
+  builds, raw lock, switches on.
+
+**Profile-guided build: release gates (2026-11-24).** `run-stage.ps1 -Part gates` on the
+gaming PC with the desktop unlocked and nobody at it, 32 minutes
+([`kcc-45.4.1-pgo/`](results/real-machine/kcc-45.4.1-pgo/)). The display is set to turn off
+after 15 idle minutes, so the run held a display-on request for its length.
+
+| | Stage 3 build, 2026-11-21 | Profile-guided build, 2026-11-24 |
+|---|---|---|
+| WebSocket gate, switches off | p99 33.1 and 32.6 ms, none over 50 ms: PASS | p99 32.4 and 32.3 ms, 0 of 507 and 514 over 50 ms: PASS |
+| WebSocket gate, switches on | p99 32.3 and 32.3 ms, none over 50 ms: PASS | p99 32.2 and 32.2 ms, 0 of 510 and 519 over 50 ms: PASS |
+| Frame-cap gate, off and all | PASS | PASS: launch caps 5/5 at 60, 144 and 240; runtime suite 14/14 on the 2D and the WebGL page |
+| Cap above reach, all against off | within 0.2 % | within 0.1 % at busy 5 ms; at busy 3 ms best +3.7 %, medians +0.1 % |
+| Uncapped rate of the gate's pages (2D off, WebGL off, 2D all, WebGL all) | 4,955 / 5,180 / 5,209 / 5,506 fps | 5,756 / 6,267 / 6,056 / 6,314 fps |
+
+- **Both gates pass with the switches off and on**, every run at the first attempt. GPU
+  compositing and WebGL are enabled, WebGL2 on the RTX 5080 through Direct3D 11.
+- The +3.7 % is one launch of five in the faster of the machine's two launch states (330 fps
+  where the others reach 318), the same pair of states as on the Stage 3 build (329 and 316).
+- The gate's own pages run 15 % to 21 % faster uncapped than on the Stage 3 build. That is one
+  launch each, three days apart: an indication that agrees with the game figures, not a
+  comparison.
+- Not run on this build: the c60 gate (`-Part cap-switches`) and the per-patch checks
+  (`-Part checks`).
+
+Still not checked anywhere: a match in the client itself, the c60 gate and the per-patch
+checks on the profile-guided build, more than one match per switch variant (Electron 43, switches off,
+switches on), the raw-input patches off against on in play, more than three launches per
+build in play with the same known map in every launch, real mice at 8 kHz, sessions longer
+than a few minutes, and the macOS and Linux patches.
 
 ## Per patch
 

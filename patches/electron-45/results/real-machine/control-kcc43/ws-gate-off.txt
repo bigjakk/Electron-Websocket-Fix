@@ -1,0 +1,7 @@
+﻿WS starvation gate  flags off  2026-11-21T19:41:42
+exe: C:\projects\kpd clients\Krunker-Civilian-Client\node_modules\electron\dist\electron.exe
+
+WS-off-1               exit 0  p99 50.6 ms  max 78.1 ms  >50ms 6/512  rAF frames 3712  FAIL
+WS-off-1 (attempt 2)   exit 0  p99 41.9 ms  max 48.7 ms  >50ms 0/487  rAF frames 2390  PASS
+WS-off-2               exit 0  p99 33.6 ms  max 47.9 ms  >50ms 0/505  rAF frames 5428  PASS
+WS GATE (off): PASS
