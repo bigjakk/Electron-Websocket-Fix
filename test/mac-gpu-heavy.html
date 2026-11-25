@@ -1,0 +1,103 @@
+<!doctype html>
+<!--
+  GPU-bound WebGL2 page for mac-gpu-backpressure-test.js (c32). A full-window
+  triangle whose fragment shader runs ?iters=N loop iterations per pixel, drawn
+  on every requestAnimationFrame, so that the GPU and not script is the limiting
+  side (the case in which c32's two back-pressure waits can occur).
+  window.kcc: reset(), stats() (frame count, fps, frame-time percentiles, 1 %
+  low), renderer, lost().
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<title>mac-gpu-heavy</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+'use strict';
+const q = new URLSearchParams(location.search);
+const ITERS = Math.max(1, Math.min(4096, Number(q.get('iters') || 256)));
+const c = document.getElementById('c');
+const dpr = window.devicePixelRatio || 1;
+c.width = Math.round(innerWidth * dpr);
+c.height = Math.round(innerHeight * dpr);
+const gl = c.getContext('webgl2', { antialias: false, alpha: false, depth: false, powerPreference: 'high-performance' });
+
+function shader(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, shader(gl.VERTEX_SHADER, `#version 300 es
+void main() {
+  vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+  gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
+}`));
+gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, `#version 300 es
+precision highp float;
+uniform float t;
+uniform int iters;
+uniform vec2 res;
+out vec4 color;
+void main() {
+  vec2 p = gl_FragCoord.xy / res;
+  vec3 acc = vec3(0.0);
+  for (int i = 0; i < 4096; i++) {
+    if (i >= iters) break;
+    float f = float(i) * 0.013;
+    acc += 0.5 + 0.5 * cos(t + f + p.xyx * 6.2831 + vec3(0.0, 2.0, 4.0));
+    p = fract(p * 1.0007 + 0.0003);
+  }
+  color = vec4(acc / float(iters), 1.0);
+}`));
+gl.linkProgram(prog);
+if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+gl.useProgram(prog);
+const uT = gl.getUniformLocation(prog, 't');
+gl.uniform1i(gl.getUniformLocation(prog, 'iters'), ITERS);
+gl.uniform2f(gl.getUniformLocation(prog, 'res'), c.width, c.height);
+gl.bindVertexArray(gl.createVertexArray());
+gl.viewport(0, 0, c.width, c.height);
+
+let times = [];
+function frame(ts) {
+  gl.uniform1f(uT, ts * 0.001);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  times.push(ts);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+const pct = (s, p) => s[Math.min(s.length - 1, Math.floor(p * (s.length - 1)))];
+window.kcc = {
+  renderer: dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
+  size: [c.width, c.height],
+  iters: ITERS,
+  reset() { times = []; },
+  lost() { return gl.isContextLost(); },
+  stats() {
+    const n = times.length;
+    if (n < 2) return { frames: n };
+    const d = [];
+    for (let i = 1; i < n; i++) d.push(times[i] - times[i - 1]);
+    const s = d.slice().sort((a, b) => a - b);
+    return {
+      frames: n,
+      fps: (n - 1) / ((times[n - 1] - times[0]) / 1000),
+      frameMs: { p50: pct(s, 0.5), p90: pct(s, 0.9), p99: pct(s, 0.99), max: s[s.length - 1] },
+      low1PctFps: 1000 / pct(s, 0.99),
+    };
+  },
+};
+</script>
+</body>
+</html>
