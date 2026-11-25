@@ -11,8 +11,12 @@ in the game.
 > - **Builds:** both compiled all 22 patches with no fix.
 > - **Gates and checks:** both release gates and every synthetic check that applies on macOS
 >   pass on both builds.
-> - **Still open:** c12 and c15 need the
->   [manual check](#manual-check-c12-and-c15-with-a-physical-mouse) with a physical mouse.
+> - **c12 and c15:** checked with injected mouse moves, 3 of 3 runs per variant on both builds
+>   ([c12 and c15](#c12-and-c15-with-injected-mouse-input)). Not checked with a physical mouse.
+> - **Not settled:** whether macOS also drops raw movement from a real mouse when it merges its
+>   reports, as it did with injected moves. That is stock behaviour, which the series neither
+>   causes nor fixes. A [physical-mouse check](#manual-check-c12-and-c15-with-a-physical-mouse)
+>   can settle it.
 > - **Release `dist.zip`:** 120,934,276 bytes, SHA-256
 >   `3bbd5ca1e0f379766ffebeb10a263a889e5722d4e491a291761e6ee11d2494e4`.
 
@@ -191,6 +195,7 @@ files:
 | `posix-run-webgl-startup.js` | `run-webgl-startup.ps1` | WebGL startup repeats (`webgl-startup-test.js`) |
 | `posix-run-stage.js` | `run-stage.ps1` | A stage's gates, checks and c32 run |
 | `mac-run-gpu-backpressure.js`, `mac-gpu-backpressure-test.js`, `mac-gpu-heavy.html` | new | c32: the stock trace, then the uncapped rate with the switch off and on |
+| `mac-run-raw-input.js`, `mac-raw-input-test.js`, `mac-mouse-inject.m`, `mac-build-mouse-inject.sh` | new | c12 and c15 with injected mouse moves ([c12 and c15](#c12-and-c15-with-injected-mouse-input)) |
 
 The pass and re-run rules are those of the PowerShell drivers. Added for this machine:
 
@@ -376,7 +381,7 @@ caps hold either way.
 | c40 | PASS: with the switch every scenario stays flat (growth at most 1.5x); stock grew more than 3x in 4 of 4 |
 | c41 | PASS: 4 renders (off x2, on x2) are identical, sample for sample |
 | lat | INFO: under a 144 cap 144.01 fps; main frame start to DrawAndSwap p50 13.83 ms; submit to display draw p50 6.86 ms (busy 0 and 3 ms alike) |
-| raw (c12-c15) | N/A: `raw-input-test.js` injects input with SendInput, which is Windows-only. See [What this machine could not check](#what-this-machine-could-not-check) |
+| raw (c12-c15) | c12, c15: PASS with injected mouse moves, in a later run ([c12 and c15](#c12-and-c15-with-injected-mouse-input)); `raw-input-test.js` itself injects with SendInput, which is Windows-only. c13, c14: N/A, Windows-only |
 | c60 | N/A: Windows-only |
 
 **WebGL startup** (`webgl-startup-test.js`, 60 launches per variant, interleaved): with the
@@ -400,7 +405,7 @@ every switch on, 0 / 0 / 0, rAF/s min 2,679 and median 2,976.
 | c40 | PASS: with the switch every scenario stays flat (growth at most 1.5x); stock grew more than 3x in 4 of 4 |
 | c41 | PASS: 4 renders (off x2, on x2) are identical, sample for sample |
 | lat | INFO: under a 144 cap 144.02 fps. Main frame start to DrawAndSwap p50 6.92 ms, one 144 Hz interval; the DCHECK build took 13.83 ms, two. BeginImplFrame to DrawAndSwap p50 13.77 ms at busy 0 ms and 10.82 ms at busy 3 ms. Submit to display draw p50 6.83 ms and 3.88 ms |
-| raw (c12-c15) | N/A, as on the DCHECK build ([manual check](#manual-check-c12-and-c15-with-a-physical-mouse)) |
+| raw (c12-c15) | c12, c15: PASS with injected mouse moves, in a later run ([c12 and c15](#c12-and-c15-with-injected-mouse-input)). c13, c14: N/A, Windows-only |
 | c60 | N/A: Windows-only |
 
 **WebGL startup** (`webgl-startup-test.js`, 60 launches per variant, interleaved):
@@ -551,6 +556,130 @@ What this is and is not:
 - **The game:** neither result says anything yet about it. Its frames are longer, and its rate
   depends on its own GPU and CPU load.
 
+## c12 and c15 with injected mouse input
+
+**PASS on both builds:** every run of every variant came out as expected, 30 runs, none invalid
+or repeated. These are injected events, not a physical mouse. They show which movement fields
+the lock reads (c12) and what a locked pointermove carries (c15), not how a real device feels.
+
+### How
+
+- **Injector.** macOS lets a process post input events only with the Accessibility permission.
+  For this check the user granted it to one small helper app, `KccMouseInject.app`. Its source
+  is `test/mac-mouse-inject.m`, and `test/mac-build-mouse-inject.sh` builds it, ad-hoc signed and
+  background-only. On the build machine it is in `~/Applications`, and the built app is not
+  committed. No other process got the permission, and removing it again is the user's. The
+  helper only posts mouse-move events, never a button, key or wheel event, and only while the
+  Electron test window is the frontmost app. Otherwise it stops, which happened once, in a stock
+  calibration run, when another app came to the front.
+- **Two movements per move.** Each injected move carries (+11, +7) as the accelerated delta
+  (`kCGMouseEventDeltaX/Y`, which `NSEvent.deltaX/Y` returns) and (+5, +3) as the unaccelerated
+  movement (`kCGEventUnacceleratedPointerMovementX/Y`). Chromium reads the second in a pointer
+  lock with `unadjustedMovement` and the first otherwise (`web_input_event_builders_mac.mm`).
+  So the movement sums show which mode the lock is in, with no acceleration curve involved.
+- **Driver.** `test/mac-run-raw-input.js` runs `test/mac-raw-input-test.js` on the Windows
+  check's page, `raw-input.html`. The variants are off, c12 (`KccPinRawPointerLock`), c15
+  (`KccLeanLockedMouseMove`), c12+c15 and all (README "Everything on"), interleaved, with
+  3 runs each per build.
+
+Each phase injects 40 measured moves:
+
+| Phase | Moves | Lock | Expected |
+|---|---|---|---|
+| adjusted-lock | 20 ms apart | `requestPointerLock()` from unlocked | (440, 280) in every variant |
+| raw-move | 20 ms apart | `requestPointerLock({ unadjustedMovement: true })` | (200, 120) in every variant |
+| raw-burst | 2 ms apart | the raw lock | c15: coalesced lists of 1 and no predicted events. Stock: predicted events |
+| raw-burst-busy | 2 ms apart, main thread busy 25 ms per frame | the raw lock | c15: the same. Stock: coalesced lists of more than 1 |
+| after-plain-request | 20 ms apart | `requestPointerLock()` again, without options, while the raw lock is held (c12's case) | Stock (440, 280): downgraded. c12 (200, 120): still raw |
+
+**Validity.** A run counts only when all 40 measured moves of each 20 ms phase reached the
+page, so that no move was merged or lost and the sums can be compared. A run that misses this,
+or that another app interrupts, is INVALID and is repeated, up to 3 attempts. None was.
+
+### Stock behaviour the test is built around
+
+Both effects showed up in the stock calibration runs (switches off), before any patched
+variant ran. The first calibration runs did not match the expected sums, and the test was
+changed to allow for them:
+
+- **Not every injected move reaches the page.**
+  - A move sent alone by a freshly started helper almost never did.
+  - After a new lock, the first locked moves can go missing. When the cursor is outside the
+    window, taking the lock warps it into the window, and Chromium then drops the first locked
+    move on purpose (`_suppressNextLockedMouseMoveForRecenter` in
+    `render_widget_host_view_cocoa.mm`, stock since Chromium commit 25c584c; no patch of the
+    series touches it).
+  - So every injection starts with 3 lead-in moves of (+1, +1), 150 ms apart. The page records
+    every locked mousemove, and the lead-in moves are told apart by their movement. In every
+    run, 2 of the 3 arrived after a new lock and 3 of 3 in a held lock.
+- **macOS merges injected moves that come faster than the display refresh.**
+  - 40 moves 2 ms apart reached the page as 10-12 events, and as 4-5 with the main thread busy.
+  - In a merged event, the accelerated delta was the sum of the merged moves, but the
+    unaccelerated movement was the value of one move. So in the raw lock the 40 moves summed to
+    (50, 30)-(60, 36), not (200, 120). Hence the 20 ms spacing for the sums.
+  - This was seen with injected events, whose fields are set by hand. Whether macOS merges a
+    real mouse's reports the same way is not known; it may be an artifact of posting events
+    like this. **Not settled.** A check with a physical mouse can settle it
+    ([manual check](#manual-check-c12-and-c15-with-a-physical-mouse)).
+
+### Results, every run
+
+Sums are of the 40 measured moves; all 40 arrived in every 20 ms phase of every run. For each
+burst, the table gives the events at the page per 40 injected, the largest coalesced list and
+the most predicted events of one pointermove.
+
+**Release build (`out/Release`):**
+
+| Variant | Run | adjusted-lock | raw-move | raw-burst | raw-burst-busy | after-plain-request |
+|---|---|---|---|---|---|---|
+| off | 1 | (440, 280) | (200, 120) | 11, 1, 3 | 4, 4, 3 | (440, 280) |
+| off | 2 | (440, 280) | (200, 120) | 11, 1, 3 | 4, 3, 3 | (440, 280) |
+| off | 3 | (440, 280) | (200, 120) | 11, 1, 3 | 4, 4, 3 | (440, 280) |
+| c12 | 1 | (440, 280) | (200, 120) | 11, 1, 3 | 5, 3, 3 | (200, 120) |
+| c12 | 2 | (440, 280) | (200, 120) | 10, 2, 3 | 5, 3, 3 | (200, 120) |
+| c12 | 3 | (440, 280) | (200, 120) | 11, 1, 3 | 5, 3, 3 | (200, 120) |
+| c15 | 1 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (440, 280) |
+| c15 | 2 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (440, 280) |
+| c15 | 3 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (440, 280) |
+| c12+c15 | 1 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (200, 120) |
+| c12+c15 | 2 | (440, 280) | (200, 120) | 11, 1, 0 | 5, 1, 0 | (200, 120) |
+| c12+c15 | 3 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (200, 120) |
+| all | 1 | (440, 280) | (200, 120) | 11, 1, 0 | 5, 1, 0 | (200, 120) |
+| all | 2 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (200, 120) |
+| all | 3 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (200, 120) |
+
+**DCHECK build (`out/Testing`):** no crash, no DCHECK, and no crash line in any log.
+
+| Variant | Run | adjusted-lock | raw-move | raw-burst | raw-burst-busy | after-plain-request |
+|---|---|---|---|---|---|---|
+| off | 1 | (440, 280) | (200, 120) | 11, 1, 3 | 5, 3, 3 | (440, 280) |
+| off | 2 | (440, 280) | (200, 120) | 12, 1, 3 | 5, 3, 3 | (440, 280) |
+| off | 3 | (440, 280) | (200, 120) | 11, 1, 3 | 5, 3, 3 | (440, 280) |
+| c12 | 1 | (440, 280) | (200, 120) | 11, 1, 3 | 5, 3, 3 | (200, 120) |
+| c12 | 2 | (440, 280) | (200, 120) | 11, 1, 3 | 4, 4, 3 | (200, 120) |
+| c12 | 3 | (440, 280) | (200, 120) | 11, 1, 3 | 5, 3, 3 | (200, 120) |
+| c15 | 1 | (440, 280) | (200, 120) | 11, 1, 0 | 5, 1, 0 | (440, 280) |
+| c15 | 2 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (440, 280) |
+| c15 | 3 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (440, 280) |
+| c12+c15 | 1 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (200, 120) |
+| c12+c15 | 2 | (440, 280) | (200, 120) | 11, 1, 0 | 5, 1, 0 | (200, 120) |
+| c12+c15 | 3 | (440, 280) | (200, 120) | 12, 1, 0 | 4, 1, 0 | (200, 120) |
+| all | 1 | (440, 280) | (200, 120) | 11, 1, 0 | 5, 1, 0 | (200, 120) |
+| all | 2 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (200, 120) |
+| all | 3 | (440, 280) | (200, 120) | 11, 1, 0 | 4, 1, 0 | (200, 120) |
+
+**What the switches change**, the same on both builds:
+
+- **c12:** after the plain re-request, the lock stays raw, (200, 120), in 9 of 9 runs with the
+  switch (c12, c12+c15, all). Without it (off, c15), the lock is downgraded to the adjusted
+  path, (440, 280), in 6 of 6: the stock behaviour the patch is for.
+- **c15:** raw moves carry no predicted events and one coalesced entry in 9 of 9 runs with the
+  switch, idle and busy. Without it, a pointermove carries up to 3 predicted events. Coalesced
+  lists stay mostly at 1 while the page is idle, because macOS has already merged the moves,
+  and reach 3-4 entries with the main thread busy. The movement sums are the same with and
+  without the switch.
+- **Neither** changes the adjusted lock, or the raw lock before the re-request.
+
 ## Per patch
 
 What each of the 22 patches got on this machine. Every patch compiled into both builds.
@@ -566,10 +695,10 @@ holds for both builds.
 | e01 | `frame-cap-set-frame-cap` | all | frame-cap gate, runtime and heavy suites (`setFrameCap`) | PASS |
 | c10 | `keyup-after-handled-keydown` | all | c10 | PASS |
 | c11 | `pointer-lock-esc-cooldown` | all | c11 | PASS |
-| c12 | `pin-raw-pointer-lock` | Win, mac | not exercised (needs real mouse input; manual check below) | - |
+| c12 | `pin-raw-pointer-lock` | Win, mac | injected mouse moves ([c12 and c15](#c12-and-c15-with-injected-mouse-input)) | PASS: after a plain re-request the lock stays raw (9 of 9 runs with the switch; downgraded in 6 of 6 without). Not checked with a physical mouse |
 | c13 | `raw-input-keep-wheel-motion` | Win | - | N/A |
 | c14 | `raw-input-fast-path` | Win | - | N/A |
-| c15 | `lean-locked-mouse-move` | Win, mac | not exercised (needs real mouse input; manual check below) | - |
+| c15 | `lean-locked-mouse-move` | Win, mac | injected mouse moves ([c12 and c15](#c12-and-c15-with-injected-mouse-input)) | PASS: raw moves carry no predicted events and one coalesced entry (9 of 9 runs with the switch; without it up to 3 predicted, and lists of up to 4 when busy). Not checked with a physical mouse |
 | e10 | `skip-unobserved-input-emits` | all | e10 | PASS |
 | c20 | `skip-canvas-perf-sampling` | all | c20 | PASS |
 | c21 | `webgl-fast-api-calls` | all | c21 | PASS |
@@ -585,12 +714,11 @@ holds for both builds.
 
 ## What this machine could not check
 
-- **c12 and c15 with real mouse input.** Both patches have macOS code, but the harness's
-  injector for them is SendInput (Windows). On macOS, injecting mouse input would mean giving a
-  process Accessibility or Input Monitoring permission, and that was not done. They ran with
-  every switch on in every gate and check (no crash, no DCHECK), but their effect was not
-  observed. A manual check with a physical mouse is in `test/mac-raw-mouse-manual.js`
-  ([below](#manual-check-c12-and-c15-with-a-physical-mouse)).
+- **c12 and c15 with a physical mouse.** Both were checked with injected moves
+  ([c12 and c15](#c12-and-c15-with-injected-mouse-input)). These show which fields the lock
+  reads and what a locked pointermove carries. Not checked: a real device, and whether macOS
+  also drops raw movement from a real mouse's reports when it merges them, as it did with
+  injected moves ([manual check](#manual-check-c12-and-c15-with-a-physical-mouse)).
 - **c13, c14, c31, c60:** Windows-only code paths. **c50, c51:** Linux/X11 only.
 - **CustomMaxPendingFrames:count/2** was kept out of every gate (documented conflict with the
   frame cap) and not measured.
@@ -624,9 +752,24 @@ In each launch:
      fast mouse. With `KccLeanLockedMouseMove`: 0 predicted events and 1 coalesced entry on
      every move.
 
+To settle the merge question from the injected check, one launch with the switches off is
+enough. In the raw lock (before R), sweep a measured distance, for example 10 cm along a ruler,
+once slowly and once fast, and read:
+
+- **The largest coalesced list per move** (the c15 table) during the fast sweep. Above 1:
+  macOS handed Chromium several reports per frame, so nothing was merged before Chromium, and
+  the injected result is an artifact of injection. 1: macOS merged the reports.
+- **The two sums against the mouse's resolution**, if it is known: a sweep of d cm should give
+  about DPI × d / 2.54 counts. Sums far below that mean raw movement is lost.
+- **"fast / slow".** Clearly below 1 also means raw movement is lost. About 1 does not settle it
+  on its own: a 1000 Hz mouse reports every millisecond in any steady sweep, slow or fast, so
+  both sweeps could lose a similar share.
+
 ## Raw output
 
 Logs, traces and per-run JSON are under `results/macos/` on the build machine and are not
 committed (`*.log` is ignored): `stage2-testing/` for the DCHECK build, `stage3-release/` for
-the Release build, and the build logs next to them. Only `results/macos/base-commits.txt` is
+the Release build, and the build logs next to them. The injected c12/c15 check is in
+`raw-input-release/` and `raw-input-testing/`: `series/` holds the counted runs, and the stock
+calibration and diagnosis runs are next to it. Only `results/macos/base-commits.txt` is
 committed.
