@@ -4,11 +4,16 @@
 //   electron x11-raw-mouse-test.js --kcc-out=FILE [--kcc-vmouse-fifo=PATH]
 //       [--enable-features=...] --ozone-platform=x11
 //
-// Needs the X11 session of linux-x11-env.sh: Xorg with libinput, openbox, and
-// the uinput mouse "kcc-virtual-mouse" (its FIFO from --kcc-vmouse-fifo or
-// $KCC_VMOUSE_FIFO). That mouse takes the real device path: libinput pointer
-// acceleration applies to its core motion, XInput2 raw events carry its device
-// counts. Keys go in through XTEST (xdotool).
+// Needs an X11 session in $DISPLAY with the uinput mouse "kcc-virtual-mouse"
+// (its FIFO from --kcc-vmouse-fifo or $KCC_VMOUSE_FIFO): the test server of
+// "linux-x11-env.sh start" (Xorg dummy, libinput, openbox), or a desktop's Xorg
+// session with "linux-x11-env.sh start-mouse". That mouse takes the real device
+// path: libinput pointer acceleration applies to its core motion, XInput2 raw
+// events carry its device counts. The acceleration phases set the mouse's
+// libinput properties with xinput, which needs Xorg's libinput driver; under
+// XWayland they cannot be set and the run reports that as a problem. Keys go in
+// through XTEST (xdotool); before anything else the script checks, as a
+// control, whether an XTEST Alt+Tab moves the focus at all with no lock held.
 //
 // The page is raw-input.html. The script asks for pointer lock with
 // { unadjustedMovement: true } (user gesture through executeJavaScript(...,
@@ -131,6 +136,21 @@ app.whenReady().then(async () => {
     const handle = win.getNativeWindowHandle();
     results.xid = handle.length >= 8 ? Number(handle.readBigUInt64LE(0)) : handle.readUInt32LE(0);
     results.focusAtStart = await focusedWindow();
+    // Control for the alt-tab phase: does the window manager move the focus on
+    // an XTEST Alt+Tab at all, with no lock held? (If not, that phase cannot
+    // show anything, and linux-run-checks.js says so instead of failing it.)
+    {
+      const before = await focusedWindow();
+      await xdotool('key', 'alt+Tab');
+      await sleep(800);
+      const after = await focusedWindow();
+      await xdotool('key', 'alt+Tab');
+      await sleep(800);
+      const back = await focusedWindow();
+      results.altTabControl = { before, after, back, switched: after !== before && back === before };
+      log(`alt-tab control (no lock): ${JSON.stringify(results.altTabControl)}`);
+      if (back !== before) { win.focus(); wc.focus(); await sleep(500); }
+    }
     const isLocked = () => wc.executeJavaScript('kccLocked()');
     // MouseEvent.buttons of every locked mousemove, as a histogram.
     await wc.executeJavaScript(`(() => {

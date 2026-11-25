@@ -9,9 +9,11 @@ on the build machine under `results/linux/` (not committed). Nothing was tested 
 > no GPU**: Chromium renders in software (SwiftShader), and the tests run in a dedicated X
 > server, **Xorg with the dummy video driver**, with openbox as the window manager (no
 > compositor) and a uinput virtual mouse driven through libinput (see
-> [Test environment](#test-environment)). The Windows build machine had the same limit; its
-> results were later confirmed on a PC with a real GPU. Whether a GPU-backed Linux desktop is
-> available for the same confirmation is the user's call.
+> [Test environment](#test-environment)). Every result in this file is a **build-machine
+> result under software rendering**. The Windows build machine had the same limit; its
+> results were later confirmed on a PC with a real GPU. The Linux Release build is to be
+> checked the same way on a Linux machine with a GPU: frame rates, c50's effect under a real
+> compositor and c51 with a physical mouse are statements for that machine, not this one.
 
 > **Status:** in progress (Stage 0 done; Stage 1 running).
 
@@ -99,6 +101,7 @@ a physical mouse.
 
 ```sh
 test/linux-x11-env.sh start 1          # Xorg :1, openbox, virtual mouse; prints DISPLAY and KCC_VMOUSE_FIFO
+test/linux-x11-env.sh start-mouse      # on a desktop instead: the virtual mouse alone, in $DISPLAY
 test/linux-x11-env.sh accel adaptive 1 # libinput profile and speed of the virtual mouse
 test/linux-x11-env.sh mouse move 200 120 40 2
 test/linux-x11-env.sh stop
@@ -111,7 +114,7 @@ in Node, keep the same pass rules, feature list, arguments and re-run rules:
 
 | Windows | Linux |
 |---|---|
-| `kcc-flags.ps1` | `linux-common.js` (also adds `--ozone-platform=x11` and `--no-sandbox` to every run) |
+| `kcc-flags.ps1` | `linux-common.js` (also the platform switches, below) |
 | `run-ws-gate.ps1` | `linux-run-ws-gate.js` |
 | `run-frame-cap-gate.ps1` | `linux-run-frame-cap-gate.js` (variants `off`, `all`; `precise` is Windows-only) |
 | `run-checks.ps1` | `linux-run-checks.js` (c10, c11, e10, c21, v01, c20/c30, c40, c41, plus c50 and c51) |
@@ -119,23 +122,32 @@ in Node, keep the same pass rules, feature list, arguments and re-run rules:
 | `raw-input-test.js` + `send-input.ps1` | `x11-raw-mouse-test.js` + `linux-vmouse.py` (c51; also c12 and c15 on the X11 raw path) |
 | (none) | `x11-window-props-test.js` (c50) |
 
-Every run gets `--ozone-platform=x11 --no-sandbox --disable-gpu --enable-unsafe-swiftshader`
-(`linux-common.js`; `KCC_NO_SWIFTSHADER=1` drops the last two on a machine with a GPU):
+The drivers use the X server in `$DISPLAY`. Every run gets `--ozone-platform=x11`; two more
+switches are for particular machines and are **off unless asked for**, so that a run on a
+desktop with a GPU never gets them by accident. Every summary and log header records the
+switches its runs used. On this machine every run used both:
 
-- `--no-sandbox`: Ubuntu 24.04 restricts unprivileged user namespaces, so an electron run
-  from a build directory cannot start its sandbox; the v42 to v44 Linux tests ran the same
-  way.
-- `--disable-gpu --enable-unsafe-swiftshader`: without a GPU and without these switches the
-  GPU process exits at start-up until Chromium disables GPU access, and WebGL is unavailable
-  (`frame-cap.html` then silently draws on a 2D canvas; the Linux frame-cap driver now fails
-  such a WebGL suite). With `--enable-unsafe-swiftshader` alone the page's WebGL2 context was
-  lost at load in **5 of 5** launches of `webgl-startup-test.js` (v44.0.0 binary); with
-  `--disable-gpu` added, 0 of 5. That combination gives what the Windows build machine had:
-  software compositing (`gpu_compositing: disabled_software`) and WebGL on a software
-  rasteriser (ANGLE over SwiftShader here, over WARP there). The third combination tried,
+- `--no-sandbox` (driver option `--no-sandbox`): Ubuntu 24.04 restricts unprivileged user
+  namespaces, and the `chrome-sandbox` helper of a build directory or an unpacked zip is
+  not setuid root, so electron cannot start its sandbox here; the v42 to v44 Linux tests ran
+  the same way.
+- `--disable-gpu --enable-unsafe-swiftshader` (driver option `--software-rendering`): without
+  a GPU and without these switches the GPU process exits at start-up until Chromium disables
+  GPU access, and WebGL is unavailable (`frame-cap.html` then silently draws on a 2D canvas;
+  the Linux frame-cap driver fails such a WebGL suite). With `--enable-unsafe-swiftshader`
+  alone the page's WebGL2 context was lost at load in **5 of 5** launches of
+  `webgl-startup-test.js` (v44.0.0 binary); with `--disable-gpu` added, 0 of 5. That
+  combination gives what the Windows build machine had: software compositing
+  (`gpu_compositing: disabled_software`) and WebGL on a software rasteriser (ANGLE over
+  SwiftShader here, over WARP there). The third combination tried,
   `--use-angle=swiftshader`, puts the display compositor on SwiftShader's Vulkan device: no
   loss, but a different output path from the Windows reference and about a third of the
   frame rate, so it is not used.
+
+Without a virtual mouse (`KCC_VMOUSE_FIFO` unset) the c51 runs, and with them c12 and c15 on
+the X11 raw path, are reported as SKIP, and the last line says which checks were skipped;
+the Alt+Tab part of c51 is skipped only when an Alt+Tab with no lock held does not move the
+focus either (the test runs that control first).
 
 Dry run of the harness on the archived v44.0.0 Linux build (stock for c50 and c51): the
 unadjusted lock is refused (`NotSupportedError`) and the plain lock follows acceleration

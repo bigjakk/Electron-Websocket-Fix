@@ -5,6 +5,13 @@
 //   node linux-run-frame-cap-gate.js --exe <electron> --out <dir>
 //       [--variants off,all] [--busy 5,3] [--heavy-runs 5] [--parts A,B]
 //       [--heavy-mode webgl|2d] [--features-via commandline|js] [--window-ms N]
+//       [--software-rendering] [--no-sandbox]
+//
+// --software-rendering, --no-sandbox: only on a machine that needs them (the
+// build VM: no GPU, Ubuntu 24.04); see linux-common.js. Off by default, so a
+// run on a desktop with a GPU uses the GPU. Runs use the X server in $DISPLAY.
+// The summary lists every measured rate of each suite, the uncapped ones
+// included, so that it shows which caps were within the page's reach.
 //
 // Part A, for every variant: the launch suite for CustomFrameCap:fps/60, /144
 // and /240 (2D page), and the runtime suite (setFrameCap 60/144/240, hide/show,
@@ -47,7 +54,7 @@ if (!o.exe || !o.out || variants.some((v) => !['off', 'all'].includes(v))) {
 }
 const say = c.summaryWriter(path.join(o.out, `summary-${variants.join('-')}.txt`),
   `frame-cap gate  ${c.stamp()}\nexe: ${o.exe}\nvariants: ${variants.join(',')}  parts: ${o.parts}  heavy suite: ${o['heavy-mode']} page, ` +
-  `busy ${busyList.join(', ')} ms, ${heavyRuns} runs each  features via: ${o['features-via']}\nplatform args: ${c.PLATFORM_ARGS.join(' ')}  DISPLAY=${process.env.DISPLAY || ''}\n`);
+  `busy ${busyList.join(', ')} ms, ${heavyRuns} runs each  features via: ${o['features-via']}\nplatform args: ${c.platformArgs().join(' ')}  DISPLAY=${process.env.DISPLAY || ''}\n`);
 
 const variantFeatures = (v) => (v === 'all' ? c.KCC_ALL_FEATURES : []);
 const variantJs = (v) => (v === 'all' ? [`--js-flags=${c.KCC_ALL_JS_FLAGS}`] : []);

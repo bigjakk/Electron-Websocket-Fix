@@ -9,7 +9,11 @@
 // switch: 1 on an ordinary opaque top-level window that is not
 // override-redirect, 2 on the others. The script only records;
 // linux-run-checks.js judges. Without a compositing window manager only the
-// property can be checked, not whether a compositor then unredirects.
+// property can be checked, not whether a compositor then unredirects; with
+// one, the property is still all this script reads (whether the compositor
+// honours it is the compositor's, and not visible here). It records the window
+// manager's name (_NET_SUPPORTING_WM_CHECK, _NET_WM_NAME) to say which ran.
+// Runs in the X server of $DISPLAY.
 //
 // Exit code: 0 ran, 2 harness error.
 'use strict';
@@ -31,6 +35,10 @@ const tool = (cmd, args) => { try { return execFileSync(cmd, args, { encoding: '
 
 app.whenReady().then(async () => {
   try {
+    const check = /window id # (0x[0-9a-f]+)/i.exec(tool('xprop', ['-root', '_NET_SUPPORTING_WM_CHECK']));
+    const wmName = check ? /=\s*"(.*)"/.exec(tool('xprop', ['-id', check[1], '_NET_WM_NAME'])) : null;
+    results.windowManager = wmName ? wmName[1] : null;
+    log(`window manager: ${results.windowManager}`);
     const kinds = [
       ['ordinary', {}],
       ['transparent', { transparent: true, frame: false }],

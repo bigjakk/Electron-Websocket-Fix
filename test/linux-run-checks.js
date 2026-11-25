@@ -10,10 +10,26 @@
 //
 //   node linux-run-checks.js --exe <electron> --out <dir>
 //        [--only c10,c11,e10,c21,v01,c20,c40,c41,c50,c51]
+//        [--software-rendering] [--no-sandbox]
 //
-// c51 needs the session of linux-x11-env.sh ($DISPLAY and $KCC_VMOUSE_FIFO).
-// Writes one log / JSON per run into --out and a summary.txt. A check that
-// cannot be exercised on this machine says so instead of passing.
+// --software-rendering, --no-sandbox: only on a machine that needs them (the
+// build VM: no GPU, Ubuntu 24.04); see linux-common.js. Off by default, so a
+// run on a desktop with a GPU uses the GPU.
+// Runs use the X server in $DISPLAY: a desktop X11 session, or the test server
+// of linux-x11-env.sh. c51 also needs a uinput virtual mouse in that X server,
+// named by $KCC_VMOUSE_FIFO: "linux-x11-env.sh start" starts one with the test
+// server, "linux-x11-env.sh start-mouse" one alone in a desktop session (both
+// need sudo, for /dev/uinput). Without it c51, and c12 and c15 on the X11 raw
+// path, are SKIPPED with a line that says so, never passed. The Alt+Tab part of
+// c51 is skipped, and says so, only when Alt+Tab does not move the focus even
+// with no lock held (a window manager that ignores XTEST keys; a Wayland
+// compositor never sees them). c50 checks the window hint only: whether a
+// compositor then unredirects the window is not visible to this script.
+//
+// Writes one log / JSON per run into --out and a summary.txt. The last line is
+// "SYNTHETIC CHECKS: PASS", "... PASS, with checks SKIPPED ..." or "... SOME
+// FAILED". Exit code: 0 all passed, 1 a check failed, 3 none failed but some
+// were skipped.
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -27,9 +43,11 @@ const only = c.list(o.only);
 if (!o.exe || !o.out) { console.error('usage: node linux-run-checks.js --exe <electron> --out <dir> [--only ...]'); process.exit(2); }
 const OUT = path.resolve(o.out);
 const say = c.summaryWriter(path.join(OUT, 'summary.txt'),
-  `synthetic checks (Linux)  ${c.stamp()}\nexe: ${o.exe}\nchecks: ${only.join(',')}\nplatform args: ${c.PLATFORM_ARGS.join(' ')}  DISPLAY=${process.env.DISPLAY || ''}\n`);
+  `synthetic checks (Linux)  ${c.stamp()}\nexe: ${o.exe}\nchecks: ${only.join(',')}\nplatform args: ${c.platformArgs().join(' ')}  DISPLAY=${process.env.DISPLAY || ''}\n`);
 let allPass = true;
 function verdict(name, ok, detail) { if (!ok) allPass = false; say(`${name.padEnd(6)} ${(ok ? 'PASS' : 'FAIL').padEnd(5)} ${detail}`); }
+const skipped = [];
+function skip(name, detail) { skipped.push(name); say(`${name.padEnd(6)} SKIP  ${detail}`); }
 function run(name, argv) {
   const log = path.join(OUT, `${name}.log`);
   const code = c.runElectron(o.exe, argv, log);
@@ -174,7 +192,7 @@ if (only.includes('c50')) {
     const r = run(name, ['x11-window-props-test.js', outArg(name), ...c.joinFeatures(f)]);
     r50[mode] = r;
     const ws = (r.res || {}).windows || [];
-    say(`       c50 ${mode}: exit ${r.code}; ${ws.map((w) => `${w.kind} ${w.bypassCompositor} (override-redirect ${w.overrideRedirect}, depth ${w.depth})`).join(', ')}${crashNote(r)}`);
+    say(`       c50 ${mode}: exit ${r.code}; window manager ${(r.res || {}).windowManager}; ${ws.map((w) => `${w.kind} ${w.bypassCompositor} (override-redirect ${w.overrideRedirect}, depth ${w.depth})`).join(', ')}${crashNote(r)}`);
   }
   const vals = (mode) => Object.fromEntries((((r50[mode].res || {}).windows) || []).map((w) => [w.kind, w.bypassCompositor]));
   const want = { ordinary: 1, transparent: 2, 'non-focusable': 2 };
@@ -188,9 +206,14 @@ if (only.includes('c50')) {
 
 // ---- c51 (+ c12, c15 on X11): raw pointer lock through the uinput mouse ----------
 if (only.includes('c51')) {
-  if (!process.env.DISPLAY || !process.env.KCC_VMOUSE_FIFO) {
-    say('c51    N/A   needs the linux-x11-env.sh session (DISPLAY and KCC_VMOUSE_FIFO unset); c12/c15 on X11 not checked either');
-    allPass = false;
+  const fifo = process.env.KCC_VMOUSE_FIFO || '';
+  const noMouse = !process.env.DISPLAY ? 'DISPLAY is not set'
+    : !fifo ? 'no virtual mouse: KCC_VMOUSE_FIFO is not set (linux-x11-env.sh start-mouse starts one; it needs sudo, for /dev/uinput)'
+      : !fs.existsSync(fifo) ? `no virtual mouse: ${fifo} does not exist (linux-x11-env.sh start-mouse starts one)` : '';
+  if (noMouse) {
+    skip('c51', `${noMouse}: c51 NOT checked`);
+    skip('c12', 'on the X11 raw path: NOT checked (it needs the c51 runs)');
+    skip('c15', 'on the X11 raw path: NOT checked (it needs the c51 runs)');
   } else {
     const cfgs = { off: [], c51: ['KccX11RawMouse'], 'c51+c12': ['KccX11RawMouse', 'KccPinRawPointerLock'], 'c51+c15': ['KccX11RawMouse', 'KccLeanLockedMouseMove'], all: c.KCC_ALL_FEATURES };
     // MouseEvent.buttons histogram of a phase's locked mousemoves: "N moves, buttons {value: count}".
@@ -228,10 +251,21 @@ if (only.includes('c51')) {
       verdict('c51', clean(R[k]) && L.unadjusted === 'locked' && L.kind === 'raw', `${k === 'c51' ? 'KccX11RawMouse' : 'every switch'}: requestPointerLock({unadjustedMovement:true}) -> ${L.unadjusted}`);
       verdict('c51', clean(R[k]) && MOVES.every((n) => exact(ph(k)[n])),
         `${k}: movement = XInput2 raw device counts in every phase, whatever the acceleration and the speed: ${sums(k, MOVES)} (must all be (200,120))`);
-      verdict('c51', clean(R[k]) && L.kind === 'raw' && escOk(k) && tabOk(k),
-        `${k}: ${L.kind} lock; Escape released it: ${ph(k).esc ? !ph(k).esc.lockedAfter : 'n/a'}, mouse moved after it: ${ph(k).esc ? ph(k).esc.pointer[1].x !== ph(k).esc.pointer[0].x : 'n/a'}; ` +
-        `Alt+Tab released it: ${ph(k)['alt-tab'] ? !ph(k)['alt-tab'].lockedAfter : 'n/a'}, focus to another application: ${ph(k)['alt-tab'] ? ph(k)['alt-tab'].focusAfter !== R[k].res.xid : 'n/a'}, ` +
-        `locked movement while it had the focus: ${ph(k)['alt-tab'] ? `(${ph(k)['alt-tab'].stats.mx},${ph(k)['alt-tab'].stats.my})` : 'n/a'} (must be (0,0))`);
+      verdict('c51', clean(R[k]) && L.kind === 'raw' && escOk(k),
+        `${k}: ${L.kind} lock; Escape released it: ${ph(k).esc ? !ph(k).esc.lockedAfter : 'n/a'}, mouse moved after it: ${ph(k).esc ? ph(k).esc.pointer[1].x !== ph(k).esc.pointer[0].x : 'n/a'}`);
+      // Alt+Tab is the window manager's: if it does not move the focus with no
+      // lock held either (the control the test runs first), the release on
+      // focus loss cannot be checked here. Otherwise a focus that stays is a fail.
+      const ctl = (R[k].res || {}).altTabControl;
+      const t = ph(k)['alt-tab'];
+      if (clean(R[k]) && ctl && !ctl.switched) {
+        skip('c51', `${k}: Alt+Tab with no lock held did not move the focus either (${ctl.before} -> ${ctl.after}): this window manager ignores an XTEST Alt+Tab, so the release of the lock on focus loss is NOT checked`);
+      } else {
+        verdict('c51', clean(R[k]) && L.kind === 'raw' && Boolean(ctl) && tabOk(k),
+          `${k}: ${L.kind} lock; Alt+Tab released it: ${t ? !t.lockedAfter : 'n/a'}, focus to another application: ${t ? t.focusAfter !== R[k].res.xid : 'n/a'}, ` +
+          `locked movement while it had the focus: ${t ? `(${t.stats.mx},${t.stats.my})` : 'n/a'} (must be (0,0)), focus back after a second Alt+Tab: ${t ? t.focusBack === R[k].res.xid : 'n/a'}` +
+          ` (control, no lock: Alt+Tab moved the focus: ${ctl ? ctl.switched : 'n/a'})`);
+      }
       const d = ph(k).drag;
       verdict('c51', clean(R[k]) && L.kind === 'raw' && d && d.lock === 'locked' && d.movesWhileDown > 0 && d.buttonsZeroWhileDown === 0,
         `${k}: ${L.kind} lock taken in mousedown, moved with the button down: ${d ? `${d.buttonsZeroWhileDown} of ${d.movesWhileDown} locked mousemoves had buttons 0 (first ${jsonc(d.firstButtons)}; must be none)` : 'n/a'}`);
@@ -261,5 +295,6 @@ if (only.includes('c51')) {
   }
 }
 
-say(`\n${allPass ? 'SYNTHETIC CHECKS: PASS' : 'SYNTHETIC CHECKS: SOME FAILED (see above)'}`);
-process.exit(allPass ? 0 : 1);
+const skippedText = skipped.length ? `, with checks SKIPPED (not checked on this machine): ${[...new Set(skipped)].join(', ')}` : '';
+say(`\n${allPass ? `SYNTHETIC CHECKS: PASS${skippedText}` : `SYNTHETIC CHECKS: SOME FAILED (see above)${skippedText}`}`);
+process.exit(!allPass ? 1 : skipped.length ? 3 : 0);

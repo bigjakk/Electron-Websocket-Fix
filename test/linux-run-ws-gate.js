@@ -5,9 +5,13 @@
 // inconclusive, not a pass).
 //
 //   node linux-run-ws-gate.js --exe <electron> --out <dir> [--flags off|on] [--runs 2]
+//        [--software-rendering] [--no-sandbox]
 //
 // --flags on adds every switch of the series (README "Everything on") and the
 // --js-flags value.
+// --software-rendering, --no-sandbox: only on a machine that needs them (the
+// build VM: no GPU, Ubuntu 24.04); see linux-common.js. Off by default, so a
+// run on a desktop with a GPU uses the GPU. Runs use the X server in $DISPLAY.
 //
 // Re-runs, as on Windows: a run that exited cleanly with frames but missed only
 // the latency limits is run once more, and both attempts are reported; a
@@ -25,7 +29,7 @@ if (!o.exe || !o.out || !['off', 'on'].includes(o.flags)) {
 }
 const runs = parseInt(o.runs, 10);
 const say = c.summaryWriter(path.join(o.out, `ws-gate-${o.flags}.txt`),
-  `WS starvation gate  flags ${o.flags}  ${c.stamp()}\nexe: ${o.exe}\nplatform args: ${c.PLATFORM_ARGS.join(' ')}  DISPLAY=${process.env.DISPLAY || ''}\n`);
+  `WS starvation gate  flags ${o.flags}  ${c.stamp()}\nexe: ${o.exe}\nplatform args: ${c.platformArgs().join(' ')}  DISPLAY=${process.env.DISPLAY || ''}\n`);
 const extra = o.flags === 'on' ? [...c.joinFeatures(c.KCC_ALL_FEATURES), `--js-flags=${c.KCC_ALL_JS_FLAGS}`] : [];
 
 const num = (text, re) => { const m = re.exec(text); return m ? Number(m[1]) : null; };

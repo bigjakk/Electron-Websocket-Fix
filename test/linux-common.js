@@ -3,20 +3,33 @@
 // exactly as patches/electron-45/README.md lists them under "Everything on",
 // and how one Electron run is started and logged.
 //
-// Every run gets --ozone-platform=x11 (the client runs on X11) and, unless
-// KCC_SANDBOX=1 is set, --no-sandbox: Ubuntu 24.04 restricts unprivileged user
-// namespaces, so a build tree's electron cannot start its sandbox there.
-// Unless KCC_NO_SWIFTSHADER=1 is set, also --disable-gpu
-// --enable-unsafe-swiftshader, for a machine without a GPU. Without them the
-// GPU process exits at start-up until Chromium disables GPU access, and WebGL
-// is unavailable. With --enable-unsafe-swiftshader alone the GPU process first
-// fails on hardware GL and the page's WebGL context is lost at load (5 of 5
-// launches of webgl-startup-test.js here); with --disable-gpu as well it starts
-// in software mode at once (0 of 5 lost). The display compositor then runs its
-// software output path and WebGL runs on ANGLE over SwiftShader: what the
-// Windows build machine had (software compositing, WebGL on WARP). On a machine
-// with a GPU set KCC_NO_SWIFTSHADER=1 to leave both out.
-// Runs use the X server in $DISPLAY (see linux-x11-env.sh).
+// Platform switches. Every run gets --ozone-platform=x11 (the client runs on
+// X11, also under XWayland) and uses the X server in $DISPLAY, whatever it is:
+// a desktop session, or the test server of linux-x11-env.sh. Two more switches
+// are for particular machines only. They are OFF unless asked for, so that a
+// run on a desktop with a GPU never gets them by accident, and every summary
+// and log header records the switches its runs used. Every driver takes them
+// as options (and passes them on to the drivers it starts):
+//
+//   --software-rendering   (or KCC_SOFTWARE_RENDERING=1)
+//       adds --disable-gpu --enable-unsafe-swiftshader, for a machine WITHOUT a
+//       GPU, such as the build VM. Without them the GPU process there exits at
+//       start-up until Chromium disables GPU access, and WebGL is unavailable.
+//       With --enable-unsafe-swiftshader alone the GPU process first fails on
+//       hardware GL and the page's WebGL context is lost at load (5 of 5
+//       launches of webgl-startup-test.js on the build VM); with --disable-gpu
+//       as well it starts in software mode at once (0 of 5 lost). The display
+//       compositor then runs its software output path and WebGL runs on ANGLE
+//       over SwiftShader: what the Windows build machine had (software
+//       compositing, WebGL on WARP). Never on a machine with a GPU: the run
+//       would measure the software rasteriser, not the GPU.
+//   --no-sandbox   (or KCC_NO_SANDBOX=1)
+//       adds --no-sandbox, only where Chromium's sandbox cannot start: Ubuntu
+//       23.10 and later restrict unprivileged user namespaces (AppArmor), and
+//       the chrome-sandbox helper of a build tree or of an unpacked dist.zip is
+//       not setuid root, so electron exits at start-up there (the build VM, the
+//       v42 to v44 Linux tests). Elsewhere, or with chrome-sandbox made
+//       root-owned and mode 4755, leave it out.
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -41,19 +54,37 @@ function joinFeatures(features) {
 // kcc-flags.ps1 ("WATCHDOG" is what the test scripts log when they time out).
 const CRASH_PATTERN = /Check failed|DCHECK failed|NOTREACHED|FATAL:|child-process-gone|render-process-gone|HARNESS ERROR|\bWATCHDOG\b/;
 
-const PLATFORM_ARGS = [
-  '--ozone-platform=x11',
-  ...(process.env.KCC_SANDBOX === '1' ? [] : ['--no-sandbox']),
-  ...(process.env.KCC_NO_SWIFTSHADER === '1' ? [] : ['--disable-gpu', '--enable-unsafe-swiftshader']),
-];
+// The two machine-specific switches (see the top of this file): driver option
+// and the environment variable that carries it to the drivers a driver starts.
+const MACHINE_OPTIONS = { 'software-rendering': 'KCC_SOFTWARE_RENDERING', 'no-sandbox': 'KCC_NO_SANDBOX' };
+if (process.env.KCC_SANDBOX !== undefined || process.env.KCC_NO_SWIFTSHADER !== undefined) {
+  // Names of an earlier revision, where both switches were on by default.
+  throw new Error('KCC_SANDBOX and KCC_NO_SWIFTSHADER are no longer read: the switches are now off unless asked for (--no-sandbox, --software-rendering)');
+}
 
-// Command line options of the drivers: --name value or --name=value.
+// The platform switches every run gets, from the options above.
+function platformArgs() {
+  return [
+    '--ozone-platform=x11',
+    ...(process.env.KCC_NO_SANDBOX === '1' ? ['--no-sandbox'] : []),
+    ...(process.env.KCC_SOFTWARE_RENDERING === '1' ? ['--disable-gpu', '--enable-unsafe-swiftshader'] : []),
+  ];
+}
+
+// Command line options of the drivers: --name value or --name=value, plus the
+// machine options (--software-rendering, --no-sandbox: no value, or =1 / =0),
+// which every driver takes and which go into the environment.
 function parseArgs(argv, defaults) {
   const out = { ...defaults };
   for (let i = 0; i < argv.length; i++) {
     const m = /^--([^=]+)(?:=(.*))?$/.exec(argv[i]);
     if (!m) throw new Error(`unexpected argument ${argv[i]}`);
     const key = m[1];
+    if (key in MACHINE_OPTIONS) {
+      if (m[2] !== undefined && m[2] !== '0' && m[2] !== '1') throw new Error(`--${key} takes no value (or =1, =0)`);
+      process.env[MACHINE_OPTIONS[key]] = m[2] === '0' ? '0' : '1';
+      continue;
+    }
     if (!(key in out)) throw new Error(`unknown option --${key}`);
     out[key] = m[2] !== undefined ? m[2] : argv[++i];
   }
@@ -89,7 +120,7 @@ function waitElectronGone(exeReal, timeoutMs = 20000) {
 // |log|, and returns the exit code (signals as 128+n).
 function runElectron(exe, argv, log, { env = {}, timeoutMs = 20 * 60 * 1000 } = {}) {
   const exeReal = fs.realpathSync(exe);
-  const args = [...argv, ...PLATFORM_ARGS];
+  const args = [...argv, ...platformArgs()];
   fs.mkdirSync(path.dirname(log), { recursive: true });
   fs.writeFileSync(log, `# ${stamp()}  ${exe} ${args.join(' ')}\n`);
   const fd = fs.openSync(log, 'a');
@@ -128,6 +159,6 @@ const median = (xs) => {
 };
 
 module.exports = {
-  KCC_ALL_FEATURES, KCC_ALL_JS_FLAGS, CRASH_PATTERN, PLATFORM_ARGS, joinFeatures, parseArgs, list, stamp,
+  KCC_ALL_FEATURES, KCC_ALL_JS_FLAGS, CRASH_PATTERN, platformArgs, joinFeatures, parseArgs, list, stamp,
   runElectron, crashLines, readJson, summaryWriter, fmt1, median, electronPids,
 };
