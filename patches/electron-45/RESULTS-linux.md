@@ -15,7 +15,8 @@ on the build machine under `results/linux/` (not committed). Nothing was tested 
 > checked the same way on a Linux machine with a GPU: frame rates, c50's effect under a real
 > compositor and c51 with a physical mouse are statements for that machine, not this one.
 
-> **Status:** in progress (Stages 0 and 1 done; Stage 2 running).
+> **Status:** in progress (Stages 0 to 2 done, with the c51 fix of Stage 2; Stage 3 Release build
+> running).
 
 ## Machine (Stage 0)
 
@@ -207,3 +208,179 @@ and hand speed: the same (200,120) device counts arrived as (200,120) with the f
 profile, (679,407) with a fast swipe and (201,121) with a slow one under the adaptive
 profile, while XI2 raw motion was (200,120) every time. That is the behaviour c51 is meant
 to replace.
+
+For a Linux machine with a physical mouse, `x11-raw-mouse-test.js --kcc-manual=SECONDS` takes
+the lock the same way, asks for a free movement of the mouse and prints the page's movement
+sums next to the XInput2 raw motion of the same interval (device counts and accelerated
+values): a raw lock must equal the device counts.
+
+## Stage 2: the DCHECK build under test
+
+Run on 2026-11-25, 05:09 to 05:49 UTC, on the idle machine, in the X server above:
+
+```sh
+node test/linux-run-stage.js --exe out/Testing/electron --out results/linux/stage2-testing \
+     --ws-runs 6 --features-via js --software-rendering --no-sandbox
+```
+
+`gpu-status.js`: Electron 45.4.1, Chrome 156.0.8078.100, V8 15.6.75.57-electron.d384e85dffdbe2dd,
+Node 24.22.3; `gpu_compositing: disabled_software`; WebGL2 renderer "ANGLE (Google, Vulkan 1.3.0
+(SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"; GPU device 1234:1111 (the
+VM's VGA). Every figure below is a software-rendering figure from the build machine.
+
+### WebSocket gate
+
+Every run: 0 % of messages over 50 ms, p99 under 50 ms, rendered frames. Six runs each way.
+
+| Run | Switches off: p99 / max / over 50 ms / rAF frames | Every switch on: p99 / max / over 50 ms / rAF frames |
+|---|---|---|
+| 1 | 25.5 / 64.2 ms / **1 of 762** / 2906: **fail**; re-run: 27.4 / 41.5 ms / 0 of 760 / 2742 | 29.7 / 41.5 ms / 0 of 783 / 2819 |
+| 2 | 29.3 / 46.6 ms / 0 of 754 / 2931 | 24.7 / 40.2 ms / 0 of 792 / 2973 |
+| 3 | 25.8 / 35.9 ms / 0 of 763 / 2914 | 23.7 / 38.6 ms / 0 of 796 / 3281 |
+| 4 | 27.7 / 30.5 ms / 0 of 770 / 2989 | 25.8 / 36.2 ms / 0 of 785 / 2855 |
+| 5 | 27.8 / 39.3 ms / 0 of 763 / 2781 | 25.1 / 33.5 ms / 0 of 788 / 2840 |
+| 6 | 26.9 / 41.7 ms / 0 of 761 / 2716 | 24.1 / 37.3 ms / 0 of 793 / 2873 |
+
+- **Every switch on: pass**, 6 of 6 runs clean.
+- **Switches off: environment-limited, not a pass.** The drivers' re-run rule passes it (one
+  failed run, clean on its re-run), but the first attempt of run 1 had one message at 64.2 ms.
+  The same gate on this VM with v44.0.0 (2026-08, Xvfb, 4 runs): p99 32.7, 44.5, 29.8 and
+  31.6 ms; 2 of 750, 4 of 762, 0 and 0 messages over 50 ms (max 55.9, 69.0, 38.4, 39.1 ms). One
+  v44.0.0 run in this session's X server (during the Stage 1 compile): p99 30.2 ms, 0 of 762.
+  With no KCC switch, the WebSocket path is the ported c01, the same code as v44.
+
+### Frame-cap gate
+
+Variants `off` (no KCC switch) and `all` (every switch and the V8 flag); features passed
+through the main script (`--kcc-features`), as a DCHECK build needs. The launch suite runs a
+2D page in a 640x480 window: the cap at launch, after hide/show, after a resize to 800x600
+(`setContentSize`, then 1 s before measuring), then back at 640x480 `setFrameCap(0)` and the
+cap again. Measurement windows are 10 s; a cap is met within 1 %.
+
+| Launch suite, fps | cap | after hide/show | after resize (800x600) | uncapped (640x480) | re-cap |
+|---|---|---|---|---|---|
+| off, 60 | 60.00 | 60.01 | 60.00 | 642.98 | 60.00 |
+| off, 144 | 144.00 | 144.01 | 144.11 | 626.49 | 144.01 |
+| off, 240, attempt 1 | 240.04 | 240.04 | **236.01 (-1.66 %)** | 404.83 | 240.04 |
+| off, 240, attempt 2 | 240.04 | 240.04 | **237.04 (-1.23 %)** | 637.18 | 240.04 |
+| all, 60 | 60.00 | 60.00 | 60.02 | 643.56 | 60.00 |
+| all, 144 | 144.01 | 144.01 | 144.11 | 644.45 | 144.01 |
+| all, 240 | 240.04 | 240.04 | 238.87 (-0.47 %) | 627.03 | 240.04 |
+
+Runtime suite (`setFrameCap` while running), fps:
+
+- 2D, off: uncapped baseline 401.07; caps 60.00, 144.01, 240.04; 144 after hide/show 144.01,
+  after resize 144.01; a change of N at once: 240.49, 60.48, 144.49; uncapped reference 635.03;
+  `setFrameCap(0)` 636.97; two views uncapped 519.37 / 525.43, cap 144 144.01 / 144.01,
+  cap 60 60.00 / 60.00, uncapped again 524.22 / 530.87.
+- 2D, all: uncapped baseline 383.89; caps 60.00, 144.00, 240.10; 144 after hide/show 144.01,
+  after resize 144.01; at once 240.28, 60.49, 144.49; uncapped reference 651.47;
+  `setFrameCap(0)` 619.80; two views uncapped 499.28 / 503.54, cap 144 144.02 / 144.01, cap 60
+  60.00 / 60.00, uncapped again 494.25 / 489.23.
+- WebGL2, off: uncapped baseline 121.40, so caps 144 and 240 are out of reach and the suite
+  uses 90, 72 and 60 instead (SKIP lines in the summary): 60.00; 90 after hide/show 90.00;
+  uncapped at 800x600 82.12, so 60 after resize 60.00; at once 72.01, 60.00, 90.01; uncapped
+  reference 126.28; `setFrameCap(0)` 121.91; two views uncapped 110.38 / 110.38, cap 60 60.00 /
+  60.00, uncapped again 110.64 / 110.64.
+- WebGL2, all: uncapped baseline 119.84; 60.00; 90 after hide/show 90.00; uncapped at 800x600
+  81.82; 60 after resize 60.00; at once 72.01, 60.01, 90.00; uncapped reference 124.54;
+  `setFrameCap(0)` 121.51; two views uncapped 112.58 / 112.58, cap 60 60.00 / 60.00, uncapped
+  again 115.44 / 115.44.
+
+Heavy suite (WebGL2 page spinning 5 ms and 3 ms per frame, 5 runs per variant, interleaved;
+best / median of each variant, every run in the summary): busy 5 ms, uncapped reach off 117.8
+/ 116.8, all 117.6 / 115.9; cap 1000 all vs off +0.3 %, cap 240 -0.1 %, cap 144 -1.4 % (best,
+limit -3 %). Busy 3 ms: reach off 129.5 / 124.5, all 127.3 / 125.7; cap 1000 -1.2 %, cap 240
++1.9 %, cap 144 +1.5 %. All within the rule.
+
+**The gate failed as run, on one item:** `off`, launch cap 240 after the resize, 236.01 and
+237.04 fps on the two attempts (the rule allows one re-run). The two measurements had a p99
+frame interval of 7.1 and 6.2 ms and a longest one of 17.1 and 18.5 ms, against 4.17 ms for
+240: late frames, not a cap held too long. The same item in the `all` variant, which runs the
+same frame-cap code on Linux (c60 is Windows-only), read 238.87.
+
+**Control** (15:15 to 15:30 UTC, idle machine): the launch suite at cap 240, five times each,
+interleaved, with the same arguments, on the archived v44.0.0 build (the same frame-cap design,
+an official build) and on the 45 DCHECK binary (off and all):
+
+| After resize (800x600), fps | runs | within 1 % | uncapped at 640x480 |
+|---|---|---|---|
+| v44.0.0 (official build) | 240.04, 240.04, 240.04, 240.04, 240.04 | 5 of 5 | 1270, 1347, 1309, 1307, 1307 |
+| 45 DCHECK, off | 240.04, 240.04, 240.04, 240.00, 240.04 | 5 of 5 | 566, 358, 550, 319, 354 |
+| 45 DCHECK, all | 240.04, 239.64, 240.04, 240.04, 240.04 | 5 of 5 | 344, 343, 334, 554, 533 |
+
+Every other item of those 15 runs passed too. The miss did not come back in ten runs of the
+same binary; its uncapped rate varied from 319 to 566 fps between runs on this VM. The DCHECK
+build reaches half of what the official v44 does here, so v44 against this binary does not
+separate the port from the build type. The official 45 build gets the same five runs in
+Stage 3 (below).
+
+### Checks
+
+| Check | Result on the DCHECK build |
+|---|---|
+| c10 | Pass: flags off and on, the page saw [keydown KeyA, keyup KeyA] through `sendInputEvent` and through CDP |
+| e10 | Pass: 10 of 10 checks with KccSkipUnobservedInputEmits off and on |
+| c11 | Pass: re-lock 35 ms after Esc refused (SecurityError) with the switch off, locked 34 ms after Esc with it on |
+| c21 | Pass: fast and no-fast paths give the same error and pixel hashes (err 2ac24dc, pix 4b3ace96; 11205 GL errors on purpose), loop 11720 / 12132 ms, TurboFan on both; no context loss |
+| v01 | Pass: the flag is listed by `--v8-options`; CppGC sweep slices stock 5 ms (max 6.7 ms), with the flag at 1 ms max 2.3 ms, at 2 ms max 4.0 ms |
+| c20 | Pass: RecordMetrics trace slices off 5, on 0 |
+| c30 | Pass: the texture-rebind page ran without crash or DCHECK, glError 0, no context loss, 482 frames |
+| c31 | N/A: Windows-only (DCompPresenter); this build does not define the feature |
+| c40 | Pass: with the switch every scenario stays flat (growth at most 1.5x); stock grew more than 3x in 4 of 4 |
+| c41 | Pass: four renders (off twice, on twice), one distinct buffer, identical sample for sample |
+| c50 | Pass (the hint only): `_NET_WM_BYPASS_COMPOSITOR` ordinary / transparent / non-focusable window = 2 / 2 / 2 switch off, 1 / 2 / 2 with KccX11AllowUnredirect and with every switch; window manager Openbox, all three windows depth 24. No compositor runs here: whether one unredirects the window is not tested |
+| c51 | **Failed, then fixed** (below); after the fix every c51 check passes |
+| c12, c15 (X11 raw path) | Failed only through c51's double count; pass after the fix |
+
+### c51: every raw motion counted twice, found and fixed
+
+With the raw lock, every phase read twice the device counts: (400,240) for a (200,120) swipe
+under the flat profile, the adaptive profile fast, and slow; 200 for 100 with a held button;
+c12 and c15 failed the same way. The lock itself, Esc, Alt+Tab, the focus gate and the button
+state were right. The page saw exactly 2.00 dispatched moves (coalesced events) per XInput2
+raw event in every phase; with the plain lock, 1.00.
+
+Temporary logging (not kept) at three layers of the browser, for one run of the c51 checks:
+`x11::Connection::DispatchEvent()` received 720 raw events, 360 distinct (pairs with the same
+sequence number, server time, device 2, source 11, opcode 17); `X11Window::OnEvent()` took
+720, `OnRawMouseMotion()` dispatched 720, and content's locked-mouse path saw 720. So the X
+server sends each master-pointer raw event twice to this client, while `xinput test-xi2`, which
+holds no grab, gets it once. The reason is in xorg-server 21.1.12 (`dix/events.c`, read from
+the release tarball): pointer lock holds an owner-events grab on the window, so
+`DeliverGrabbedEvent()` walks from the window under the pointer up to the root and hands the
+event to this client's own root-window selection; `DeliverRawEvent()` then delivers it to the
+root windows again, because `FilterRawEvents()` skips that delivery only for a grab whose
+window is the root.
+
+Fix (c51's own files, Linux/X11 only): XI_RawMotion is selected for all devices, inside the
+root-window mask `DeviceDataManagerX11` already keeps for `DeviceId::All`, and only the slave
+pointer's own copy (`deviceid == sourceid`, attached to a master) is counted. The slave device
+is not grabbed by pointer lock, and the implicit grab of a held button has no owner events, so
+its copy arrives once. The description at the top of the diff says what changed and why.
+
+Re-run of the c51 checks on the rebuilt DCHECK binary (15:36 UTC; the Release compile was
+running, these checks only count events). Raw events / dispatched moves / page mousemoves, and
+the movement sum:
+
+| Switches | flat, fast | adaptive, fast | adaptive, slow | held button | none held |
+|---|---|---|---|---|---|
+| c51 | 40 / 40 / 8, (200,120) | 40 / 40 / 7, (200,120) | 200 / 200 / 102, (200,120) | 20 / 20 / 5, 100 | 20 / 20 / 4, 100 |
+| c51 + c12 | 40 / 40 / 7, (200,120) | 40 / 40 / 7, (200,120) | 200 / 200 / 104, (200,120) | 20 / 20 / 5, 100 | 20 / 20 / 5, 100 |
+| every switch (c15 makes coalesced lists one long) | 40 / 7 / 7, (200,120) | 40 / 7 / 7, (200,120) | 200 / 101 / 101, (200,120) | 20 / 4 / 4, 100 | 20 / 5 / 5, 100 |
+| off (plain lock, the control) | 40 / 24 / 7, (200,120) | 40 / 36 / 8, (675,405) | 200 / 201 / 103, (201,121) | 20 / 16 / 4, 100 | 20 / 19 / 5, 100 |
+
+- c51: the lock resolves; movement equals the device counts in every phase with c51 alone and
+  with every switch; Esc releases it and the mouse moves afterwards; Alt+Tab releases it, the
+  focus goes to the other application and (100,0) moved there does not reach the page (0,0);
+  a lock taken in a mousedown handler with the button held: 0 of 3 locked mousemoves with
+  buttons 0. Held button: 5 moves, `buttons` 1 on every one, movement 100; after the release 4
+  moves with `buttons` 0; with no button held 4 moves with `buttons` 0 (every switch: 4, 5 and
+  5 moves, the same values).
+- c12: after `requestPointerLock()` without options on a raw lock, c51 alone falls back to
+  accelerated movement, (735,440); with KccPinRawPointerLock it stays raw, (200,120).
+- c15: c51 alone, coalesced lists up to 10 long and predicted up to 10; with
+  KccLeanLockedMouseMove 1 and 0, the coalesced entries sum to 200.
+
+The gates do not exercise c51 (no pointer lock), so their DCHECK results above stand; the
+official build runs all of it again.
