@@ -312,8 +312,12 @@ gap, and 7 with them on, none of which did.
   WebSocket logs.
 - **What it means:** Chromium logs it when one compositor frame carries more than 100 input
   latency records (`kMaxLatencyInfoNumber`). It then drops that frame's records, which feed
-  only latency tracking, and submits the frame as usual.
-- **Why it shows up here:** the stress sends CDP mouse events as fast as the browser takes them:
+  only latency tracking, and submits the frame as usual, so the frame is still drawn.
+- **Stock code:** the check and its message are stock Chromium code (`ui/latency/latency_info.cc`,
+  called from `CompositorFrameSinkSupport`). No patch of the series touches either. The line
+  appears with the switches off too.
+- **Why it shows up here:** its count follows the density of the injected input. The stress sends
+  CDP mouse events as fast as the browser takes them:
   - here, 147,000-153,000 in 12 s with the switches off and 261,000-275,000 with them on;
   - on the DCHECK build, 117,000-129,000;
   - on the Windows Release build, 60,000-76,000.
