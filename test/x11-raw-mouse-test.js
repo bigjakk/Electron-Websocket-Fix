@@ -26,13 +26,22 @@
 //                   down (the case of the c51 desk-check bug), then (100,0) in
 //                   20 reports 2 ms apart, then the button released: the
 //                   buttons of every locked mousemove
+//   held            the lock released, the left button pressed and held on
+//                   the page, then the lock taken again (from script, not from
+//                   an input event), then (100,0) in 20 reports: the buttons of
+//                   every locked mousemove; then the button released and
+//                   (100,0) again: the buttons after the release
+//   none            the same with no button held
 //   alt-tab         lock held, Alt+Tab (openbox) to another application's
 //                   window (xmessage): the lock must be released, and (100,0)
 //                   made while the other window has the focus must not reach
 //                   the page as locked movement; then Alt+Tab back
 // Every movement phase also records the XInput2 raw motion the X server
 // reported for the master pointer (xinput test-xi2 --root): the counts a raw
-// lock must match. The script only records; linux-run-checks.js judges.
+// lock must match, and the MouseEvent.buttons values of its locked mousemoves
+// (a histogram, from a listener this script adds: raw-input.html is shared
+// with the Windows tests and stays as it is). The script only records;
+// linux-run-checks.js judges.
 //
 // Exit code: 0 ran, 1 a phase could not run, 2 harness error.
 'use strict';
@@ -123,6 +132,24 @@ app.whenReady().then(async () => {
     results.xid = handle.length >= 8 ? Number(handle.readBigUInt64LE(0)) : handle.readUInt32LE(0);
     results.focusAtStart = await focusedWindow();
     const isLocked = () => wc.executeJavaScript('kccLocked()');
+    // MouseEvent.buttons of every locked mousemove, as a histogram.
+    await wc.executeJavaScript(`(() => {
+      const t = document.getElementById('t');
+      window.kccBtnReset = () => { window.kccBtn = { n: 0, hist: {} }; };
+      kccBtnReset();
+      document.addEventListener('mousemove', (e) => {
+        if (document.pointerLockElement !== t) return;
+        kccBtn.n++;
+        kccBtn.hist[e.buttons] = (kccBtn.hist[e.buttons] || 0) + 1;
+      });
+    })()`);
+    const buttonsSeen = () => wc.executeJavaScript('JSON.parse(JSON.stringify(kccBtn))');
+    // What the X server holds down on the virtual mouse (XI1 query of the slave
+    // device; the master pointer cannot be queried that way).
+    async function xButtonsDown() {
+      const q = await run('xinput', ['query-state', 'kcc-virtual-mouse']);
+      return q.err ? `error: ${q.err}` : [...q.out.matchAll(/button\[(\d+)\]=down/g)].map((m) => Number(m[1]));
+    }
 
     async function settled() {
       // Until the counters have not changed for 300 ms (400 ms at least, 3 s at most).
@@ -140,7 +167,7 @@ app.whenReady().then(async () => {
     async function movePhase(name, profile, speed, [dx, dy, n, ms], before) {
       const a = await accel(profile, speed);
       if (a.err) results.problems.push(`${name}: accel: ${a.err} ${a.stderr}`);
-      await wc.executeJavaScript('kccReset()');
+      await wc.executeJavaScript('kccReset(); kccBtnReset()');
       await sleep(200);
       const pre = before ? await before() : null;
       const cap = captureRaw();
@@ -149,9 +176,10 @@ app.whenReady().then(async () => {
       const inj = await mouse('move', dx, dy, n, ms);
       const stats = await settled();
       const xi2 = await cap.stop();
+      const buttons = await buttonsSeen();
       const p1 = await pointer();
       const stillLocked = await isLocked();
-      results.phases[name] = { accel: `${profile} ${speed}`, sent: { dx, dy, reports: n, ms }, before: pre, inject: inj.err, stats, xi2, pointer: [p0, p1], stillLocked };
+      results.phases[name] = { accel: `${profile} ${speed}`, sent: { dx, dy, reports: n, ms }, before: pre, inject: inj.err, stats, xi2, buttons, pointer: [p0, p1], stillLocked };
       log(`${name}: ${JSON.stringify(results.phases[name])}`);
       if (inj.err) results.problems.push(`${name}: injection: ${inj.err} ${inj.stderr}`);
       if (!stillLocked) results.problems.push(`${name}: lock lost`);
@@ -235,6 +263,44 @@ app.whenReady().then(async () => {
       log(`drag: ${JSON.stringify(results.phases.drag)}`);
       if (lock !== 'locked') results.problems.push(`drag: lock from mousedown: ${lock}`);
     }
+
+    // ---- held / none: a button held (or not) when the lock is taken ----
+    async function buttonPhase(name, button) {
+      if (await isLocked()) await wc.executeJavaScript('document.exitPointerLock()');
+      await sleep(1500);  // a re-lock straight after an exit can be refused
+      const unlockedFirst = !(await isLocked());
+      await accel('flat', 0);
+      const b = win.getContentBounds();
+      await xdotool('mousemove', b.x + Math.round(b.width / 2), b.y + Math.round(b.height / 2));
+      await sleep(300);
+      if (button) { await mouse('down', button); await sleep(300); }
+      const xDownAtLock = await xButtonsDown();
+      const lock = await wc.executeJavaScript(lockCall, true);
+      await sleep(300);
+      await wc.executeJavaScript('kccReset(); kccBtnReset()');
+      const cap = captureRaw();
+      await sleep(300);
+      const inj = await mouse('move', 100, 0, 20, 2);
+      const stats = await settled();
+      const xi2 = await cap.stop();
+      const buttons = await buttonsSeen();
+      let afterRelease = null;
+      if (button) {
+        await mouse('up', button);
+        await sleep(300);
+        await wc.executeJavaScript('kccBtnReset()');
+        await mouse('move', 100, 0, 20, 2);
+        await settled();
+        afterRelease = { xDown: await xButtonsDown(), ...(await buttonsSeen()) };
+      }
+      const stillLocked = await isLocked();
+      results.phases[name] = { button, unlockedFirst, xDownAtLock, lock, sent: { dx: 100, dy: 0, reports: 20, ms: 2 }, inject: inj.err, stats, xi2, buttons, afterRelease, stillLocked };
+      log(`${name}: ${JSON.stringify(results.phases[name])}`);
+      if (lock !== 'locked') results.problems.push(`${name}: lock: ${lock}`);
+      if (inj.err) results.problems.push(`${name}: injection: ${inj.err} ${inj.stderr}`);
+    }
+    await buttonPhase('held', 'left');
+    await buttonPhase('none', null);
 
     // ---- alt-tab ----
     {

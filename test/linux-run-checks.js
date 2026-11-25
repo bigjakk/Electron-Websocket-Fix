@@ -193,6 +193,9 @@ if (only.includes('c51')) {
     allPass = false;
   } else {
     const cfgs = { off: [], c51: ['KccX11RawMouse'], 'c51+c12': ['KccX11RawMouse', 'KccPinRawPointerLock'], 'c51+c15': ['KccX11RawMouse', 'KccLeanLockedMouseMove'], all: c.KCC_ALL_FEATURES };
+    // MouseEvent.buttons histogram of a phase's locked mousemoves: "N moves, buttons {value: count}".
+    const btnText = (b) => (b ? `${b.n} moves, buttons ${jsonc(b.hist)}` : 'n/a');
+    const btnAll = (b, v) => Boolean(b) && b.n > 0 && Object.keys(b.hist).every((x) => Number(x) === v);
     const R = {};
     for (const [k, f] of Object.entries(cfgs)) {
       const name = `c51-raw-mouse-${k}`;
@@ -203,7 +206,8 @@ if (only.includes('c51')) {
       const ph = (r.res || {}).phases || {};
       const m = (p) => (ph[p] && ph[p].stats ? `(${ph[p].stats.mx},${ph[p].stats.my})` : 'n/a');
       say(`       c51 ${k}: exit ${r.code}; lock ${((r.res || {}).lock || {}).kind} [${((r.res || {}).lock || {}).unadjusted}]; flat-fast ${m('flat-fast')} adaptive-fast ${m('adaptive-fast')} adaptive-slow ${m('adaptive-slow')} after-plain-request ${m('after-plain-request')}; ` +
-        `xi2 raw ${ph['flat-fast'] && ph['flat-fast'].xi2 ? `${ph['flat-fast'].xi2.rawX},${ph['flat-fast'].xi2.rawY}` : 'n/a'}; drag buttons-0 moves ${ph.drag ? ph.drag.buttonsZeroWhileDown : 'n/a'}/${ph.drag ? ph.drag.movesWhileDown : 'n/a'}` +
+        `xi2 raw ${ph['flat-fast'] && ph['flat-fast'].xi2 ? `${ph['flat-fast'].xi2.rawX},${ph['flat-fast'].xi2.rawY}` : 'n/a'}; drag buttons-0 moves ${ph.drag ? ph.drag.buttonsZeroWhileDown : 'n/a'}/${ph.drag ? ph.drag.movesWhileDown : 'n/a'}; ` +
+        `held ${btnText(ph.held && ph.held.buttons)}, after release ${btnText(ph.held && ph.held.afterRelease)}, none ${btnText(ph.none && ph.none.buttons)}` +
         `${(r.res || {}).problems && r.res.problems.length ? ` | problems: ${r.res.problems.join('; ')}` : ''}${crashNote(r)}`);
     }
     const ph = (k) => ((R[k].res || {}).phases) || {};
@@ -231,6 +235,21 @@ if (only.includes('c51')) {
       const d = ph(k).drag;
       verdict('c51', clean(R[k]) && L.kind === 'raw' && d && d.lock === 'locked' && d.movesWhileDown > 0 && d.buttonsZeroWhileDown === 0,
         `${k}: ${L.kind} lock taken in mousedown, moved with the button down: ${d ? `${d.buttonsZeroWhileDown} of ${d.movesWhileDown} locked mousemoves had buttons 0 (first ${jsonc(d.firstButtons)}; must be none)` : 'n/a'}`);
+      // The desk-check fix: the button state when raw motion starts comes from
+      // the pointer, so a button already held reaches the page in buttons.
+      const h = ph(k).held; const nb = ph(k).none;
+      const heldOk = h && h.lock === 'locked' && jsonc(h.xDownAtLock) === '[1]' && btnAll(h.buttons, 1) && h.stats.mx === 100 &&
+        h.afterRelease && jsonc(h.afterRelease.xDown) === '[]' && btnAll(h.afterRelease, 0);
+      const noneOk = nb && nb.lock === 'locked' && jsonc(nb.xDownAtLock) === '[]' && btnAll(nb.buttons, 0) && nb.stats.mx === 100 && MOVES.every((n) => btnAll(ph(k)[n] && ph(k)[n].buttons, 0));
+      verdict('c51', clean(R[k]) && L.kind === 'raw' && Boolean(heldOk) && Boolean(noneOk),
+        `${k}: ${L.kind} lock taken with the left button held (X server: down ${h ? jsonc(h.xDownAtLock) : 'n/a'}): ${btnText(h && h.buttons)} (must all be 1), movement ${h ? h.stats.mx : 'n/a'} (must be 100); ` +
+        `after the release: ${btnText(h && h.afterRelease)} (must all be 0); taken with no button held: ${btnText(nb && nb.buttons)} (must all be 0); ` +
+        `flat-fast / adaptive-fast / adaptive-slow: ${MOVES.map((n) => btnText(ph(k)[n] && ph(k)[n].buttons)).join(' / ')} (must all be 0)`);
+    }
+    // The same phases on the plain lock (switch off): the control, informational.
+    {
+      const h = ph('off').held; const nb = ph('off').none;
+      say(`c51    INFO  switch off (plain lock, the control): left button held: ${btnText(h && h.buttons)}; after the release: ${btnText(h && h.afterRelease)}; no button held: ${btnText(nb && nb.buttons)}`);
     }
     const apr = (k) => ph(k)['after-plain-request'];
     verdict('c12', clean(R['c51+c12']) && exact(apr('c51+c12')),

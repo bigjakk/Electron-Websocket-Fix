@@ -95,6 +95,10 @@ function writeSuite(name, attempts) {
       line += `  checks ${checks.length - failed.length}/${checks.length}`;
       if (a.res.suite === 'heavy') line += `  (busy ${a.res.busy} ms: reach ${c.fmt1(a.res.reach)}, cap1000 ${c.fmt1(a.res.cap1000)}, cap240 ${c.fmt1(a.res.cap240)}, cap144 ${c.fmt1(a.res.cap144)})`;
       if (a.res.suite === 'runtime') line += `  (uncapped baseline ${c.fmt1(a.res.uncappedBaseline)} fps, page ${a.res.pageRenderer})`;
+      // Every measured rate, the uncapped ones included, so that it shows which
+      // caps were within the page's reach on this machine.
+      const ms = a.res.measurements || [];
+      if (ms.length) line += `\n    rates (fps): ${ms.map((m) => `${m.name} ${m.error ? 'ERROR' : Number(m.fps).toFixed(2)}`).join('; ')}`;
       for (const f of failed) line += `\n    FAIL ${f.name}: ${f.detail}`;
       for (const s of a.res.skipped || []) if (s) line += `\n    SKIP ${s.name}: ${s.why}`;
       if (a.froze) line += '\n    FROZE: a measurement timed out';

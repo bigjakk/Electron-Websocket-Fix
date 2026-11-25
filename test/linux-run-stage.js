@@ -36,7 +36,7 @@ const stage = path.join(OUT, 'stage-summary.txt');
 const note = (s) => { fs.appendFileSync(stage, `${s}\n`); console.log(s); };
 // Verdict lines: one per gate run or check, its failures, skips and re-runs,
 // the heavy-suite comparison, and the final verdict of each driver.
-const VERDICT = /^(WS GATE|FRAME-CAP GATE|SYNTHETIC CHECKS)|^\S+\s+(PASS|FAIL|N\/A|INFO)\s|^\S+( \(attempt \d\))?\s+exit -?\d+|^\s+(FAIL|SKIP|LOG:|FROZE)|^heavy suite|^\s+\S+\s+reach\s|\s(ok|DROP)$/;
+const VERDICT = /^(WS GATE|FRAME-CAP GATE|SYNTHETIC CHECKS)|^\S+\s+(PASS|FAIL|N\/A|INFO)\s|^\S+( \(attempt \d\))?\s+exit -?\d+|^\s+(FAIL|SKIP|LOG:|FROZE)|^heavy suite|^\s+\S+\s+reach\s|^\s+rates \(fps\):|\s(ok|DROP)$/;
 function sub(script, args) {
   const r = spawnSync(process.execPath, [path.join(__dirname, script), ...args], { encoding: 'utf8', maxBuffer: 256 << 20 });
   const lines = `${r.stdout || ''}${r.stderr || ''}`.split('\n');
