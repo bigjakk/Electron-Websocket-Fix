@@ -200,7 +200,7 @@ if (only.includes('c50')) {
   verdict('c50', clean(r50.off) && Object.keys(want).every((k) => off[k] === 2), `switch off: ${jsonc(off)} (stock: 2 on every window)`);
   for (const mode of ['on', 'all']) {
     const v = vals(mode);
-    verdict('c50', clean(r50[mode]) && Object.keys(want).every((k) => v[k] === want[k]), `${mode === 'on' ? 'KccX11AllowUnredirect' : 'every switch'}: ${jsonc(v)} (must be ${jsonc(want)}). No compositor here: only the hint is checked, not unredirection`);
+    verdict('c50', clean(r50[mode]) && Object.keys(want).every((k) => v[k] === want[k]), `${mode === 'on' ? 'KccX11AllowUnredirect' : 'every switch'}: ${jsonc(v)} (must be ${jsonc(want)}). Only the hint is checked, not whether a compositor then unredirects the window`);
   }
 }
 
