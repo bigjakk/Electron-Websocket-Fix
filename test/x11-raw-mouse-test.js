@@ -55,7 +55,8 @@
 // window says MOVE: move the mouse (fast, slow, any way) until it says STOP.
 // The script prints the page's movement sums next to the XInput2 raw motion
 // of the same interval: the device counts, and the accelerated values the X
-// server derived from them. A raw lock must equal the device counts exactly,
+// server derived from them; and the counts of raw events, dispatched moves and
+// page mousemoves (as in RESULTS-linux.md). A raw lock must equal the device counts exactly,
 // whatever the hand speed or the desktop's acceleration setting; a plain lock
 // follows the accelerated values. Do not use the mouse before MOVE or after
 // STOP; Esc releases the lock and voids the result (it says so).
@@ -186,6 +187,14 @@ async function manualRun() {
   await head('done');
   const counts = `device counts (${xi2.rawX}, ${xi2.rawY}); accelerated (${xi2.accelX}, ${xi2.accelY}); ${xi2.events} raw events from ${Object.entries(names).map(([id, n]) => `${id} "${n}"`).join(', ') || 'no device'}`;
   log(`page: movement sum (${stats.mx}, ${stats.my}) in ${stats.mousemoves} locked mousemoves; XInput2 raw motion: ${counts}`);
+  // Dispatched moves: the coalesced events of the page's locked pointermoves,
+  // one per mouse move the browser sent (KccLeanLockedMouseMove shortens those
+  // lists to one, so that count means nothing with it on).
+  const dispatched = Object.entries(stats.coalescedHist).reduce((a, [size, n]) => a + Number(size) * n, 0);
+  results.phases.manual.dispatched = dispatched;
+  log(`counts: raw events / dispatched moves / page mousemoves = ${xi2.events} / ${dispatched} / ${stats.mousemoves}` +
+    (xi2.events ? `; ${(dispatched / xi2.events).toFixed(2)} dispatched moves per raw event (a raw lock: 1.00, ` +
+      'less only for raw events without X/Y motion, such as smooth scrolling, or fractional deltas)' : ''));
   if (!stillLocked) {
     log('RESULT VOID: the lock was released during the interval (Esc, or the focus moved)');
   } else if (kind === 'raw') {
