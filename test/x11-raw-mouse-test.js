@@ -48,6 +48,18 @@
 // with the Windows tests and stays as it is). The script only records;
 // linux-run-checks.js judges.
 //
+// Manual mode, for a desktop with a physical mouse (no virtual mouse needed):
+//   electron x11-raw-mouse-test.js --kcc-manual=SECONDS [--kcc-out=FILE]
+//       [--enable-features=KccX11RawMouse] --ozone-platform=x11
+// takes the lock as above (raw if the build grants it, else plain), then the
+// window says MOVE: move the mouse (fast, slow, any way) until it says STOP.
+// The script prints the page's movement sums next to the XInput2 raw motion
+// of the same interval: the device counts, and the accelerated values the X
+// server derived from them. A raw lock must equal the device counts exactly,
+// whatever the hand speed or the desktop's acceleration setting; a plain lock
+// follows the accelerated values. Do not use the mouse before MOVE or after
+// STOP; Esc releases the lock and voids the result (it says so).
+//
 // Exit code: 0 ran, 1 a phase could not run, 2 harness error.
 'use strict';
 const { app, BrowserWindow } = require('electron');
@@ -118,8 +130,77 @@ function captureRaw() {
   };
 }
 
+const MANUAL = Number(sw('kcc-manual', '0')) || 0;
+async function manualRun() {
+  const secs = Math.min(120, Math.max(5, MANUAL));
+  MASTER = Number((await run('xinput', ['list', '--id-only', 'Virtual core pointer'])).out) || 2;
+  const win = new BrowserWindow({ x: 200, y: 150, width: 800, height: 600, show: true, webPreferences: { backgroundThrottling: false } });
+  const wc = win.webContents;
+  await win.loadFile(path.join(__dirname, 'raw-input.html'));
+  win.focus();
+  wc.focus();
+  await sleep(800);
+  // A text overlay with the prompt and the running sums (raw-input.html stays as it is).
+  await wc.executeJavaScript(`(() => {
+    const d = document.createElement('pre');
+    d.style.cssText = 'position:fixed;left:24px;top:24px;margin:0;color:#fff;font:24px monospace;pointer-events:none';
+    document.body.appendChild(d);
+    window.kccHead = 'wait';
+    setInterval(() => {
+      const s = kccStats();
+      d.textContent = kccHead + '\\nlocked: ' + kccLocked() + '\\nmovementX sum ' + s.mx + ', movementY sum ' + s.my + ' (' + s.mousemoves + ' mousemoves)';
+    }, 100);
+  })()`);
+  const head = (t) => wc.executeJavaScript(`kccHead = ${JSON.stringify(t)}`);
+  results.lock.unadjusted = await wc.executeJavaScript('kccLock({ unadjustedMovement: true })', true);
+  results.lock.kind = 'raw';
+  if (results.lock.unadjusted !== 'locked') {
+    results.lock.kind = 'plain';
+    await sleep(300);
+    results.lock.plain = await wc.executeJavaScript('kccLock()', true);
+    if (results.lock.plain !== 'locked') {
+      results.problems.push(`no pointer lock at all: ${results.lock.unadjusted} / ${results.lock.plain}`);
+      log(results.problems[0]);
+      finish(1);
+      return;
+    }
+  }
+  const kind = results.lock.kind;
+  const cap = captureRaw();
+  await sleep(700);  // xinput is listening before the counters start
+  await wc.executeJavaScript('kccReset()');
+  await head(`${kind} lock: MOVE the mouse now (${secs} s)`);
+  log(`${kind} lock held: move the mouse for ${secs} s, until the window says STOP`);
+  for (let left = secs; left > 0; left--) {
+    await head(`${kind} lock: MOVE the mouse now (${left} s)`);
+    await sleep(1000);
+  }
+  await head(`${kind} lock: STOP, do not touch the mouse`);
+  await sleep(1500);
+  const stats = await wc.executeJavaScript('kccStats()');
+  const stillLocked = await wc.executeJavaScript('kccLocked()');
+  const xi2 = await cap.stop();
+  const names = {};
+  for (const id of Object.keys(xi2.sources)) names[id] = (await run('xinput', ['list', '--name-only', id])).out;
+  results.phases.manual = { seconds: secs, kind, stats, xi2, sourceNames: names, stillLocked };
+  await head('done');
+  const counts = `device counts (${xi2.rawX}, ${xi2.rawY}); accelerated (${xi2.accelX}, ${xi2.accelY}); ${xi2.events} raw events from ${Object.entries(names).map(([id, n]) => `${id} "${n}"`).join(', ') || 'no device'}`;
+  log(`page: movement sum (${stats.mx}, ${stats.my}) in ${stats.mousemoves} locked mousemoves; XInput2 raw motion: ${counts}`);
+  if (!stillLocked) {
+    log('RESULT VOID: the lock was released during the interval (Esc, or the focus moved)');
+  } else if (kind === 'raw') {
+    const same = stats.mx === Math.round(xi2.rawX) && stats.my === Math.round(xi2.rawY);
+    log(`RESULT ${same ? 'MATCH' : 'DIFFERENT'}: raw lock, page sum ${same ? 'equals' : 'differs from'} the device counts${same ? '' : ` by (${stats.mx - Math.round(xi2.rawX)}, ${stats.my - Math.round(xi2.rawY)})`}`);
+  } else {
+    log(`RESULT PLAIN LOCK: the build refused the raw lock (${results.lock.unadjusted}); the page got the accelerated motion, not the device counts`);
+  }
+  await sleep(1000);
+  finish(stillLocked ? 0 : 1);
+}
+
 app.whenReady().then(async () => {
   try {
+    if (MANUAL) { await manualRun(); return; }
     if (!FIFO || !fs.existsSync(FIFO)) throw new Error(`no virtual mouse FIFO (${FIFO || 'unset'}); start linux-x11-env.sh first`);
     MASTER = Number((await run('xinput', ['list', '--id-only', 'Virtual core pointer'])).out) || 2;
     // Another application's window, mapped before ours so that ours ends up
