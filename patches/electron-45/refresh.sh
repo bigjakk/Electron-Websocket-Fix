@@ -18,6 +18,12 @@
 # A new patch needs a line in series.txt and a commit with the matching
 # subject; give it a description by hand afterwards.
 set -u
+# Apple's git (the one Xcode installs) ships a system-wide gitattributes file that
+# marks *.m and *.mm as diff=objc. Git's objc rule does not match C++ member
+# function definitions, so on a Mac the hunk headers of .mm files would come out
+# empty and the diffs would differ from the ones written on Windows or Linux
+# (c32). Skip the system attributes file so that every git writes the same diff.
+export GIT_ATTR_NOSYSTEM=1
 HERE="$(cd "$(dirname "$0")" && pwd)"
 [ $# -ge 1 ] && [ -d "$1" ] || { sed -n '2,20p' "$0"; exit 2; }
 SRC="$(cd "$1" && pwd)"; shift
