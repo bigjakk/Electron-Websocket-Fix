@@ -15,7 +15,7 @@ on the build machine under `results/linux/` (not committed). Nothing was tested 
 > checked the same way on a Linux machine with a GPU: frame rates, c50's effect under a real
 > compositor and c51 with a physical mouse are statements for that machine, not this one.
 
-> **Status:** in progress (Stage 0 done; Stage 1 running).
+> **Status:** in progress (Stages 0 and 1 done; Stage 2 running).
 
 ## Machine (Stage 0)
 
@@ -61,6 +61,58 @@ The tree of the v44.0.0 Linux build was reused: gclient root `~/electron` (solut
 - Four leftovers of earlier DEPS (`third_party/harfbuzz-ng`, `third_party/ink_stroke_modeler`,
   `third_party/libphonenumber/dist`, `third_party/xdg-utils`, about 210 MB, untracked) were
   left in place; Chromium 156 tracks nothing at those paths.
+- **Series.** `apply.sh --check`: 22 ok, 0 failed; then `apply.sh --commit`: 19 commits in
+  `src`, 2 in `src/electron`, 1 in `src/v8`, on the base commits in
+  [`results/linux/stage0/base-commits.txt`](results/linux/stage0/base-commits.txt).
+- **c51 fix** (before the first build, as the brief asked): the bug recorded in c51's
+  description under "Found in a desk-check on 2026-11-21". Turning raw motion on reset the
+  button state of raw mousemoves to none, and the X server queues a motion's raw event before
+  its core event, so with a lock taken in a mousedown handler the first raw mousemove said no
+  button was down. The state is now taken from the X server's current button mask when raw
+  motion is turned on, as the description proposed; the description says so. The change is in
+  `ui/events/devices/x11/device_data_manager_x11.h` and `ui/ozone/platform/x11/x11_window.cc`,
+  X11-only files: nothing Windows compiles changed.
+- **Other checkouts.** `src` lists 12 submodule pointers as modified, and no file edits. Eleven
+  are the checkouts Electron patches with commits of its own; each is at the recorded commit
+  plus exactly Electron's patch count (angle 19, boringssl 2, dawn 10, ffmpeg 5,
+  libaddressinput 1, minigbm 1, pdfium 4, skia 5, sqlite 1, webrtc 1, v8 37 plus the series'
+  v01). The twelfth, `third_party/instrumented_libs`, is an unmanaged leftover of an older tree:
+  DEPS checks it out only under `checkout_instrumented_libraries` (False), only MSan builds use
+  it, and nothing in this build refers to it.
+
+## Stage 1: DCHECK build
+
+```gn
+# out/Testing/args.gn
+import("//electron/build/args/testing.gn")
+use_remoteexec = false
+use_reclient = false
+symbol_level = 0
+override_electron_version = "45.4.1"
+```
+
+The brief's arguments, plus `override_electron_version` as in the Release arguments. Without
+it Electron takes the nearest tag of `src/electron`, which is also v45.4.1, so it changes
+nothing; it only keeps the version independent of the tags in the checkout. `gn gen`: 36603
+targets.
+
+- **Early pass** (11 min): the eight patched sources most likely to break, compiled on their
+  own first: c51's `device_data_manager_x11.cc`, `x11_extension.cc` and
+  `desktop_window_tree_host_linux.cc`, `x11_window.cc` (c50 and c51), `begin_frame_source.cc`
+  (c60), `display_scheduler.cc` (c03, c60), `command_buffer_stub.cc` and `gl_features.cc`
+  (c32). All compiled.
+- **Full build**: `autoninja -C out/Testing -k 0 -j 12 electron`, 41610 steps, **0 failed**,
+  7 h 40 min from the start with the early pass (12 threads, no remote execution).
+- **Fixes needed: none.** No patch changed in Stage 1. c50 and c51 compiled as drafted (with
+  the c51 fix above), and so did the Linux halves of c12 and c15; c32 and the Windows-only c13,
+  c14, c31 and c60 applied and did not break the build. c15 needed no extra include.
+- After the build: `apply.sh --check --base results/linux/stage0/base-commits.txt` reports
+  22 ok, and base + diffs = HEAD in `src`, `src/electron` and `src/v8`; `refresh.sh` reports
+  0 changed, 22 unchanged. e10's `lib/browser/api/web-contents.ts` change is in the rebuilt
+  browser bundle (`gen/internal/electron/js2c/browser_init.js` calls
+  `_setInputEventObserved` and `_setBeforeMouseEventObserved`).
+- `electron --version`: `v45.4.1`. Without `--no-sandbox` the binary stops at start-up with
+  Chromium's "No usable sandbox!" (Ubuntu 23.10 and later; see [Drivers](#drivers)).
 
 ## Test environment
 
