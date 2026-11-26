@@ -15,8 +15,10 @@ on the build machine under `results/linux/` (not committed). Nothing was tested 
 > checked the same way on a Linux machine with a GPU: frame rates, c50's effect under a real
 > compositor and c51 with a physical mouse are statements for that machine, not this one.
 
-> **Status:** in progress (Stages 0 to 2 done, with the c51 fix of Stage 2; Stage 3 Release build
-> running).
+> **Status:** Stages 0 to 3 done. The official Release build and its dist.zip are made (Stage 3);
+> every check and the WebSocket gate passed on it; the frame-cap gate failed as run on one
+> heavy-suite item that this machine cannot resolve. The Release build is still to be run on a
+> Linux machine with a GPU.
 
 ## Machine (Stage 0)
 
@@ -174,6 +176,7 @@ in Node, keep the same pass rules, feature list, arguments and re-run rules:
 | `run-stage.ps1` | `linux-run-stage.js` |
 | `raw-input-test.js` + `send-input.ps1` | `x11-raw-mouse-test.js` + `linux-vmouse.py` (c51; also c12 and c15 on the X11 raw path) |
 | (none) | `x11-window-props-test.js` (c50) |
+| (none) | `linux-run-heavy-aa.js` (the heavy suite again with an A/A control arm, only after a heavy comparison missed; Stage 3) |
 
 The drivers use the X server in `$DISPLAY`. Every run gets `--ozone-platform=x11`; two more
 switches are for particular machines and are **off unless asked for**, so that a run on a
@@ -384,3 +387,277 @@ the movement sum:
 
 The gates do not exercise c51 (no pointer lock), so their DCHECK results above stand; the
 official build runs all of it again.
+
+## Stage 3: the official Release build
+
+```gn
+# out/Release/args.gn
+import("//electron/build/args/release.gn")
+is_official_build = true
+use_remoteexec = false
+use_reclient = false
+override_electron_version = "45.4.1"
+```
+
+`gn gen`: 36572 targets. In effect: `is_official_build = true`, `is_debug = false`,
+`dcheck_always_on = false`, no component build, `use_thin_lto = true`, `symbol_level = 2`,
+`chrome_pgo_phase = 2` with Electron's stock profile for Linux x64
+(`electron-linux-x64-1794713269-6bfc23bf15.profdata`) and the stock V8 builtins profile
+(`electron-v8-x64-1794710512-6bfc23bf15.profile`), both checked against Electron's state files
+before the build. Clang 24.0.0git (llvm-project 86922d51225d), no remote execution.
+
+- **Build**: `autoninja -C out/Release -k 0 -j 12 electron`, 46047 steps, **0 failed**, 9 h 32 min
+  (2026-11-25 15:32 to 2026-11-26 01:04 UTC). The first 3255 steps ran with 10 jobs while the
+  Stage 2 c51 fix was being checked on the DCHECK build; ninja was then stopped by hand and
+  restarted with 12 jobs on the same tree, which had the fix from the start. The ThinLTO link of
+  `electron` took 35.5 min, with a peak `ld.lld` RSS of 26.5 GB and up to 7.8 GB of swap in use
+  (the v44 link on this machine: 26.4 GB, about 13 min). Free disk: 169 GB at the start, 91 GB at
+  the end of the compile.
+- **Fixes needed: none.** No patch changed in Stage 3.
+- **Before the zip**: no uncommitted source file in `src`, `src/electron` and `src/v8`;
+  `apply.sh --check --base results/linux/stage0/base-commits.txt`: 22 ok, and base + diffs = HEAD
+  in all three; `refresh.sh`: 0 changed, 22 unchanged; `ninja -n electron`: no work to do. Then
+  `autoninja -C out/Release electron:electron_dist_zip` (10 steps: the strip actions of the
+  Linux zip, the version and licence files, the zip), after which
+  `ninja -n electron electron:electron_dist_zip` has no work to do.
+
+| | |
+|---|---|
+| `out/Release/dist.zip` | **123997995 bytes**, SHA-256 `f3228381c30c9a076d3fb28a7820f1af5c023a8e7bdef1206e21ec20a354402f`, 72 files |
+| Built from | `src` `0f02044a47d3ed65af3086953dd58f6d63b03a89`, `src/electron` `81cbfc5d4e08cf607efc19b1fba6e16c15a4271b`, `src/v8` `9bcdcbce24d4f0ef9475add913ead4a55be1bc79` |
+| `electron` in the zip | stripped by the zip target (234663240 bytes; `out/Release/electron` with symbols is 1.3 GB); `--version` prints `v45.4.1`; `ldd` finds every library |
+
+The gates and checks below ran `out/Release/electron`: the same build, with its symbols.
+
+### Gates and checks
+
+Run on 2026-11-26, 01:09 to 01:50 UTC, on the idle machine, in the same X server:
+
+```sh
+node test/linux-run-stage.js --exe out/Release/electron --out results/linux/stage3-release \
+     --ws-runs 6 --software-rendering --no-sandbox
+```
+
+Features on the command line (`--enable-features`), as on Windows. `gpu-status.js`: Electron
+45.4.1, Chrome 156.0.8078.100, V8 15.6.75.57-electron.d384e85dffdbe2dd, Node 24.22.3; software
+compositing and WebGL2 on ANGLE over SwiftShader, as in Stage 2. Build-machine figures.
+
+#### WebSocket gate
+
+| Run | Switches off: p99 / max / over 50 ms / rAF frames | Every switch on: p99 / max / over 50 ms / rAF frames |
+|---|---|---|
+| 1 | 19.9 / 25.4 ms / 0 of 825 / 8267 | 20.4 / 26.9 ms / 0 of 825 / 7727 |
+| 2 | 21.2 / 30.7 ms / 0 of 817 / 8287 | 19.4 / 25.8 ms / 0 of 829 / 7798 |
+| 3 | 20.6 / 28.1 ms / 0 of 823 / 8108 | 20.1 / 25.8 ms / 0 of 828 / 7780 |
+| 4 | 20.4 / 30.3 ms / 0 of 822 / 7928 | 19.6 / 29.6 ms / 0 of 829 / 7802 |
+| 5 | 20.2 / 27.9 ms / 0 of 819 / 7802 | 19.7 / 27.1 ms / 0 of 827 / 7722 |
+| 6 | 19.7 / 23.6 ms / 0 of 822 / 8014 | 19.9 / 25.3 ms / 0 of 824 / 7750 |
+
+**Pass both ways**: 12 of 12 runs clean at the first attempt, the longest message 30.7 ms. The
+Stage 2 verdict for the DCHECK build with the switches off (environment-limited, not a pass)
+stays as written.
+
+#### Frame-cap gate
+
+Launch suite (2D page, 640x480; the same items as in Stage 2), fps:
+
+| Launch suite | cap | after hide/show | after resize (800x600) | uncapped (640x480) | re-cap |
+|---|---|---|---|---|---|
+| off, 60 | 60.00 | 60.00 | 60.00 | 1945.98 | 60.00 |
+| off, 144 | 144.01 | 144.01 | 144.01 | 1309.17 | 144.01 |
+| off, 240 | 240.04 | 240.04 | 240.04 | 1990.00 | 240.04 |
+| all, 60 | 60.00 | 60.00 | 60.00 | 1895.68 | 60.00 |
+| all, 144 | 144.01 | 144.01 | 144.01 | 1303.47 | 144.01 |
+| all, 240 | 240.04 | 240.04 | 240.04 | 1315.51 | 240.04 |
+
+Runtime suite, fps. In the Release build the WebGL2 page reaches about 456 fps, so its suite
+uses the caps 60, 144 and 240 as the 2D one does (the DCHECK build needed 90/72/60):
+
+- 2D, off: uncapped baseline 1315.87; caps 60.00, 144.01, 240.04; 144 after hide/show 144.01,
+  after resize 144.01; at once 240.03, 59.99, 143.98; uncapped reference 1885.31;
+  `setFrameCap(0)` 1987.34; two views uncapped 1559.99 / 994.32, cap 144 144.01 / 144.01, cap 60
+  60.00 / 60.00, `setFrameCap(0)` 1389.79 / 1389.24.
+- 2D, all, attempt 1: **one item missed**: "two views, `setFrameCap(0)` uncaps both": before
+  1692.20 / 1053.19, after 1346.19 / 1344.42; the first view came to 79.6 % of its rate before,
+  the rule asks for 80 % (the two views together: 98 % of before). Everything else as in attempt
+  2. Attempt 2 (the rule allows one re-run): uncapped baseline 1286.54; caps 60.00, 144.01,
+  240.04; 144 after hide/show 144.01, after resize 144.01; at once 240.03, 59.99, 143.97;
+  uncapped reference 1995.68; `setFrameCap(0)` 1951.06; two views uncapped 1316.46 / 1316.35,
+  cap 144 144.01 / 144.01, cap 60 60.00 / 60.00, `setFrameCap(0)` 1337.23 / 1336.89: pass.
+- WebGL2, off: uncapped baseline 456.55; caps 60.00, 144.01, 240.04; 144 after hide/show 144.01,
+  after resize 144.01; at once 239.83, 59.95, 143.88; uncapped reference 453.34;
+  `setFrameCap(0)` 479.72; two views uncapped 374.74 / 374.75, cap 144 144.01 / 144.01, cap 60
+  60.00 / 60.00, `setFrameCap(0)` 382.82 / 382.87.
+- WebGL2, all: uncapped baseline 458.29; caps 60.00, 144.01, 240.04; 144 after hide/show 144.01,
+  after resize 144.01; at once 239.80, 59.94, 143.88; uncapped reference 480.35;
+  `setFrameCap(0)` 498.58; two views uncapped 409.50 / 409.44, cap 144 144.01 / 144.01, cap 60
+  60.00 / 60.00, `setFrameCap(0)` 397.89 / 397.86.
+
+Heavy suite (the WebGL2 page spinning 5 ms and 3 ms per frame, 5 runs per variant, off and all
+interleaved in every round; the rule: for each cap, the best run of `all` no more than 3 % below
+the best run of `off`). Each run, uncapped / cap 1000 / cap 240 / cap 144:
+
+| Busy, round | off | all |
+|---|---|---|
+| 5 ms, 1 | 145.3 / 146.2 / 145.6 / 144.0 | 147.1 / 147.7 / 149.5 / 144.0 |
+| 5 ms, 2 | 150.3 / 149.8 / 149.2 / 143.9 | 150.4 / 149.6 / 149.3 / 143.9 |
+| 5 ms, 3 | 149.5 / 149.5 / 147.8 / 144.0 | 149.9 / 148.4 / 148.8 / 144.0 |
+| 5 ms, 4 | 148.8 / 149.5 / 148.6 / 144.0 | 150.2 / 150.8 / 149.7 / 144.0 |
+| 5 ms, 5 | 149.3 / 150.0 / 149.9 / 144.0 | 150.6 / 151.1 / 150.5 / 144.0 |
+| 3 ms, 1 | 199.9 / 201.2 / 198.8 / 144.0 | 200.1 / 200.1 / 199.4 / 144.0 |
+| 3 ms, 2 | 215.0 / 217.7 / 217.7 / 144.0 | 198.7 / 198.4 / 198.1 / 144.0 |
+| 3 ms, 3 | 200.1 / 201.1 / 199.6 / 144.0 | 197.1 / 190.0 / 189.4 / 144.0 |
+| 3 ms, 4 | 205.5 / 208.0 / 204.3 / 144.0 | 188.3 / 188.1 / 190.3 / 144.0 |
+| 3 ms, 5 | 208.6 / 209.8 / 212.9 / 144.0 | 211.9 / 212.1 / 210.8 / 144.0 |
+
+- Busy 5 ms: all against off, best against best: cap 1000 +0.7 %, cap 240 +0.4 %, cap 144
+  -0.0 %. Within the rule.
+- Busy 3 ms: cap 1000 -2.6 % (medians -4.6 %), **cap 240 -3.2 %** (210.8 against 217.7; medians
+  -3.1 %), cap 144 -0.0 %.
+
+The gate failed as run on one item: heavy suite, busy 3 ms, cap 240, -3.2 % against a limit of
+3 %. At busy 3 ms the page's own reach is under 240 fps in every run, so cap 240 is above
+reach; within each variant cap 240 read about what the uncapped run did (best uncapped / best cap
+240: off 215.0 / 217.7, all 211.9 / 210.8), and the gap between the variants is there uncapped
+as well (best -1.4 %, medians -3.3 %). In the DCHECK build of Stage 2 the same comparison was
++1.9 %. The `all` run, as run:
+
+```
+electron frame-cap-test.js --kcc-suite=heavy --kcc-busy=3 --kcc-mode=webgl
+  --enable-features=KccNoPointerLockEscCooldown,KccPinRawPointerLock,KccRawInputKeepWheelMotion,KccRawInputFastPath,KccLeanLockedMouseMove,KccSkipUnobservedInputEmits,KccSkipCanvasPerfSampling,KccLabelTexturesOnce,KccCacheVsyncInterval,KccMacFineGpuBackpressure,KccAudioParamCoalesce,KccHrtfPannerKRateAngles,KccX11AllowUnredirect,KccX11RawMouse,KccFrameCapPreciseRelease
+  --js-flags=--cppheap-max-incremental-sweep-duration-ms=1 --kcc-out=<json> --enable-logging
+  --ozone-platform=x11 --no-sandbox --disable-gpu --enable-unsafe-swiftshader
+```
+
+`off` is the same command without `--enable-features` and `--js-flags`.
+
+**FRAME-CAP GATE: FAIL** (this machine, as run). The item was measured again with an A/A control,
+next.
+
+#### Re-measurement of the heavy-suite item
+
+Measured again after the gate run, with an A/A control: a second `off` arm with the same command
+line as `off` shows how far two identical arms drift apart on this machine. 02:08 to 02:31 UTC,
+idle machine; busy 3 ms, the gate's WebGL2 page (ANGLE over SwiftShader); arms `off`, `all` and
+`off2`, 10 rounds, the order rotated from round to round: rounds 1, 4, 7 and 10 ran off, all,
+off2; rounds 2, 5 and 8 all, off2, off; rounds 3, 6 and 9 off2, off, all. The script of the build
+session that ran it is in the repository as
+[`test/linux-run-heavy-aa.js`](../../test/linux-run-heavy-aa.js) (the same command lines,
+rotation and figures). 30 of 30 runs exited 0 with 3 of 3 checks, page `webgl2`; the CPU steal
+time over every run was 0.01 to 0.04 % of all CPU time. Each run, uncapped / cap 1000 / cap 240
+(cap 144 read 144.0 in all 30 runs):
+
+| Round | off | all | off2 |
+|---|---|---|---|
+| 1 | 216.1 / 217.1 / 214.7 | 214.2 / 214.5 / 215.8 | 197.4 / 199.0 / 195.1 |
+| 2 | 198.2 / 198.3 / 197.3 | 195.7 / 196.5 / 197.0 | 194.5 / 197.6 / 197.0 |
+| 3 | 211.1 / 212.9 / 214.7 | 213.3 / 216.6 / 214.5 | 194.4 / 195.9 / 192.3 |
+| 4 | 196.9 / 197.1 / 197.0 | 212.4 / 214.7 / 212.5 | 196.1 / 196.7 / 196.3 |
+| 5 | 214.3 / 214.7 / 213.8 | 195.1 / 196.5 / 196.4 | 214.1 / 213.7 / 214.0 |
+| 6 | 214.0 / 216.2 / 215.0 | 197.8 / 196.8 / 198.0 | 200.0 / 199.6 / 198.7 |
+| 7 | 198.4 / 199.7 / 201.1 | 199.0 / 199.1 / 198.9 | 197.5 / 195.0 / 197.6 |
+| 8 | 195.3 / 197.1 / 200.1 | 199.2 / 198.5 / 199.5 | 197.2 / 197.1 / 199.6 |
+| 9 | 214.8 / 216.4 / 216.0 | 199.4 / 196.8 / 199.6 | 196.7 / 198.1 / 198.7 |
+| 10 | 197.1 / 198.0 / 199.5 | 198.5 / 198.9 / 199.1 | 197.2 / 197.2 / 199.1 |
+
+| | uncapped | cap 1000 | cap 240 | cap 144 |
+|---|---|---|---|---|
+| best / median: off | 216.1 / 204.8 | 217.1 / 206.3 | 216.0 / 207.4 | 144.0 / 144.0 |
+| best / median: all | 214.2 / 199.1 | 216.6 / 198.7 | 215.8 / 199.3 | 144.0 / 144.0 |
+| best / median: off2 | 214.1 / 197.2 | 213.7 / 197.4 | 214.0 / 198.1 | 144.0 / 144.0 |
+| best against best (medians): all vs off | -0.9 % (-2.8 %) | -0.2 % (-3.7 %) | -0.1 % (-3.9 %) | 0.0 % (0.0 %) |
+| all vs off2 | +0.0 % (+1.0 %) | +1.3 % (+0.6 %) | +0.8 % (+0.6 %) | 0.0 % (0.0 %) |
+| off2 vs off (A/A) | -0.9 % (-3.7 %) | -1.6 % (-4.3 %) | -0.9 % (-4.5 %) | 0.0 % (0.0 %) |
+| paired per round, median (rounds below zero): all - off | -0.7 fps, -0.3 % (5 of 10) | -1.2 fps, -0.6 % (6 of 10) | -0.5 fps, -0.2 % (8 of 10) | 0.0 |
+| off2 - off (A/A) | -2.3 fps, -1.1 % (8 of 10) | -2.9 fps, -1.4 % (10 of 10) | -2.1 fps, -1.0 % (9 of 10) | 0.0 |
+
+- The rates fell into **two groups**: at cap 240 every run read either 192.3 to 201.1 or 212.5 to
+  216.0 fps, none in between. The upper group held 5 of the 10 `off` runs, 3 of the 10 `all` runs
+  and 1 of the 10 `off2` runs; by position in the round, 1 of the 10 first runs, 6 of the 10
+  second runs and 2 of the 10 third runs. CPU steal does not account for it. (In the gate run the
+  rates spread over 188.3 to 217.7 without that gap.)
+- **What it showed:** the A/A comparison moved as far as `all` against `off`, or further: best
+  -0.9 % against -0.1 %, paired median -1.0 % against -0.2 %, medians -4.5 % against -3.9 % (cap
+  240). On this machine, with software rendering, the 3 % rule cannot separate the two variants.
+  This does not change the verdict: **the frame-cap gate failed as run, at -3.2 %; the item is not
+  resolvable on this machine and is decided by the same gate on a machine with a GPU.** It is not
+  a pass.
+
+#### Frame-cap item of Stage 2: five runs on the official build
+
+The control of Stage 2 again (01:53 to 02:08 UTC, idle machine): the launch suite at cap 240,
+five times each, interleaved, with the gate's arguments, on the archived v44.0.0 build and on the
+45 Release build, off and all:
+
+| After resize (800x600), fps | runs | within 1 % | p99 / longest frame interval | uncapped at 640x480 |
+|---|---|---|---|---|
+| v44.0.0 (official build) | 240.04 ×5 | 5 of 5 | 4.30 ms every run / 4.4 to 4.7 ms | 1441, 1400, 1410, 1414, 1414 |
+| 45 Release, off | 240.04 ×5 | 5 of 5 | 4.30 ms / 4.4 to 4.6 ms | 1455, 1462, 1406, 1381, 1372 |
+| 45 Release, all | 240.04 ×5 | 5 of 5 | 4.30 ms / 4.4 to 4.9 ms | 1492, 1466, 1417, 1393, 1457 |
+
+Every other item of the 15 runs passed too (launch and hide/show 240.04, re-cap 240.04, one v44
+re-cap 240.14). The official 45 build holds cap 240 after the resize as v44 does, at the same
+uncapped reach; with the gate run above (240.04 in off and all) that is 12 of 12 Release runs.
+The Stage 2 miss (236.01 and 237.04 on the DCHECK build) did not come back on the official build.
+
+#### Checks
+
+| Check | Result on the Release build |
+|---|---|
+| c10 | Pass: flags off and on, the page saw [keydown KeyA, keyup KeyA] through `sendInputEvent` and through CDP |
+| e10 | Pass: 10 of 10 checks with KccSkipUnobservedInputEmits off and on |
+| c11 | Pass: re-lock 33 ms after Esc refused (SecurityError) with the switch off, locked with it on |
+| c21 | Pass: fast and no-fast paths give the same error and pixel hashes (err 2ac24dc, pix 4b3ace96; 11205 GL errors on purpose), loop 6179 / 6596 ms, TurboFan on both; no context loss |
+| v01 | Pass: the flag is listed by `--v8-options`; CppGC sweep slices stock 5 ms (max 5.5 ms), with the flag at 1 ms max 1.6 ms, at 2 ms max 2.6 ms |
+| c20 | Pass: RecordMetrics trace slices off 8, on 0 |
+| c30 | Pass: the texture-rebind page ran without crash, glError 0, no context loss, 765 frames |
+| c31 | N/A: Windows-only (DCompPresenter); this build does not define the feature |
+| c40 | Pass: with the switch every scenario stays flat (0.92x to 1.00x); stock grew 10.9x to 15.6x in 4 of 4 |
+| c41 | Pass: four renders (off twice, on twice), one distinct buffer, identical sample for sample |
+| c50 | Pass (the hint only): `_NET_WM_BYPASS_COMPOSITOR` ordinary / transparent / non-focusable = 2 / 2 / 2 switch off, 1 / 2 / 2 with KccX11AllowUnredirect and with every switch; Openbox, depth 24. No compositor here |
+| c51 | Pass, every item (below) |
+| c12, c15 (X11 raw path) | Pass: c12, c51 alone falls back to accelerated movement after `requestPointerLock()` without options, (822,492), and stays raw with KccPinRawPointerLock, (200,120). c15, c51 alone coalesced up to 8 and predicted up to 10; with KccLeanLockedMouseMove 1 and 0, coalesced entries sum 200 |
+
+c51 on the Release build. Raw events / dispatched moves / page mousemoves, and the movement sum:
+
+| Switches | flat, fast | adaptive, fast | adaptive, slow | held button | none held |
+|---|---|---|---|---|---|
+| c51 | 40 / 40 / 7, (200,120) | 40 / 40 / 7, (200,120) | 200 / 200 / 99, (200,120) | 20 / 20 / 4, 100 | 20 / 20 / 4, 100 |
+| c51 + c12 | 40 / 40 / 7, (200,120) | 40 / 40 / 6, (200,120) | 200 / 200 / 99, (200,120) | 20 / 20 / 5, 100 | 20 / 20 / 4, 100 |
+| every switch | 40 / 7 / 7, (200,120) | 40 / 7 / 7, (200,120) | 200 / 99 / 99, (200,120) | 20 / 5 / 5, 100 | 20 / 4 / 4, 100 |
+| off (plain lock, the control) | 40 / 40 / 8, (200,120) | 40 / 42 / 9, (679,407) | 200 / 201 / 100, (201,121) | 20 / 20 / 4, 100 | 20 / 20 / 5, 100 |
+
+The lock resolves; movement equals the device counts in every phase with c51 alone and with
+every switch; Esc releases it and the mouse moves afterwards; Alt+Tab releases it, the focus goes
+to the other application and movement there does not reach the page, (0,0); a lock taken in a
+mousedown handler with the button held: 0 of 5 locked mousemoves with buttons 0; held button:
+`buttons` 1 on every move, movement 100, then `buttons` 0 after the release and with no button
+held. Without the switch, `unadjustedMovement` is refused (NotSupportedError) and the plain lock
+follows acceleration.
+
+#### c51: raw events after the lock ends
+
+Asked for after Stage 2, and done after the zip was made, on the DCHECK build: no Release object
+was built with the logging. A temporary `LOG(ERROR)` line for every XInput2 raw event at
+`x11::Connection::DispatchEvent()` (`ui/gfx/x/connection.cc`), `out/Testing` rebuilt (20 steps),
+then one run of a script of the build session (not in the repository): window B, a plain page,
+stays open throughout; window A takes the raw lock three times; each interval moves the uinput
+mouse (100,0) in 20 reports.
+
+| Interval | Lock | Raw events at `x11::Connection` |
+|---|---|---|
+| locked, 1 | held | 60 for 20 motions: the slave pointer's own copy 20, the master pointer's 40 |
+| after Esc | released | **0** |
+| locked, 2 | held | 60 (20 and 40) |
+| after Alt+Tab, focus in another application (xmessage) | released | **0** |
+| locked, 3 | held | 60 (20 and 40) |
+| after window A was closed, B still open | | **0** |
+
+No raw event reached the connection outside the intervals either. The raw selection ends with the
+lock in all three ways; while the lock is held each motion reaches the browser three times, the
+slave pointer's copy that c51 counts and the master pointer's two (Stage 2), as c51's description
+says. The logging was then removed: the file is back at its committed content (checked by
+SHA-256) and its original time stamp, so the Release build made before stays up to date, and
+`out/Testing` was rebuilt. Afterwards `ninja -n` has nothing to do in `out/Release` and in
+`out/Testing`, neither `electron` binary contains the logging string, and dist.zip is unchanged
+(same size and SHA-256).
