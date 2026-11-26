@@ -1,0 +1,6 @@
+# Base commits the KCC series was applied on, Linux build (Stage 0, 2026-11-24T21:19:48Z)
+# Commit ids of src and v8 are this machine's: Electron's patches are applied as local commits by the sync.
+src       acb421e98814b883516097c51df7b501867a4e7c  Chromium 156.0.8078.100 (46876a0c2df3492ed67a8846950ba6d37170b58c) + Electron v45.4.1's 301 Chromium patches; tree d93dabfbd671d4876e7f911890f7767fda478346
+electron  deaded07eebdfe9a3737884933b1acbe65971f64  tag v45.4.1
+v8        a252240cdb391376c27f38cccc0a0ada130f69a7  V8 15.6.75.57 (pinned 5e51e9c6079c7fa65ca75e7919c81ea50734302e) + Electron's 37 V8 patches; tree ab3ad17056d278c4ec78d984dd57b680fad8b078
+src/electron/DEPS chromium_version: 156.0.8078.100

@@ -30,21 +30,31 @@ Layers:
     X11Extension was chosen over PlatformWindow so that no other platform
     sees a new method.
   - X11Window (ui/ozone/platform/x11) does the work.
-  - DeviceDataManagerX11::GetRawMotionDelta() (ui/events/devices/x11)
-    decodes the event next to the existing Fp3232/valuator helpers.
+  - DeviceDataManagerX11 (ui/events/devices/x11): GetRawMotionDelta()
+    decodes the event next to the existing Fp3232/valuator helpers, and
+    SetRawMotionSelected() adds XI_RawMotion to the root-window selection
+    this class already makes.
 
 Details:
   - Selection.  XI_RawMotion only goes to clients that select it on the
-    root window.  X11Window selects {root, DeviceId::AllMaster, RawMotion}
-    when the first window enables raw motion and writes an empty mask when
-    the last one disables it (file-static counter; also from
-    CloseXWindow()).  The only other XI2 selection this client has on the
-    root is DeviceDataManagerX11's Hierarchy|DeviceChanged for
-    DeviceId::All, which is a separate mask in the server.
-  - One event per motion.  The server processes a raw event for the slave
-    and again for the master it is attached to; selecting for AllMaster
-    delivers only the master copy, and GetRawMotionDelta() additionally
-    requires deviceid to be one of master_pointers().
+    root window.  When the first window enables raw motion, X11Window has
+    DeviceDataManagerX11 add RawMotion to the selection it makes on the
+    root for DeviceId::All (Hierarchy|DeviceChanged); when the last one
+    disables it, that selection goes back to what it was (file-static
+    counter; also from CloseXWindow()).  The server keeps one mask per
+    client, window and device id, so the two have to be one selection.
+  - One event per motion.  The server sends a raw event for the slave
+    device that moved and again for the master it is attached to.
+    GetRawMotionDelta() counts only the slave's own copy (deviceid ==
+    sourceid, a slave pointer attached to a master).  The master's copy
+    cannot be used: while this client holds an owner-events grab on one of
+    its windows, which pointer lock takes, the server delivers it twice,
+    once through the grab (its owner-events delivery reaches this client's
+    root-window selection) and once to the root windows, which
+    FilterRawEvents() skips only for a grab on the root window itself
+    (xorg-server dix/events.c, DeliverRawEvent()).  Pointer lock grabs
+    master devices only, and the implicit grab of a held button has no
+    owner events, so the slave's copy arrives once.
   - Decoding.  Only axisvalues_raw (unaccelerated), only valuators 0 and 1
     as present in valuator_mask; scroll valuators are ignored.  Events
     whose source device (sourceid) has X or Y in ValuatorMode::Absolute
@@ -140,26 +150,38 @@ Known limits:
     fallback path above depends on the content layer re-centring.
   - Every raw event is dispatched on its own, as on Windows.  8 kHz mice
     will cost browser UI thread time; raw events are not coalesced here.
-  - Found in a desk-check on 2026-11-21, not fixed (it cannot be compiled
-    on the Windows build machine): SetRawMouseMotionEnabled(true) resets
-    raw_mouse_event_flags_ to 0, and only ordinary mouse events refresh it.
-    The server queues a motion's raw event before its core motion event, so
-    when the lock is taken from a mousedown and the mouse moves with the
-    button still held, the first move made from raw motion carries no
-    button or modifier flags: a kMouseMoved instead of kMouseDragged, and
-    the page sees buttons == 0 (and loses a held Shift/Ctrl) on that one
-    mousemove, until the next core event corrects it.  Possible fix: seed
-    the field on enable with XGetMaskAsEventFlags() &
-    kRawMouseMotionStateFlags (ui/base/x/x11_drag_drop_client.h; one
-    synchronous QueryPointer; covers Shift, Ctrl, Alt, Super and the left,
-    middle and right buttons).
+  - Each motion arrives as two or three raw events: the slave's copy,
+    which is counted, and the master's, once or (under the pointer-lock
+    grab) twice, which is read and dropped on the browser UI thread.
+  - Found in a desk-check on 2026-11-21, fixed on the Linux build on
+    2026-11-24: SetRawMouseMotionEnabled(true) reset raw_mouse_event_flags_
+    to 0, and only ordinary mouse events refresh it.  The server queues a
+    motion's raw event before its core motion event, so when the lock was
+    taken from a mousedown and the mouse moved with the button still held,
+    the first move made from raw motion carried no button or modifier
+    flags: a kMouseMoved instead of kMouseDragged, and the page saw
+    buttons == 0 (and lost a held Shift/Ctrl) on that one mousemove.  The
+    field is now seeded on enable with XGetMaskAsEventFlags() &
+    kRawMouseMotionStateFlags (ui/base/x/x11_drag_drop_client.h, already
+    used in this file; one synchronous QueryPointer; Shift, Ctrl, Alt,
+    Super and the left, middle and right buttons.  Caps Lock and Num Lock
+    are not in that mask and stay off until the next ordinary mouse event,
+    as before).
+  - Found on the Linux build on 2026-11-25 and fixed there: the draft
+    selected raw motion for the master devices and counted the master's
+    copies.  Under pointer lock every motion arrived twice (measured at
+    x11::Connection: two identical events per motion) and movementX/Y were
+    doubled, (400,240) for a (200,120) device swipe in every acceleration
+    profile.  The slave's copies are counted now, as described above.
 
-Not verified: nothing was compiled or run.  Type and field names were
-taken from ui/gfx/x/generated_protos/xinput.h, which is checked in and is
-what the build compiles unless regenerate_x11_protos is set.  X server
-behaviour quoted above (master/slave copies, POINTER_NORAW for warps, raw
-delivery under grabs for XI >= 2.1 clients, XWayland) was read from the
-xorg-server sources, not tested.
+Not verified when drafted: nothing was compiled or run.  Type and field
+names were taken from ui/gfx/x/generated_protos/xinput.h, which is checked
+in and is what the build compiles unless regenerate_x11_protos is set.  X
+server behaviour quoted above (master/slave copies, POINTER_NORAW for
+warps, raw delivery under grabs for XI >= 2.1 clients, XWayland) was read
+from the xorg-server sources.  The Linux build (2026-11-25, Xorg 21.1.12)
+measured the raw-event delivery under the pointer-lock grab (see "One
+event per motion"); XWayland was not tested there.
 
 Platforms: Linux/X11 (and XWayland).  The views and platform_window files
 also build for Wayland, where nothing changes.
@@ -182,20 +204,34 @@ Build and check status (2026-11-21)
 The "not compiled" / "not verified" notes above were written before the
 build; they stay for the caveats they list. Details and raw logs:
 patches/electron-45/RESULTS.md and results/.
+Linux build (2026-11-25): compiled, and checked with a uinput mouse
+through libinput under Xorg; results in patches/electron-45/RESULTS-linux.md.
 
 diff --git a/ui/events/devices/x11/device_data_manager_x11.cc b/ui/events/devices/x11/device_data_manager_x11.cc
-index 0fd92a26c8859579e162d6543b290d10afa2c838..a03fbc9b13f981244e9b13c7fa814f534792f14b 100644
+index 0fd92a26c8859579e162d6543b290d10afa2c838..01356ef388d6423dd47af72d8515f39c5bfb2ecf 100644
 --- a/ui/events/devices/x11/device_data_manager_x11.cc
 +++ b/ui/events/devices/x11/device_data_manager_x11.cc
-@@ -188,6 +188,7 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
+@@ -188,6 +188,8 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
    cmt_devices_.clear();
    touchpads_.clear();
    stylus_.clear();
 +  absolute_pointer_devices_.clear();
++  slave_pointers_.clear();
    master_pointers_.clear();
    valuator_count_.clear();
    valuator_lookup_.clear();
-@@ -249,6 +250,11 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
+@@ -218,6 +220,10 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
+   for (const auto& info : info_list) {
+     if (info.type == x11::Input::DeviceType::MasterPointer)
+       master_pointers_.push_back(info.deviceid);
++    // kcc: see GetRawMotionDelta().
++    if (info.type == x11::Input::DeviceType::SlavePointer) {
++      slave_pointers_.insert(info.deviceid);
++    }
+ 
+     // We currently handle only slave, non-keyboard devices
+     if (info.type != x11::Input::DeviceType::SlavePointer &&
+@@ -249,6 +255,11 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
        if (device_class.valuator.has_value()) {
          auto dt = UpdateValuatorClassDevice(*device_class.valuator,
                                              atom_to_data_type, deviceid);
@@ -207,7 +243,7 @@ index 0fd92a26c8859579e162d6543b290d10afa2c838..a03fbc9b13f981244e9b13c7fa814f53
          if (IsStylusDataType(dt))
            possible_stylus = true;
          if (IsCMTDataType(dt))
-@@ -846,6 +852,39 @@ bool DeviceDataManagerX11::IsEventBlocked(const x11::Event& x11_event) {
+@@ -846,6 +857,57 @@ bool DeviceDataManagerX11::IsEventBlocked(const x11::Event& x11_event) {
    return blocked_devices_.contains(xievent->sourceid);
  }
  
@@ -218,11 +254,19 @@ index 0fd92a26c8859579e162d6543b290d10afa2c838..a03fbc9b13f981244e9b13c7fa814f53
 +  if (raw.opcode != x11::Input::RawDeviceEvent::RawMotion) {
 +    return false;
 +  }
-+  // The server processes every event of a slave device a second time for the
-+  // master pointer the slave is attached to. Count only that second copy, so
-+  // that one physical motion is never reported twice.
-+  if (std::ranges::find(master_pointers_, raw.deviceid) ==
-+      master_pointers_.end()) {
++  // The server sends a raw event once for the slave device that moved and
++  // once more for the master pointer the slave is attached to. Count the
++  // slave's own copy (deviceid == sourceid), not the master's: the master's
++  // copy arrives twice while this client holds an owner-events grab on one of
++  // its own windows, which pointer lock takes. The grab's owner-events
++  // delivery reaches this client's root-window selection, and the root-window
++  // delivery that follows is skipped only for a grab on the root window itself
++  // (DeliverRawEvent() and FilterRawEvents() in xorg-server's dix/events.c).
++  // Pointer lock grabs master devices only, and the implicit grab of a held
++  // button has no owner events, so the slave's copy arrives once. Floating
++  // slaves move no pointer and are not counted.
++  if (raw.deviceid != raw.sourceid ||
++      !slave_pointers_.contains(raw.deviceid)) {
 +    return false;
 +  }
 +  if (absolute_pointer_devices_.contains(raw.sourceid)) {
@@ -244,31 +288,46 @@ index 0fd92a26c8859579e162d6543b290d10afa2c838..a03fbc9b13f981244e9b13c7fa814f53
 +  return true;
 +}
 +
++void DeviceDataManagerX11::SetRawMotionSelected(bool selected) {
++  // The constructor's mask, plus XI_RawMotion while |selected|. The server
++  // keeps one mask per client, window and device id, so this replaces the
++  // constructor's selection for DeviceId::All rather than adding to it.
++  const auto mask = x11::Input::XIEventMask::Hierarchy |
++                    x11::Input::XIEventMask::DeviceChanged;
++  SelectDeviceEvents(selected ? mask | x11::Input::XIEventMask::RawMotion
++                              : mask);
++}
++
  void DeviceDataManagerX11::OnKeyboardDevicesUpdated(
      const std::vector<KeyboardDevice>& devices) {
    std::vector<KeyboardDevice> keyboards(devices);
 diff --git a/ui/events/devices/x11/device_data_manager_x11.h b/ui/events/devices/x11/device_data_manager_x11.h
-index 5e14481343aa5dcf3a729a283c046f2321d25fb9..d0f79891c9c9cac70b9186a297dba45dc89229cf 100644
+index 5e14481343aa5dcf3a729a283c046f2321d25fb9..05bfc3b305cff1c157cc29be637b21dd8b90cf0b 100644
 --- a/ui/events/devices/x11/device_data_manager_x11.h
 +++ b/ui/events/devices/x11/device_data_manager_x11.h
-@@ -280,6 +280,16 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
+@@ -280,6 +280,21 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
    // Returns true if |native_event| should be blocked.
    bool IsEventBlocked(const x11::Event& xev);
  
 +  // kcc: Extracts the unaccelerated pointer motion from an XI_RawMotion event.
 +  // Returns false and leaves |dx| and |dy| alone if |raw| must not be counted
 +  // as pointer motion: it is not an XI_RawMotion, it is not the copy that the
-+  // server delivers for a master pointer, its source device has absolute X/Y
-+  // axes (tablets, touchscreens, virtual machine pointers), or it has no X/Y
-+  // valuators (for example a scroll wheel).
++  // server delivers for the slave pointer device itself (see the .cc), its
++  // source device has absolute X/Y axes (tablets, touchscreens, virtual
++  // machine pointers), or it has no X/Y valuators (for example a scroll wheel).
 +  bool GetRawMotionDelta(const x11::Input::RawDeviceEvent& raw,
 +                         double* dx,
 +                         double* dy) const;
 +
++  // kcc: Adds XI_RawMotion for all devices to the root-window selection made
++  // in the constructor (Hierarchy and DeviceChanged for DeviceId::All), or
++  // takes it out again. For windows that want raw mouse motion.
++  void SetRawMotionSelected(bool selected);
++
    const std::vector<x11::Input::DeviceId>& master_pointers() const {
      return master_pointers_;
    }
-@@ -356,6 +366,10 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
+@@ -356,6 +371,14 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
    base::flat_set<x11::Input::DeviceId> touchpads_;
    base::flat_set<x11::Input::DeviceId> stylus_;
  
@@ -276,11 +335,15 @@ index 5e14481343aa5dcf3a729a283c046f2321d25fb9..d0f79891c9c9cac70b9186a297dba45d
 +  // raw values of such a device are positions, not deltas.
 +  base::flat_set<x11::Input::DeviceId> absolute_pointer_devices_;
 +
++  // kcc: Slave pointer devices attached to a master pointer (not floating).
++  // GetRawMotionDelta() counts their own XI_RawMotion copies.
++  base::flat_set<x11::Input::DeviceId> slave_pointers_;
++
    // List of the master pointer devices.
    std::vector<x11::Input::DeviceId> master_pointers_;
  
 diff --git a/ui/ozone/platform/x11/x11_window.cc b/ui/ozone/platform/x11/x11_window.cc
-index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262b0ecf347 100644
+index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e99d1cd301222e90e2d45d4dc9139d0657ce1659 100644
 --- a/ui/ozone/platform/x11/x11_window.cc
 +++ b/ui/ozone/platform/x11/x11_window.cc
 @@ -5,6 +5,7 @@
@@ -326,7 +389,7 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
  // Opacity for drag widget windows.
  constexpr float kDragWidgetOpacity = .75f;
  
-@@ -1360,6 +1375,40 @@ bool X11Window::IsWmSyncActiveForTest() {
+@@ -1360,6 +1375,41 @@ bool X11Window::IsWmSyncActiveForTest() {
    return bounds_wm_sync_.get();
  }
  
@@ -341,7 +404,12 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
 +  raw_mouse_motion_seen_ = false;
 +  raw_mouse_motion_remainder_x_ = 0.0;
 +  raw_mouse_motion_remainder_y_ = 0.0;
-+  raw_mouse_event_flags_ = 0;
++  // The server queues a motion's raw event before its core event, so with a
++  // lock taken from a mousedown the first raw move would go out before any
++  // ordinary mouse event has set the button and modifier state. Start from the
++  // pointer's state instead (one synchronous QueryPointer).
++  raw_mouse_event_flags_ =
++      enabled ? ui::XGetMaskAsEventFlags() & kRawMouseMotionStateFlags : 0;
 +
 +  if (enabled) {
 +    ++g_raw_mouse_motion_users;
@@ -350,15 +418,11 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
 +  }
 +  // XI_RawMotion is only delivered to clients that select it on the root
 +  // window. Select it when the first window starts and deselect it when the
-+  // last one stops. Selecting for the master devices gives one event per
-+  // physical motion, and does not disturb the mask DeviceDataManagerX11 keeps
-+  // on the root window for DeviceId::All.
++  // last one stops. It goes into the selection DeviceDataManagerX11 keeps on
++  // the root window for DeviceId::All, and GetRawMotionDelta() counts only the
++  // slave pointers' own copies (see there why not the master's).
 +  if (g_raw_mouse_motion_users == (enabled ? 1 : 0)) {
-+    const x11::Input::XIEventMask mask =
-+        enabled ? x11::Input::XIEventMask::RawMotion
-+                : x11::Input::XIEventMask{};
-+    connection_->xinput().XISelectEvents(
-+        {x_root_window_, {{x11::Input::DeviceId::AllMaster, {mask}}}});
++    DeviceDataManagerX11::GetInstance()->SetRawMotionSelected(enabled);
 +    connection_->Flush();
 +  }
 +  return true;
@@ -367,7 +431,7 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
  bool X11Window::HandleAsAtkEvent(const x11::Event& event) {
  #if !BUILDFLAG(USE_ATK)
    // TODO(crbug.com/40653448): Support ATK in Ozone/X11.
-@@ -1378,6 +1427,20 @@ bool X11Window::HandleAsAtkEvent(const x11::Event& event) {
+@@ -1378,6 +1428,20 @@ bool X11Window::HandleAsAtkEvent(const x11::Event& event) {
  }
  
  void X11Window::OnEvent(const x11::Event& xev) {
@@ -388,7 +452,7 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
    auto event_type = ui::EventTypeFromXEvent(xev);
    if (event_type != EventType::kUnknown) {
      // If this event can be translated, it will be handled in ::DispatchEvent.
-@@ -1475,6 +1538,13 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
+@@ -1475,6 +1539,13 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
      return;
    }
  
@@ -402,7 +466,7 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
    // If after CoalescePendingMotionEvents the type of xev is resolved to
    // UNKNOWN, i.e: xevent translation returns nullptr, don't dispatch the
    // event. TODO(crbug.com/40559202): investigate why ColescePendingMotionEvents
-@@ -1487,6 +1557,88 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
+@@ -1487,6 +1558,88 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
                              base::Unretained(platform_window_delegate())));
  }
  
@@ -491,7 +555,7 @@ index abfb4a6cf1ff7b5359d62d6a5883d1974cd4a241..e958539cc661dd9d29e2e3f931ba4262
  void X11Window::UpdateDecorationInsets() {
    auto atom = x11::GetAtom("_GTK_FRAME_EXTENTS");
    auto insets_dip =
-@@ -1983,6 +2135,7 @@ void X11Window::CloseXWindow() {
+@@ -1983,6 +2136,7 @@ void X11Window::CloseXWindow() {
  
    CancelResize();
    UnconfineCursor();
