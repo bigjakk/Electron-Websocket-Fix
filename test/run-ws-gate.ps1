@@ -5,8 +5,7 @@
 #
 #   run-ws-gate.ps1 -Exe <electron.exe> -OutDir <dir> [-Flags off|on] [-Runs 2]
 #
-# -Flags on adds every switch of the series (README "Everything on") and the
-# --js-flags value.
+# -Flags on adds every switch of the series (README "Everything on").
 #
 # Re-runs: this machine stalls now and then (a VM; seen with nothing else
 # running). A run that exited cleanly with frames but missed only the latency
@@ -25,7 +24,7 @@ $summary = Join-Path $OutDir "ws-gate-$Flags.txt"
 Set-Content $summary "WS starvation gate  flags $Flags  $(Get-Date -Format s)`nexe: $Exe`n" -Encoding utf8
 
 $extra = @()
-if ($Flags -eq 'on') { $extra = (Join-KccFeatures $KccAllFeatures) + @("--js-flags=$KccAllJsFlags") }
+if ($Flags -eq 'on') { $extra = @(Join-KccFeatures $KccAllFeatures) }
 $allPass = $true
 for ($i = 1; $i -le $Runs; $i++) {
   for ($try = 1; $try -le 2; $try++) {

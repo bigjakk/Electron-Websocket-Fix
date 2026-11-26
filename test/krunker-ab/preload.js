@@ -7,7 +7,7 @@
 // Without it the lock is the ordinary one: Chromium derives movement from the
 // position of the hidden cursor and puts it back in the middle of the window
 // whenever it comes near an edge, which can show as a sudden view flick, and
-// none of the series' raw-input patches (c12 to c15) run.
+// the run would not measure what the client's players get.
 const { ipcRenderer } = require('electron');
 
 const origLock = HTMLCanvasElement.prototype.requestPointerLock;

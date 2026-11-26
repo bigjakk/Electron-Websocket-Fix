@@ -6,7 +6,6 @@
 #                         [-ExtraArgs '--enable-logging=stderr --v=0']
 #
 # Variants (comma-separated): off; all (every switch, as the gates use it);
-# features (every --enable-features switch, no JS flag); js (only the JS flag);
 # a feature name or names joined by + (KccA+KccB: those features alone).
 # -ExtraArgs: Electron switches for every launch, space-separated
 # (default --enable-logging).
@@ -27,9 +26,7 @@ $byVariant = [ordered]@{}
 foreach ($v in @($Variants | ForEach-Object { $_ -split ',' } | Where-Object { $_ })) {
   $byVariant[$v] = switch -Regex ($v) {
     '^off$' { @() }
-    '^all$' { @(Join-KccFeatures $KccAllFeatures) + @("--js-flags=$KccAllJsFlags") }
-    '^features$' { @(Join-KccFeatures $KccAllFeatures) }
-    '^js$' { @("--js-flags=$KccAllJsFlags") }
+    '^all$' { @(Join-KccFeatures $KccAllFeatures) }
     '^Kcc' { @(Join-KccFeatures ($v -split '\+')) }
     default { throw "unknown variant $v" }
   }

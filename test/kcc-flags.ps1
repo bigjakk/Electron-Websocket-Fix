@@ -4,15 +4,9 @@
 # callers merge their own features into one value with Join-KccFeatures.
 
 $KccAllFeatures = @(
-  'KccNoPointerLockEscCooldown', 'KccPinRawPointerLock', 'KccRawInputKeepWheelMotion',
-  'KccRawInputFastPath', 'KccLeanLockedMouseMove', 'KccSkipUnobservedInputEmits',
-  'KccSkipCanvasPerfSampling', 'KccLabelTexturesOnce', 'KccCacheVsyncInterval',
-  'KccMacFineGpuBackpressure', 'KccAudioParamCoalesce', 'KccHrtfPannerKRateAngles',
-  'KccX11AllowUnredirect', 'KccX11RawMouse', 'KccFrameCapPreciseRelease'
+  'KccNoPointerLockEscCooldown', 'KccSkipCanvasPerfSampling', 'KccCacheVsyncInterval',
+  'KccMacFineGpuBackpressure', 'KccAudioParamCoalesce', 'KccFrameCapPreciseRelease'
 )
-# KccFrameCapLateLatch (c61) was dropped from the series on 2026-11-21 (see
-# patches/electron-45/RESULTS.md); Stage 2 tested it on the 23-patch build.
-$KccAllJsFlags = '--cppheap-max-incremental-sweep-duration-ms=1'
 
 function Join-KccFeatures([string[]]$features) {
   $list = @($features | Where-Object { $_ })

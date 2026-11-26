@@ -1,5 +1,19 @@
 # Electron v45.4.1 KCC series: build and check results
 
+> **These results are for the 22-patch series.** Eleven of those patches were removed on
+> 2026-11-26; the reasons are in [README.md](README.md#removed-on-2026-11-26). The eleven
+> kept diffs are unchanged, and the lean set has not been built as a set yet. Sections on a
+> removed patch are kept as the record behind that decision; the test drivers and pages of
+> the removed patches were removed with them, so some files named below no longer exist.
+
+> **Correction, 2026-11-26: the Windows WebSocket gate's "switches on" runs.** Until that day
+> `test/run-ws-gate.ps1` joined the last switch and the `--js-flags` value into one argument
+> (`...KccFrameCapPreciseRelease--js-flags=...`; the first line of every `ws-gate-on-*.log`
+> under `results/` shows it). In every Windows "switches on" WebSocket gate run recorded
+> here, `KccFrameCapPreciseRelease` and the V8 flag were therefore not in effect; the other
+> switches were. The frame-cap gate, the checks, the startup test and the in-game harness
+> built their arguments correctly, and the macOS and Linux drivers never had the fault.
+
 Build of Electron **v45.4.1** (Chromium **156.0.8078.100**, V8 **15.6.75.57**) with the patch
 series in this directory, on the machine described below. Raw logs are in
 [`results/`](results/). The build machine tested nothing in the game; see

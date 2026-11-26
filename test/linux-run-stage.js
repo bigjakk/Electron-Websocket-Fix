@@ -1,8 +1,7 @@
 // Everything Stage 2 / Stage 3 of the KCC Electron 45 build brief runs on one
 // binary on Linux, the counterpart of run-stage.ps1: gpu-status.json, both
 // release gates with the switches off and with every switch on, then the
-// synthetic checks (linux-run-checks.js, which includes the Linux-only c50 and
-// c51).
+// synthetic checks (linux-run-checks.js).
 //
 //   node linux-run-stage.js --exe <electron> --out <dir> [--part gates|checks|all]
 //        [--ws-runs 6] [--features-via commandline|js] [--cap-page-mode webgl|2d]
@@ -20,14 +19,12 @@
 //   on to every driver; off by default, so a run on a desktop with a GPU uses
 //   the GPU (see linux-common.js for what each does and why).
 //
-// Runs use the X server in $DISPLAY. c51 also needs a uinput virtual mouse,
-// $KCC_VMOUSE_FIFO, or it is skipped (and says so); see linux-run-checks.js.
+// Runs use the X server in $DISPLAY.
 //
 //   The build VM (no GPU, no desktop, Ubuntu 24.04):
-//     eval "$(test/linux-x11-env.sh start 1 | grep ^export)"   # Xorg dummy, openbox, mouse
+//     eval "$(test/linux-x11-env.sh start 1 | grep ^export)"   # Xorg dummy, openbox
 //     node test/linux-run-stage.js --exe <electron> --out <dir> --software-rendering --no-sandbox
 //   A desktop with a GPU, in its X11 session (Xorg; DISPLAY already set):
-//     eval "$(test/linux-x11-env.sh start-mouse | grep ^export)"  # optional: c51
 //     node test/linux-run-stage.js --exe <electron> --out <dir>   # add --no-sandbox only if electron will not start
 //
 // Every part appends its verdict lines to <out>/stage-summary.txt, which also
@@ -60,7 +57,7 @@ function sub(script, args) {
   return r.status;
 }
 
-const env = `DISPLAY=${process.env.DISPLAY || ''} KCC_VMOUSE_FIFO=${process.env.KCC_VMOUSE_FIFO ? 'set' : 'unset'}`;
+const env = `DISPLAY=${process.env.DISPLAY || ''}`;
 note(`== ${o.part}  ${c.stamp()}  exe ${o.exe}  features via ${o['features-via']}, heavy page ${o['cap-page-mode']}  ${env}  platform args: ${c.platformArgs().join(' ')}`);
 
 if (o.part === 'gates' || o.part === 'all') {

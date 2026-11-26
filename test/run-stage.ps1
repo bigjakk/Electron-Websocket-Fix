@@ -1,7 +1,6 @@
 # Everything Stage 2 / Stage 3 of the KCC Electron 45 build brief runs on one
 # binary: both release gates with the switches off and with every switch on,
-# the frame-cap gate with the frame-cap switches alone and together, then the
-# synthetic checks.
+# the frame-cap gate with the frame-cap switch alone, then the synthetic checks.
 #
 #   run-stage.ps1 -Exe <electron.exe> -OutDir <dir> [-Part gates|cap-switches|checks|all]
 #                 [-FeaturesVia commandline|js] [-CapPageMode webgl|2d]
@@ -10,8 +9,6 @@
 #                 "off" and "all" (heavy runs interleaved)             (~45 min)
 #   cap-switches  frame-cap gate "precise" (heavy runs interleaved with
 #                 "off"), in <OutDir>\cap-switches             (~25 min)
-#                 (The Stage 2 build also had "latch" and "both": c61,
-#                 KccFrameCapLateLatch, was dropped afterwards.)
 #                 Its own folder because its "off" heavy runs have the same
 #                 file names as those of the gates part (in Stage 3 they were
 #                 written over the gates part's, which were restored from git).
@@ -19,7 +16,7 @@
 #
 # -FeaturesVia js: the frame-cap gate passes its --enable-features list through
 #   the main script (needed on a DCHECK build; see frame-cap-test.js).
-# -CapPageMode: page of the c60 / c61 checks and of the frame-cap gate's heavy
+# -CapPageMode: page of the c60 check and of the frame-cap gate's heavy
 #   suite (2d where the WebGL page cannot reach 144 or its rate is too noisy to
 #   compare, as on the DCHECK build here).
 #
@@ -46,7 +43,7 @@ function Sub([string]$script, [string[]]$a) {
   $out | Where-Object { $_ -match $verdictPattern } | ForEach-Object { Note "  $_" }
 }
 $session = (quser 2>$null | Select-String '^\s*>' | ForEach-Object { ($_.Line -replace '\s{2,}', '|').Trim() }) -join ' '
-Note "== $Part  $(Get-Date -Format s)  exe $Exe  features via $FeaturesVia, c60/c61 page $CapPageMode  session: $session"
+Note "== $Part  $(Get-Date -Format s)  exe $Exe  features via $FeaturesVia, c60 page $CapPageMode  session: $session"
 
 if ($Part -in 'gates', 'all') {
   Push-Location $PSScriptRoot

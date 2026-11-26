@@ -35,7 +35,6 @@ foreach ($b in $busyList) {
       $log = Join-Path $OutDir "$name.log"
       if (Test-Path $json) { Remove-Item $json }
       $argv = @('cap-toggle-test.js', "--kcc-busy=$b", "--kcc-cycles=$Cycles", "--kcc-out=$json") + @(Join-KccFeatures $featureOf[$v]) + @('--enable-logging')
-      if ($v -eq 'all') { $argv += "--js-flags=$KccAllJsFlags" }
       $code = Invoke-Electron $Exe $argv $log
       $crash = @(Select-String -Path $log -Pattern $KccCrashPattern).Count
       $r = if (Test-Path $json) { Get-Content $json -Raw | ConvertFrom-Json } else { $null }

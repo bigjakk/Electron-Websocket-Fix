@@ -16,7 +16,7 @@
 // reach must not lose rate). Medians and every run are reported as well.
 // Variants:
 //   off      no KCC switch
-//   all      every switch of the series (README "Everything on") + --js-flags
+//   all      every switch of the series (README "Everything on")
 //   precise  KccFrameCapPreciseRelease (c60, Windows only: on macOS and Linux the
 //            feature does not exist, so this is variant "off" under another name)
 // Never combined with CustomMaxPendingFrames:count/2 (a documented conflict).
@@ -178,7 +178,6 @@ async function main(argv) {
   if (parts.includes('A')) {
     for (const v of variants) {
       const vf = variantFeatures(v);
-      const js = v === 'all' ? [`--js-flags=${k.KCC_ALL_JS_FLAGS}`] : [];
       // Launch caps and the first runtime suite draw with a 2D canvas; the second
       // runtime suite and the heavy suite draw with WebGL2, the game's path.
       const runs = [];
@@ -189,7 +188,7 @@ async function main(argv) {
       runs.push(['runtime-webgl', ['frame-cap-test.js', '--kcc-suite=runtime', '--kcc-mode=webgl', ...featureArgs(vf)]]);
       for (const [n, args] of runs) {
         const name = `${v}-${n}`;
-        verdictOf(writeSuite(name, await invokeSuite(name, [...args, ...js])));
+        verdictOf(writeSuite(name, await invokeSuite(name, args)));
       }
     }
   }
@@ -204,9 +203,8 @@ async function main(argv) {
   for (const b of busyList) {
     for (let i = 1; i <= heavyRuns; i++) {
       for (const v of heavyVariants) {
-        const js = v === 'all' ? [`--js-flags=${k.KCC_ALL_JS_FLAGS}`] : [];
         const name = `${v}-heavy-${b}-${i}`;
-        const att = await invokeSuite(name, ['frame-cap-test.js', '--kcc-suite=heavy', `--kcc-busy=${b}`, `--kcc-mode=${a['heavy-mode']}`, ...featureArgs(variantFeatures(v)), ...js]);
+        const att = await invokeSuite(name, ['frame-cap-test.js', '--kcc-suite=heavy', `--kcc-busy=${b}`, `--kcc-mode=${a['heavy-mode']}`, ...featureArgs(variantFeatures(v))]);
         if (verdictOf(writeSuite(name, att)) === 'invalid') heavyInvalid[`${v}|${b}`] = (heavyInvalid[`${v}|${b}`] || 0) + 1;
         const last = att[att.length - 1];
         if (last.res && last.code === 0 && !last.invalid) (heavy[`${v}|${b}`] = heavy[`${v}|${b}`] || []).push(last.res);

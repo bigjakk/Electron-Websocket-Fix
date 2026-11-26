@@ -1,7 +1,7 @@
 # Frame-cap release gate driver (KCC Electron 45 series).
 #
 #   run-frame-cap-gate.ps1 -Exe <electron.exe> -OutDir <dir>
-#       [-Variants off,precise,latch,both,all] [-Busy 5,3] [-HeavyRuns 3]
+#       [-Variants off,precise,all] [-Busy 5,3] [-HeavyRuns 3]
 #       [-FeaturesVia commandline|js]
 #
 # Part A, for every variant: the launch suite for CustomFrameCap:fps/60, /144 and
@@ -22,10 +22,7 @@
 # Variants:
 #   off      no KCC switch
 #   precise  KccFrameCapPreciseRelease
-#   latch    KccFrameCapLateLatch (c61; dropped from the series, only in the
-#            Stage 2 build)
-#   both     KccFrameCapPreciseRelease + KccFrameCapLateLatch (likewise)
-#   all      every switch of the series (README "Everything on") + --js-flags
+#   all      every switch of the series (README "Everything on")
 # Never combined with CustomMaxPendingFrames:count/2 (a documented conflict).
 #
 # -FeaturesVia js passes the --enable-features list as --kcc-features, which
@@ -46,7 +43,7 @@ param(
   [string[]]$Variants = @('off'),
   # Per-frame JS work of the heavy suite. 5 ms: the page cannot reach 144 or
   # above (cap above reach). 3 ms: on a release build a 144 cap binds with ~40 %
-  # of the period to spare, which is where KccFrameCapLateLatch engages.
+  # of the period to spare.
   [string[]]$Busy = @('5', '3'),
   [int]$HeavyRuns = 5,
   [string[]]$Parts = @('A', 'B'),
@@ -75,8 +72,6 @@ function Get-VariantFeatures([string]$v) {
   switch ($v) {
     'off' { return @() }
     'precise' { return @('KccFrameCapPreciseRelease') }
-    'latch' { return @('KccFrameCapLateLatch') }
-    'both' { return @('KccFrameCapPreciseRelease', 'KccFrameCapLateLatch') }
     'all' { return $KccAllFeatures }
     default { throw "unknown variant $v" }
   }
@@ -138,7 +133,6 @@ $allPass = $true
 # ---- part A: launch and runtime suites ---------------------------------------
 foreach ($v in $(if ($Parts -contains 'A') { $Variants } else { @() })) {
   $vf = Get-VariantFeatures $v
-  $js = if ($v -eq 'all') { @("--js-flags=$KccAllJsFlags") } else { @() }
   # Launch caps and the first runtime suite draw with a 2D canvas: on a machine
   # without a GPU that leaves headroom far above 240. The second runtime suite
   # and the heavy suite draw with WebGL2, the game's path.
@@ -152,7 +146,7 @@ foreach ($v in $(if ($Parts -contains 'A') { $Variants } else { @() })) {
   $runs += , @('runtime-webgl', (@('frame-cap-test.js', '--kcc-suite=runtime', '--kcc-mode=webgl') + @(Get-FeatureArgs $vf)))
   foreach ($r in $runs) {
     $name = "$v-$($r[0])"
-    $att = Invoke-Suite $name ($r[1] + $js)
+    $att = Invoke-Suite $name $r[1]
     Write-Suite $name $att
     if (-not $script:suitePass) { $allPass = $false }
   }
@@ -166,9 +160,8 @@ foreach ($b in $Busy) {
   for ($i = 1; $i -le $HeavyRuns; $i++) {
     foreach ($v in $heavyVariants) {
       $vf = Get-VariantFeatures $v
-      $js = if ($v -eq 'all') { @("--js-flags=$KccAllJsFlags") } else { @() }
       $name = "$v-heavy-$b-$i"
-      $att = Invoke-Suite $name (@('frame-cap-test.js', '--kcc-suite=heavy', "--kcc-busy=$b", "--kcc-mode=$HeavyMode") + @(Get-FeatureArgs $vf) + $js)
+      $att = Invoke-Suite $name (@('frame-cap-test.js', '--kcc-suite=heavy', "--kcc-busy=$b", "--kcc-mode=$HeavyMode") + @(Get-FeatureArgs $vf))
       Write-Suite $name $att
       if (-not $script:suitePass) { $allPass = $false }
       $res = $att[-1].res

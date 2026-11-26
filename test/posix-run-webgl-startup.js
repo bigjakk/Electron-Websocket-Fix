@@ -9,7 +9,6 @@
 //                             [--extra-args '--enable-logging']
 //
 // Variants (comma-separated): off; all (every switch, as the gates use it);
-// features (every --enable-features switch, no JS flag); js (only the JS flag);
 // a feature name or names joined by + (KccA+KccB: those features alone).
 // --extra-args: Electron switches for every launch, space-separated.
 'use strict';
@@ -26,9 +25,7 @@ async function main(argv) {
   const byVariant = {};
   for (const v of k.list(a.variants)) {
     if (v === 'off') byVariant[v] = [];
-    else if (v === 'all') byVariant[v] = [...k.joinKccFeatures(k.KCC_ALL_FEATURES), `--js-flags=${k.KCC_ALL_JS_FLAGS}`];
-    else if (v === 'features') byVariant[v] = k.joinKccFeatures(k.KCC_ALL_FEATURES);
-    else if (v === 'js') byVariant[v] = [`--js-flags=${k.KCC_ALL_JS_FLAGS}`];
+    else if (v === 'all') byVariant[v] = k.joinKccFeatures(k.KCC_ALL_FEATURES);
     else if (/^Kcc/.test(v)) byVariant[v] = k.joinKccFeatures(v.split('+'));
     else throw new Error(`unknown variant ${v}`);
   }

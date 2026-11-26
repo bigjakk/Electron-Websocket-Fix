@@ -36,13 +36,9 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 const KCC_ALL_FEATURES = [
-  'KccNoPointerLockEscCooldown', 'KccPinRawPointerLock', 'KccRawInputKeepWheelMotion',
-  'KccRawInputFastPath', 'KccLeanLockedMouseMove', 'KccSkipUnobservedInputEmits',
-  'KccSkipCanvasPerfSampling', 'KccLabelTexturesOnce', 'KccCacheVsyncInterval',
-  'KccMacFineGpuBackpressure', 'KccAudioParamCoalesce', 'KccHrtfPannerKRateAngles',
-  'KccX11AllowUnredirect', 'KccX11RawMouse', 'KccFrameCapPreciseRelease',
+  'KccNoPointerLockEscCooldown', 'KccSkipCanvasPerfSampling', 'KccCacheVsyncInterval',
+  'KccMacFineGpuBackpressure', 'KccAudioParamCoalesce', 'KccFrameCapPreciseRelease',
 ];
-const KCC_ALL_JS_FLAGS = '--cppheap-max-incremental-sweep-duration-ms=1';
 
 // Chromium keeps only the LAST --enable-features switch: merge into one value.
 function joinFeatures(features) {
@@ -159,6 +155,6 @@ const median = (xs) => {
 };
 
 module.exports = {
-  KCC_ALL_FEATURES, KCC_ALL_JS_FLAGS, CRASH_PATTERN, platformArgs, joinFeatures, parseArgs, list, stamp,
+  KCC_ALL_FEATURES, CRASH_PATTERN, platformArgs, joinFeatures, parseArgs, list, stamp,
   runElectron, crashLines, readJson, summaryWriter, fmt1, median, electronPids,
 };

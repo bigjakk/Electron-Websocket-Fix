@@ -10,7 +10,7 @@
 //                             on, c32      KccMacFineGpuBackpressure only
 //                             all-but-c32  every switch of the series except c32
 //                             all          every switch of the series
-//                           ("every switch": README "Everything on", --js-flags included)
+//                           ("every switch": README "Everything on")
 //       [--runs 6]          untraced launches per variant
 //       [--page heavy|frame-cap]  heavy (default): the GPU-bound mac-gpu-heavy.html;
 //                           frame-cap: the gates' light page frame-cap.html
@@ -50,13 +50,12 @@ const path = require('path');
 const k = require('./posix-kcc-flags');
 
 const FEATURE = 'KccMacFineGpuBackpressure';
-const ALL_JS = `--js-flags=${k.KCC_ALL_JS_FLAGS}`;
 const VARIANTS = {
   off: [],
   on: k.joinKccFeatures([FEATURE]),
   c32: k.joinKccFeatures([FEATURE]),
-  'all-but-c32': [...k.joinKccFeatures(k.KCC_ALL_FEATURES.filter((f) => f !== FEATURE)), ALL_JS],
-  all: [...k.joinKccFeatures(k.KCC_ALL_FEATURES), ALL_JS],
+  'all-but-c32': k.joinKccFeatures(k.KCC_ALL_FEATURES.filter((f) => f !== FEATURE)),
+  all: k.joinKccFeatures(k.KCC_ALL_FEATURES),
 };
 
 const median = (xs) => {

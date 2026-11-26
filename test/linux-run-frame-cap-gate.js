@@ -22,7 +22,7 @@
 // variants interleaved with "off" in every round; for each cap the best run of
 // a variant must not be more than 3 % below the best run of "off" (a cap above
 // reach must not lose rate). Medians and every run are reported as well.
-// Variants: off (no KCC switch), all (every switch of the series + --js-flags).
+// Variants: off (no KCC switch), all (every switch of the series).
 // The "precise" variant (c60, KccFrameCapPreciseRelease) is Windows-only.
 // Never combined with CustomMaxPendingFrames:count/2 (a documented conflict).
 //
@@ -57,7 +57,6 @@ const say = c.summaryWriter(path.join(o.out, `summary-${variants.join('-')}.txt`
   `busy ${busyList.join(', ')} ms, ${heavyRuns} runs each  features via: ${o['features-via']}\nplatform args: ${c.platformArgs().join(' ')}  DISPLAY=${process.env.DISPLAY || ''}\n`);
 
 const variantFeatures = (v) => (v === 'all' ? c.KCC_ALL_FEATURES : []);
-const variantJs = (v) => (v === 'all' ? [`--js-flags=${c.KCC_ALL_JS_FLAGS}`] : []);
 function featureArgs(features) {
   const a = c.joinFeatures(features);
   return o['features-via'] === 'js' ? a.map((s) => s.replace(/^--enable-features=/, '--kcc-features=')) : a;
@@ -133,7 +132,7 @@ if (c.list(o.parts).includes('A')) {
     runs.push(['runtime-webgl', ['frame-cap-test.js', '--kcc-suite=runtime', '--kcc-mode=webgl', ...featureArgs(vf)]]);
     for (const [suite, argv] of runs) {
       const name = `${v}-${suite}`;
-      if (!writeSuite(name, runSuite(name, [...argv, ...variantJs(v)]))) allPass = false;
+      if (!writeSuite(name, runSuite(name, argv))) allPass = false;
     }
   }
 }
@@ -145,7 +144,7 @@ for (const b of busyList) {
   for (let i = 1; i <= heavyRuns; i++) {
     for (const v of heavyVariants) {
       const name = `${v}-heavy-${b}-${i}`;
-      const att = runSuite(name, ['frame-cap-test.js', '--kcc-suite=heavy', `--kcc-busy=${b}`, `--kcc-mode=${o['heavy-mode']}`, ...featureArgs(variantFeatures(v)), ...variantJs(v)]);
+      const att = runSuite(name, ['frame-cap-test.js', '--kcc-suite=heavy', `--kcc-busy=${b}`, `--kcc-mode=${o['heavy-mode']}`, ...featureArgs(variantFeatures(v))]);
       if (!writeSuite(name, att)) allPass = false;
       const last = att[att.length - 1];
       if (last.res && last.code === 0) (heavy[`${v}|${b}`] = heavy[`${v}|${b}`] || []).push(last.res);

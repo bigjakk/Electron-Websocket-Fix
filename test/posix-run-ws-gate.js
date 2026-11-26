@@ -8,8 +8,7 @@
 //
 // Prerequisite: `npm ci` in test/ (cdp-test.js needs the `ws` package).
 //
-// --flags on adds every switch of the series (README "Everything on") and the
-// --js-flags value.
+// --flags on adds every switch of the series (README "Everything on").
 //
 // Re-runs: a run that exited cleanly with frames but missed only the latency
 // limits is run once more, and both attempts are reported; a second miss is a
@@ -36,7 +35,7 @@ async function main(argv) {
   fs.mkdirSync(a.out, { recursive: true });
   const say = k.makeSummary(path.join(a.out, `ws-gate-${a.flags}.txt`),
     `WS starvation gate  flags ${a.flags}  ${k.stamp()}\nexe: ${a.exe}\n${k.machineNotes()}\n`);
-  const extra = a.flags === 'on' ? [...k.joinKccFeatures(k.KCC_ALL_FEATURES), `--js-flags=${k.KCC_ALL_JS_FLAGS}`] : [];
+  const extra = a.flags === 'on' ? k.joinKccFeatures(k.KCC_ALL_FEATURES) : [];
   let failed = false;
   let incomplete = false;
   for (let i = 1; i <= Number(a.runs); i++) {

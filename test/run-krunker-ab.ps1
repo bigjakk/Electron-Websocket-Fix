@@ -14,8 +14,8 @@
 # game requests it. The runs of 2026-11-22 were made before this existed, with
 # the ordinary lock.
 #
-# -Switches on   every switch of the series (README "Everything on") and the
-#                --js-flags value, from kcc-flags.ps1.
+# -Switches on   every switch of the series (README "Everything on"), from
+#                kcc-flags.ps1.
 # -ProfileDir    browser profile for the run (login, settings). Give every
 #                Electron version its own: a profile written by a newer
 #                Chromium must not be opened by an older one. Never point it
@@ -45,7 +45,6 @@ $OutDir = (Resolve-Path $OutDir).Path
 $env:KCC_AB_LABEL = $Label
 $env:KCC_AB_OUT = $OutDir
 $env:KCC_AB_FEATURES = if ($Switches -eq 'on') { $KccAllFeatures -join ',' } else { '' }
-$env:KCC_AB_JS_FLAGS = if ($Switches -eq 'on') { $KccAllJsFlags } else { '' }
 $env:KCC_AB_FRAME_CAP = "$FrameCap"
 $env:KCC_AB_FULLSCREEN = if ($Windowed) { '0' } else { '1' }
 $env:KCC_AB_MINUTES = "$Minutes"
@@ -62,7 +61,7 @@ $log = Join-Path $OutDir "ab-$Label.log"
 try {
   $code = Invoke-Electron $Exe $argv $log
 } finally {
-  foreach ($n in 'LABEL', 'OUT', 'FEATURES', 'JS_FLAGS', 'FRAME_CAP', 'FULLSCREEN', 'MINUTES', 'URL', 'RAW_INPUT', 'SCREENSHOT') { Remove-Item "Env:\KCC_AB_$n" -ErrorAction SilentlyContinue }
+  foreach ($n in 'LABEL', 'OUT', 'FEATURES', 'FRAME_CAP', 'FULLSCREEN', 'MINUTES', 'URL', 'RAW_INPUT', 'SCREENSHOT') { Remove-Item "Env:\KCC_AB_$n" -ErrorAction SilentlyContinue }
 }
 "exit $code"
 Get-Content $log | Where-Object { $_ -match '^\[kcc-ab\]|^  (in match|menus|pointer locks|file)' }

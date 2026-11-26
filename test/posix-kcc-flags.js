@@ -29,13 +29,9 @@ const os = require('os');
 const path = require('path');
 
 const KCC_ALL_FEATURES = [
-  'KccNoPointerLockEscCooldown', 'KccPinRawPointerLock', 'KccRawInputKeepWheelMotion',
-  'KccRawInputFastPath', 'KccLeanLockedMouseMove', 'KccSkipUnobservedInputEmits',
-  'KccSkipCanvasPerfSampling', 'KccLabelTexturesOnce', 'KccCacheVsyncInterval',
-  'KccMacFineGpuBackpressure', 'KccAudioParamCoalesce', 'KccHrtfPannerKRateAngles',
-  'KccX11AllowUnredirect', 'KccX11RawMouse', 'KccFrameCapPreciseRelease',
+  'KccNoPointerLockEscCooldown', 'KccSkipCanvasPerfSampling', 'KccCacheVsyncInterval',
+  'KccMacFineGpuBackpressure', 'KccAudioParamCoalesce', 'KccFrameCapPreciseRelease',
 ];
-const KCC_ALL_JS_FLAGS = '--cppheap-max-incremental-sweep-duration-ms=1';
 
 // Chromium keeps only the LAST --enable-features switch, so callers merge their
 // own features into one value.
@@ -382,7 +378,7 @@ function runMain(main) {
 }
 
 module.exports = {
-  KCC_ALL_FEATURES, KCC_ALL_JS_FLAGS, KCC_CRASH_PATTERN,
+  KCC_ALL_FEATURES, KCC_CRASH_PATTERN,
   joinKccFeatures, invokeElectron, waitElectronGone, processesOf,
   crashLines, crashCount, readJson, parseArgs, list, makeSummary,
   stamp, r1, fix, machineNotes, keepAwake, runMain,

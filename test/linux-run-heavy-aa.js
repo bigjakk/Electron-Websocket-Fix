@@ -8,13 +8,12 @@
 //       [--busy 3] [--rounds 10] [--arms off,all,off2] [--heavy-mode webgl|2d]
 //       [--features-via commandline|js] [--software-rendering] [--no-sandbox]
 //
-// Arms: off (no KCC switch), all (every switch of the series and --js-flags, as in
-// the gate), off2 (the same command line as off); for a split also jsflag (the V8
-// flag alone) and features (every switch, no V8 flag). Every round runs each arm
-// once, the order rotated from round to round (round r starts with the arm at
-// position (r - 1) mod N of --arms). Every run is reported, and none is repeated.
-// The CPU steal time over each run is taken from /proc/stat, so that a slow run
-// can be set against what a VM's host took.
+// Arms: off (no KCC switch), all (every switch of the series, as in the gate),
+// off2 (the same command line as off). Every round runs each arm once, the order
+// rotated from round to round (round r starts with the arm at position
+// (r - 1) mod N of --arms). Every run is reported, and none is repeated. The CPU
+// steal time over each run is taken from /proc/stat, so that a slow run can be
+// set against what a VM's host took.
 //
 // Report: every run per arm, best and median per arm; best against best (the
 // gate's ratio) for every arm against off, and for all against off2; per-round
@@ -33,22 +32,17 @@ const o = c.parseArgs(process.argv.slice(2), {
 const ROUNDS = parseInt(o.rounds, 10);
 const BUSY = Number(o.busy);
 const ARMS = c.list(o.arms);
-const KNOWN = ['off', 'off2', 'all', 'jsflag', 'features'];
+const KNOWN = ['off', 'off2', 'all'];
 if (!o.exe || !o.out || !(ROUNDS > 0) || !(BUSY > 0) || ARMS[0] !== 'off' || ARMS.some((a) => !KNOWN.includes(a)) || new Set(ARMS).size !== ARMS.length) {
   console.error('usage: node linux-run-heavy-aa.js --exe <electron> --out <dir> [--busy 3] [--rounds 10] [--arms off,all,off2] ...');
   console.error(`  --arms: starts with off; any of ${KNOWN.join(', ')}`);
   process.exit(2);
 }
-const JS = `--js-flags=${c.KCC_ALL_JS_FLAGS}`;
 function featureArgs(features) {
   const a = c.joinFeatures(features);
   return o['features-via'] === 'js' ? a.map((s) => s.replace(/^--enable-features=/, '--kcc-features=')) : a;
 }
-const ARM_ARGS = {
-  off: [], off2: [], jsflag: [JS],
-  all: [...featureArgs(c.KCC_ALL_FEATURES), JS],
-  features: featureArgs(c.KCC_ALL_FEATURES),
-};
+const ARM_ARGS = { off: [], off2: [], all: featureArgs(c.KCC_ALL_FEATURES) };
 const base = ['frame-cap-test.js', '--kcc-suite=heavy', `--kcc-busy=${BUSY}`, `--kcc-mode=${o['heavy-mode']}`];
 const say = c.summaryWriter(path.join(o.out, 'summary-heavy-aa.txt'),
   `heavy-suite A/A re-measurement  ${c.stamp()}  busy ${BUSY} ms, page ${o['heavy-mode']}, ${ROUNDS} rounds, arms ${ARMS.join(', ')}\n` +

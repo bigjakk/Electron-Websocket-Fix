@@ -19,8 +19,8 @@
 #                merge mode, so a second recording into the same directory
 #                would be added to the first: the script refuses a directory
 #                that already holds .profraw files.
-# -Switches on   every switch of the series and the --js-flags value, from
-#                test/kcc-flags.ps1 (the default: train the patched paths).
+# -Switches on   every switch of the series, from test/kcc-flags.ps1 (the
+#                default: train the patched paths).
 # -ProfileDir    browser profile for the run (login, settings). It must be one
 #                that only this Chromium version has opened, and never the real
 #                client's profile. Keep it outside the repository.
@@ -61,7 +61,7 @@ if ($CheckOnly) {
 
   $env:LLVM_PROFILE_FILE = Join-Path $OutDir 'kcc-%4m.profraw'
   $env:KCC_PGO_FEATURES = if ($Switches -eq 'on') { $KccAllFeatures -join ',' } else { '' }
-  $env:KCC_PGO_JS_FLAGS = if ($Switches -eq 'on') { $KccAllJsFlags } else { '' }
+  $env:KCC_PGO_JS_FLAGS = ''
   $env:KCC_PGO_FRAME_CAP = "$FrameCap"
   $env:KCC_PGO_FULLSCREEN = if ($Windowed) { '0' } else { '1' }
   $env:KCC_PGO_MINUTES = "$Minutes"

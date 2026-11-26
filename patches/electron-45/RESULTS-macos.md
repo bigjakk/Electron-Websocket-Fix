@@ -1,5 +1,11 @@
 # Electron v45.4.1 KCC series: macOS build and check results
 
+> **These results are for the 22-patch series.** Eleven of those patches were removed on
+> 2026-11-26; the reasons are in [README.md](README.md#removed-on-2026-11-26). The eleven
+> kept diffs are unchanged, and the lean set has not been built as a set yet. Sections on a
+> removed patch are kept as the record behind that decision; the test drivers and pages of
+> the removed patches were removed with them, so some files named below no longer exist.
+
 Build of Electron **v45.4.1** (Chromium **156.0.8078.100**, V8 **15.6.75.57**) with the 22
 patches in this directory on an Apple M5 MacBook Pro: an arm64 DCHECK build and an official
 arm64 Release build, with both release gates and the synthetic checks that apply on macOS run

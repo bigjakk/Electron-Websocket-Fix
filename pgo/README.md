@@ -19,6 +19,12 @@ plus a training session **per OS**, and the training needs a real GPU session
 with a person playing.
 
 **State (2026-11-24, Windows):** every step is done for the 22-patch tree.
+The series was cut to 11 patches on 2026-11-26 (see
+`patches/electron-45/README.md`). The recordings below were made on the
+22-patch build. A profile only carries over to a function whose code is
+unchanged, so in a build of the 11-patch tree the functions that the removed
+patches touched fall back to the stock profile's counts; everything else
+keeps the recorded ones. No recording has been made on the 11-patch tree.
 Two recordings were played on the gaming PC (7.5 minutes on the ordinary
 pointer lock, then 5.5 minutes with raw mouse input; 13 minutes and 10.6
 million WebGL draw calls together) and merged with Electron's stock profile at
